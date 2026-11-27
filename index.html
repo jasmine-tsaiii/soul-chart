@@ -850,7 +850,7 @@
         if (has('western')) rows.push(['西洋占星', we.planets[0].sign.replace('座', '') + '太陽・' + we.planets[1].sign.replace('座', '') + '月亮' + (we.asc ? '・' + we.asc.sign.replace('座', '') + '上升' : '')]);
         if (has('vedic')) rows.push(['印度占星', '月亮星宿 ' + ve.moonNakshatra.name + '（' + ve.moonNakshatra.zh + '）']);
         if (has('hd') && !hd.unknownTime) rows.push(['人類圖', X.hd.types[hd.type].name + '・' + hd.profile + '・' + X.hd.authorities[hd.authority].name]);
-        LAST.card = { name: name, title: syn.portrait.title, keywords: syn.portrait.keywords, rows: rows };
+        LAST.card = { name: name, title: syn.portrait.title, keywords: syn.portrait.keywords, rows: rows, portrait: syn.portrait };
         html += shareBlock();
       }
     }
@@ -940,7 +940,7 @@
   function shareBlock() {
     return '<div class="sc-wrap no-print"><div class="sc-preview"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>' +
       '<div class="sc-side"><div class="eyebrow">分享你的命盤卡</div><h3 class="paid-title">六種系統，看看誰最懂你</h3>' +
-      '<p>把你的一句話和六個系統的結果做成一張卡，IG 限時動態尺寸（1080×1920），朋友看得懂，也會想來測。</p>' +
+      '<p>把六種命盤一起說的「你」做成一張卡，IG 限時動態尺寸（1080×1920），朋友看得懂，也會想來測。</p>' +
       '<div class="sc-btns"><button type="button" class="btn" id="scDownload">下載分享圖</button><button type="button" class="btn line" id="scShare">分享</button><button type="button" class="btn line" id="scCopy">複製分享文字</button></div></div></div>';
   }
   function wrapText(ctx, text, maxW) {
@@ -949,56 +949,81 @@
     if (cur) lines.push(cur);
     return lines;
   }
-  function drawShareCard(cv, d) {
+  function drawShareCard(cv, d, again) {
     if (!cv || !d) return;
-    var ctx = cv.getContext('2d'), W = 1080, H = 1920, SERIF = '"Songti TC","Noto Serif TC",serif', SANS = '"PingFang TC","Noto Sans TC",sans-serif';
-    var bg = ctx.createRadialGradient(W / 2, 360, 60, W / 2, 700, 1500);
-    bg.addColorStop(0, '#3D4386'); bg.addColorStop(.45, '#20245A'); bg.addColorStop(1, '#0E1030');
+    var ctx = cv.getContext('2d'), W = 1080, H = 1920;
+    var SERIF = '"Songti TC","Noto Serif TC","STSong",serif', LATIN = '"Didot","Bodoni 72","Noto Serif TC",serif';
+    var P = d.portrait || {}, parts = d.title.split('，');
+    // 形容這個人的一段話：優先用「太陽×月亮」組合解讀，沒有就用最明顯特質的情境
+    var desc = (P.combo && P.combo.text) || (P.traits && P.traits[0] && P.traits[0].scene) || '';
+    var traits = (P.traits || []).slice(0, 3).map(function (t) { return t.name; });
+    if (!traits.length) traits = d.keywords.slice(0, 3);
+
+    // 背景：夜空
+    var bg = ctx.createRadialGradient(W / 2, 420, 40, W / 2, 900, 1500);
+    bg.addColorStop(0, '#363C7A'); bg.addColorStop(.5, '#1D2152'); bg.addColorStop(1, '#0C0E2A');
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    var seed = 7, rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-    for (var i = 0; i < 420; i++) { ctx.fillStyle = 'rgba(255,245,225,' + (rnd() * .7 + .2) + ')'; ctx.beginPath(); ctx.arc(rnd() * W, rnd() * H, rnd() * 1.8 + .3, 0, 7); ctx.fill(); }
-    // 月亮
-    var glow = ctx.createRadialGradient(W / 2, 300, 60, W / 2, 300, 260); glow.addColorStop(0, 'rgba(248,220,160,.45)'); glow.addColorStop(1, 'rgba(248,220,160,0)');
-    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, 620);
-    var mg = ctx.createRadialGradient(W / 2 - 40, 260, 10, W / 2, 300, 120); mg.addColorStop(0, '#FBEFD2'); mg.addColorStop(.5, '#EDCF95'); mg.addColorStop(1, '#C49A5C');
-    ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(W / 2, 300, 118, 0, 7); ctx.fill();
-    ctx.fillStyle = 'rgba(160,120,70,.18)'; [[-40, -30, 22], [36, 10, 14], [-6, 44, 28]].forEach(function (c) { ctx.beginPath(); ctx.arc(W / 2 + c[0], 300 + c[1], c[2], 0, 7); ctx.fill(); });
-    ctx.strokeStyle = 'rgba(243,230,200,.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(W / 2, 300, 360, 90, -.12, 0, 7); ctx.stroke();
+    var seed = 11, rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (var i = 0; i < 160; i++) { ctx.fillStyle = 'rgba(255,245,225,' + (rnd() * .5 + .15) + ')'; ctx.beginPath(); ctx.arc(rnd() * W, rnd() * H, rnd() * 1.5 + .3, 0, 7); ctx.fill(); }
+    // 細框
+    ctx.strokeStyle = 'rgba(227,207,160,.28)'; ctx.lineWidth = 1.5; ctx.strokeRect(56, 56, W - 112, H - 112);
+    // 月亮（小一點，安靜一點）
+    var my = 330;
+    var glow = ctx.createRadialGradient(W / 2, my, 30, W / 2, my, 220); glow.addColorStop(0, 'rgba(248,220,160,.35)'); glow.addColorStop(1, 'rgba(248,220,160,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, my - 230, W, 460);
+    var mg = ctx.createRadialGradient(W / 2 - 24, my - 24, 6, W / 2, my, 80); mg.addColorStop(0, '#FBF0D6'); mg.addColorStop(.6, '#E9C98D'); mg.addColorStop(1, '#C9A062');
+    ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(W / 2, my, 78, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(243,230,200,.3)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(W / 2, my, 250, 56, -.1, 0, 7); ctx.stroke();
+
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    // 標題區
-    ctx.fillStyle = '#E3CFA0'; ctx.font = '500 34px ' + SANS; ctx.letterSpacing = '12px';
-    ctx.fillText('東西方命盤大亂鬥', W / 2 + 6, 530); ctx.letterSpacing = '0px';
-    ctx.fillStyle = '#EADFC6'; ctx.font = '40px ' + SERIF; ctx.fillText((d.name ? d.name + '，' : '') + '六種系統都說你是', W / 2, 612);
-    var parts = d.title.split('，'), tg = ctx.createLinearGradient(0, 640, 0, 760); tg.addColorStop(0, '#FFF4DA'); tg.addColorStop(1, '#D9AE66');
-    ctx.fillStyle = tg; ctx.font = '700 88px ' + SERIF;
-    var tl = wrapText(ctx, parts[0], 900), y = 720;
-    tl.forEach(function (l) { ctx.fillText(l, W / 2, y); y += 104; });
-    if (parts[1]) { ctx.fillStyle = '#EBD8AE'; ctx.font = '42px ' + SERIF; ctx.fillText(parts[1], W / 2, y - 20); y += 50; }
-    // 關鍵字
-    ctx.font = '500 32px ' + SANS;
-    var ks = d.keywords.map(function (k) { return '✦ ' + k; }), kw = ks.map(function (k) { return ctx.measureText(k).width + 56; }), total = kw.reduce(function (a, b) { return a + b; }, 0) + (ks.length - 1) * 18, x = (W - total) / 2, ky = y + 10;
-    ks.forEach(function (k, i) {
-      ctx.strokeStyle = 'rgba(227,207,160,.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(x, ky, kw[i], 64, 32); ctx.stroke();
-      ctx.fillStyle = '#F3E6C8'; ctx.fillText(k, x + kw[i] / 2, ky + 43); x += kw[i] + 18;
+    var spaced = function (text, x, yy, ls) { ctx.letterSpacing = ls + 'px'; ctx.fillText(text, x + ls / 2, yy); ctx.letterSpacing = '0px'; };
+    // 小標
+    ctx.fillStyle = 'rgba(227,207,160,.85)'; ctx.font = '30px ' + SERIF; spaced('東西方命盤大亂鬥', W / 2, 560, 14);
+    // 「你是」
+    ctx.fillStyle = '#E8DCC2'; ctx.font = '38px ' + SERIF; spaced(d.name ? d.name + ' 是' : '你是', W / 2, 700, 6);
+    // 主標題：形容這個人
+    var tg = ctx.createLinearGradient(0, 740, 0, 860); tg.addColorStop(0, '#FFF3D6'); tg.addColorStop(1, '#DDB36E');
+    ctx.fillStyle = tg; ctx.font = '400 96px ' + SERIF; ctx.letterSpacing = '6px';
+    var tl = wrapText(ctx, parts[0], 900), y = 830;
+    ctx.letterSpacing = '0px';
+    tl.forEach(function (l) { spaced(l, W / 2, y, 6); y += 118; });
+    if (parts[1]) { ctx.fillStyle = 'rgba(232,220,194,.8)'; ctx.font = '36px ' + SERIF; spaced(parts[1], W / 2, y - 30, 4); y += 40; }
+    // 分隔：✦
+    y += 40; ctx.fillStyle = '#D9B271'; ctx.font = '30px ' + SERIF; ctx.fillText('✦', W / 2, y);
+    ctx.strokeStyle = 'rgba(217,178,113,.5)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(W / 2 - 150, y - 10); ctx.lineTo(W / 2 - 40, y - 10); ctx.moveTo(W / 2 + 40, y - 10); ctx.lineTo(W / 2 + 150, y - 10); ctx.stroke();
+    // 一段話
+    if (desc) {
+      y += 100; ctx.fillStyle = '#F1E7D2'; ctx.font = '42px ' + SERIF;
+      // 盡量在逗號、分號後面換行，不把詞拆開
+      var clauses = desc.match(/[^，；。、！？]+[，；。、！？]?/g) || [desc], dl = [], cur = '';
+      clauses.forEach(function (c) {
+        if (ctx.measureText(cur + c).width <= 800) { cur += c; return; }
+        if (cur) dl.push(cur);
+        if (ctx.measureText(c).width <= 800) cur = c; else { var w = wrapText(ctx, c, 800); cur = w.pop(); dl = dl.concat(w); }
+      });
+      if (cur) dl.push(cur);
+      dl.filter(Boolean).slice(0, 5).forEach(function (l) { ctx.fillText(l, W / 2, y); y += 74; });
+    }
+    // 三個特質
+    y += 70; ctx.fillStyle = '#E3C78E'; ctx.font = '38px ' + SERIF; spaced(traits.join('　·　'), W / 2, y, 4);
+
+    // 底部：六個系統（只放圖示）＋網址
+    var icons = d.rows.map(function (r) { return SYS_STYLE[r[0]] || ['✦', '#A88550']; }), gap = 74, ix = W / 2 - (icons.length - 1) * gap / 2, iy = H - 330;
+    icons.forEach(function (st, k) {
+      ctx.strokeStyle = 'rgba(227,207,160,.55)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(ix + k * gap, iy, 24, 0, 7); ctx.stroke();
+      ctx.fillStyle = '#E8D3A6'; ctx.font = '24px "Apple Symbols","Segoe UI Symbol",' + SERIF; ctx.fillText(st[0], ix + k * gap, iy + 8);
     });
-    // 六個系統
-    var ry = ky + 120, rx = 120, rw = W - 240, rh = 108;
-    ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.beginPath(); ctx.roundRect(rx - 30, ry - 30, rw + 60, d.rows.length * rh + 40, 28); ctx.fill();
-    ctx.strokeStyle = 'rgba(227,207,160,.25)'; ctx.lineWidth = 2; ctx.stroke();
-    d.rows.forEach(function (r, i) {
-      var st = SYS_STYLE[r[0]] || ['✦', '#A88550'], cy = ry + i * rh + 46;
-      ctx.fillStyle = st[1]; ctx.beginPath(); ctx.arc(rx + 34, cy, 32, 0, 7); ctx.fill();
-      ctx.fillStyle = '#fff'; ctx.font = '30px "Apple Symbols","Segoe UI Symbol",' + SERIF; ctx.textAlign = 'center'; ctx.fillText(st[0], rx + 34, cy + 11);
-      ctx.textAlign = 'left'; ctx.fillStyle = '#C9B489'; ctx.font = '500 26px ' + SANS; ctx.fillText(r[0], rx + 92, cy - 10);
-      ctx.fillStyle = '#FFF4E0'; ctx.font = '600 36px ' + SERIF;
-      var line = r[1]; while (ctx.measureText(line).width > rw - 110 && line.length > 4) line = line.slice(0, -2) + '…';
-      ctx.fillText(line.replace(/……$/, '…'), rx + 92, cy + 34);
-      if (i < d.rows.length - 1) { ctx.strokeStyle = 'rgba(227,207,160,.15)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(rx + 92, ry + (i + 1) * rh - 10); ctx.lineTo(rx + rw, ry + (i + 1) * rh - 10); ctx.stroke(); }
-    });
-    // 底部
-    ctx.textAlign = 'center'; ctx.fillStyle = '#EADFC6'; ctx.font = '34px ' + SERIF; ctx.fillText('你呢？六種系統，看看誰最懂你', W / 2, H - 160);
-    ctx.fillStyle = '#E6C384'; ctx.font = '600 40px ' + SANS; ctx.letterSpacing = '4px'; ctx.fillText('chart.jas-soul.com', W / 2 + 2, H - 96); ctx.letterSpacing = '0px';
-    ctx.fillStyle = 'rgba(234,223,198,.7)'; ctx.font = '28px ' + SANS; ctx.fillText('@jas.soulcareer', W / 2, H - 52);
+    ctx.fillStyle = 'rgba(232,220,194,.7)'; ctx.font = '28px ' + SERIF; spaced(icons.length + ' 種命盤一起說', W / 2, iy + 76, 6);
+    ctx.fillStyle = '#E3C78E'; ctx.font = '34px ' + LATIN; spaced('CHART.JAS-SOUL.COM', W / 2, H - 150, 8);
+    ctx.fillStyle = 'rgba(232,220,194,.55)'; ctx.font = '26px ' + LATIN; spaced('@jas.soulcareer', W / 2, H - 100, 3);
+
+    // 手機上可能還沒載好思源宋體：載好之後再畫一次
+    if (!again && document.fonts && document.fonts.load) {
+      var txt = '東西方命盤大亂鬥你是' + d.title + desc + traits.join('') + '種命盤一起說' + (d.name || '');
+      Promise.all(['400 96px "Noto Serif TC"', '42px "Noto Serif TC"'].map(function (f) { return document.fonts.load(f, txt); }))
+        .then(function () { drawShareCard(cv, d, true); }, function () {});
+    }
   }
   function shareText() {
     var d = LAST && LAST.card; if (!d) return '';
