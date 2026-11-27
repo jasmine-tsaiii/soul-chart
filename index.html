@@ -523,6 +523,12 @@
   .lc-buy { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--ink-2); }
   .lc-buy b { color: var(--ink); margin: 0 2px; }
   .cart-add.lc-add { margin: 0; align-self: auto; width: auto; padding: 5px 14px; border-style: solid; background: #FFFDF8; --pc: #A88550; }
+  .solo-end { margin: 26px 0 30px; padding: 20px 18px; border-radius: 16px; text-align: center; border: 1.5px solid color-mix(in srgb, var(--pc) 40%, var(--line)); background: radial-gradient(120% 140% at 50% 0%, color-mix(in srgb, var(--pc) 16%, #FFFDF8), #FFFDF8 65%); }
+  .se-k { font-size: 12px; letter-spacing: .16em; color: var(--pc); font-weight: 600; }
+  .se-t { font-family: var(--serif); font-size: 19px; font-weight: 600; margin: 4px 0 6px; }
+  .solo-end p { margin: 0 auto 12px; max-width: 460px; font-size: 13.5px; color: var(--ink-2); line-height: 1.75; }
+  .solo-end .sm-sys { justify-content: center; }
+  .solo-end .se-all { margin-top: 14px; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -1472,6 +1478,12 @@
         cover.insertAdjacentHTML('afterend', '<div class="solo-more no-print"><span>你選了<b>' + only.key + '</b>。其他系統也想對照看看嗎？</span><div class="sm-sys">' +
           rest.map(function (x) { var st = SYS_STYLE[x.key]; return '<button type="button" data-add="' + x.id + '" style="--pc:' + st[1] + '"><i>' + st[0] + '︎</i>' + x.key + '</button>'; }).join('') +
           '<button type="button" class="sm-all" data-add="all">六個一起看</button></div></div>');
+        // 看完這一章之後，再邀請一次（比較不會錯過）
+        var osec2 = document.getElementById(only.id), st0 = SYS_STYLE[only.key];
+        if (osec2) osec2.insertAdjacentHTML('afterend', '<div class="solo-end no-print" style="--pc:' + st0[1] + '"><div class="se-k">看完' + only.key + '了</div>' +
+          '<div class="se-t">想知道其他系統怎麼說你嗎？</div><p>同一個生日，換一個系統看，常常會發現「原來這點不只八字這樣說」。好幾個系統都提到的地方，通常就是最像你的地方。</p>'.replace('八字', only.key) +
+          '<div class="sm-sys">' + rest.map(function (x) { var st = SYS_STYLE[x.key]; return '<button type="button" data-add="' + x.id + '" style="--pc:' + st[1] + '"><i>' + st[0] + '\uFE0E</i>' + x.key + '</button>'; }).join('') + '</div>' +
+          '<button type="button" class="btn se-all" data-add="all">六個系統一起看，找出共同點</button></div>');
       }
       return;
     }
