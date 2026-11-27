@@ -219,6 +219,17 @@
   /* 封面與總覽 */
   .cover { text-align: center; padding: 60px 0 40px; }
   .cover + section.system { margin-top: 0; padding-top: 8px; }
+  .secnav { position: sticky; top: 0; z-index: 30; margin: 0 -24px; padding: 8px 24px; background: rgba(247,243,236,.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid transparent; transition: border-color .2s, box-shadow .2s; }
+  .secnav.stuck { border-bottom-color: var(--line); box-shadow: 0 4px 14px rgba(43,38,34,.06); }
+  .sn-track { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); padding-right: 24px; }
+  .sn-track::-webkit-scrollbar { display: none; }
+  .sn-track a { flex: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 13px 6px 7px; border-radius: 999px; font-size: 13.5px; color: var(--ink-2); text-decoration: none; border: 1px solid var(--line); background: #FFFDF8; white-space: nowrap; transition: background .2s, color .2s, border-color .2s; }
+  .sn-track a i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: var(--pc); color: #fff; font-size: 11px; font-family: "Apple Symbols", "Segoe UI Symbol", var(--serif); }
+  .sn-track a:hover { border-color: var(--pc); }
+  .sn-track a.on { background: var(--pc); border-color: var(--pc); color: #fff; }
+  .sn-track a.on i { background: rgba(255,255,255,.25); }
+  section.system, #aipack { scroll-margin-top: 64px; }
+  @media (max-width: 560px) { .secnav { margin: 0 -16px; padding: 8px 16px; } }
   .cover + section.system::before { margin-bottom: 24px; }
   .eyebrow { font-size: 12px; letter-spacing: .32em; color: var(--gold); }
   .cover h1 { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 1.35; margin: 14px 0 8px; letter-spacing: .08em; }
@@ -640,6 +651,7 @@
       '<h1>' + (name ? esc(name) + ' 的' : '') + (picked.length === 6 ? '綜合命盤' : SYSTEMS.filter(function (x) { return has(x.id); }).map(function (x) { return x.key; }).join('・')) + '</h1>' +
       '<div class="meta">' + birth.y + '.' + pad(birth.m) + '.' + pad(birth.d) + (birth.timeKnown ? '　' + pad(birth.hour) + ':' + pad(birth.minute) : '　時間不確定') +
       '　' + birth.place.name + '<br>農曆 ' + (bz.lunar ? bz.lunar.text : '') + '　生肖' + bz.zodiac + '</div></header>';
+    html += '<nav class="secnav no-print" id="secnav" aria-label="章節導覽"></nav>';
 
     var only = SYSTEMS.filter(function (x) { return has(x.id); }).map(function (x) { return x.key; });
     if (picked.length >= 2) {
@@ -673,9 +685,53 @@
     html += '<p class="disclaimer">這份分析以多種命理與占星系統為工具，提供自我覺察的參考，不是醫療、心理治療或任何形式的保證。<br>' +
       '所有排盤都由這個工具自行計算（天文公式與傳統排盤規則），已用實際命盤與已知天象驗證；重要的決定，建議再用專業軟體對照。</p>';
     $('out').innerHTML = html;
+    buildSecNav();
     updateAiText();
     renderUnlock();
   }
+
+  // ===== 章節導覽列：固定在上方，可左右滑，捲動時自動標示目前章節 =====
+  var NAV_ITEMS = [
+    { id: 'summary', label: '總覽', icon: ['✦', '#A88550'] },
+    { id: 'numerology', label: '生命靈數', key: '生命靈數' },
+    { id: 'bazi', label: '八字', key: '八字' },
+    { id: 'ziwei', label: '紫微', key: '紫微斗數' },
+    { id: 'western', label: '西洋占星', key: '西洋占星' },
+    { id: 'vedic', label: '印度占星', key: '印度占星' },
+    { id: 'hd', label: '人類圖', key: '人類圖' },
+    { id: 'aipack', label: 'AI 懶人包', icon: ['◈', '#2B2622'] }
+  ];
+  function buildSecNav() {
+    var nav = $('secnav'); if (!nav) return;
+    nav.innerHTML = '<div class="sn-track">' + NAV_ITEMS.filter(function (it) { return document.getElementById(it.id); }).map(function (it) {
+      var st = it.icon || SYS_STYLE[it.key] || ['•', '#A88550'];
+      return '<a href="#' + it.id + '" data-sec="' + it.id + '" style="--pc:' + st[1] + '"><i>' + st[0] + '︎</i>' + it.label + '</a>';
+    }).join('') + '</div>';
+    spySections();
+  }
+  function navOffset() { var n = $('secnav'); return n ? n.offsetHeight + 10 : 0; }
+  function spySections() {
+    var nav = $('secnav'); if (!nav) return;
+    var links = nav.querySelectorAll('a'), cur = null, line = navOffset() + 40;
+    links.forEach(function (a) { var el = document.getElementById(a.getAttribute('data-sec')); if (el && el.getBoundingClientRect().top <= line) cur = a; });
+    var stuck = nav.getBoundingClientRect().top <= 0.5;
+    nav.classList.toggle('stuck', stuck);
+    links.forEach(function (a) { a.classList.toggle('on', a === cur); });
+    if (cur && cur !== nav._cur) {
+      nav._cur = cur;
+      var tr = nav.querySelector('.sn-track'), l = cur.offsetLeft - (tr.clientWidth - cur.offsetWidth) / 2;
+      tr.scrollTo({ left: Math.max(0, l), behavior: reduce ? 'auto' : 'smooth' });
+    }
+  }
+  window.addEventListener('scroll', function () { spySections(); }, { passive: true });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    if (!el || !$('secnav')) return;
+    e.preventDefault();
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - navOffset(), behavior: reduce ? 'auto' : 'smooth' });
+  });
 
   function cell(id, sysName, main, sub) {
     if (LAST && LAST.picked.indexOf(id) === -1) return '';
