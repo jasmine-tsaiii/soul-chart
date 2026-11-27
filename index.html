@@ -122,6 +122,8 @@
   @media (max-width: 480px) { .form-card { padding: 2px 16px 8px; } .frow { grid-template-columns: 64px minmax(0, 1fr); gap: 10px; } .seg button { padding: 5px 18px; } }
   .app-head { text-align: center; padding: 26px 0 30px; }
   .app-head .eyebrow { font-size: 12px; letter-spacing: .32em; color: var(--gold); }
+  .app-title a { color: inherit; text-decoration: none; }
+  .app-title a:hover { color: var(--accent); }
   .app-title { font-family: var(--serif); font-weight: 600; font-size: 38px; letter-spacing: .12em; margin: 10px 0 10px; }
   .app-title::before, .app-title::after { content: '✦'; color: var(--gold); font-size: .45em; vertical-align: .45em; margin: 0 16px; }
   .app-sub { font-size: 14.5px; color: var(--muted); max-width: 30em; margin: 0 auto; line-height: 1.85; }
@@ -951,7 +953,7 @@
   <div class="input-area no-print">
     <header class="app-head">
       <div class="eyebrow">免費命盤排盤</div>
-      <h1 class="app-title">東西方命盤大亂鬥</h1>
+      <h1 class="app-title"><a href="./" id="homeLink" title="回到首頁">東西方命盤大亂鬥</a></h1>
       <p class="app-sub">六種系統一起上場，看看誰最懂你。<br>生命靈數、八字、紫微、星盤、人類圖，輸入一次生日就全部排好，還會幫你整理它們重複提到的地方。</p>
     </header>
     <div class="edit-bar" id="editBar" hidden><span id="editSummary"></span><button type="button" class="btn line" id="editBtn">修改資料／重新分析</button></div>
@@ -1230,6 +1232,13 @@
       $('editSummary').textContent = '想看別人的盤，或資料要修改？';
     }
   }
+  // 點標題：回到最上面、打開出生資料表單（結果保留在下面）
+  document.addEventListener('click', function (e) {
+    if (!(e.target.closest && e.target.closest('#homeLink'))) return;
+    e.preventDefault();
+    collapseInput(false); track('home_link');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
   document.addEventListener('click', function (e) {
     if (!(e.target.closest && e.target.closest('#editBtn'))) return;
     collapseInput(false); track('edit_input');
