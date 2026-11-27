@@ -94,7 +94,27 @@
   @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .loading .orbs, .loading .orbs i, .btn.pending { animation: none; } }
   @media print { .reveal { opacity: 1 !important; transform: none !important; } .toast { display: none; } }
   .hint { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
-  .input-area { padding-bottom: 26px; border-bottom: 1px solid var(--line); }
+  .input-area { padding-bottom: 26px; border-bottom: 1px solid var(--line); max-width: 680px; margin-left: auto; margin-right: auto; }
+  .form-card { background: #FFFDF8; border: 1px solid var(--line); border-radius: 12px; padding: 4px 22px 10px; box-shadow: 0 2px 14px rgba(140,106,47,.06); }
+  .frow { display: grid; grid-template-columns: 78px minmax(0, 1fr); align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .frow .rl { font-size: 14px; color: var(--ink-2); letter-spacing: .08em; display: flex; flex-direction: column; line-height: 1.3; }
+  .frow .rl small { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+  .frow input[type=text], .frow input[type=time], .frow select { width: 100%; font: inherit; font-size: 15px; padding: 7px 0; border: none; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 0; -webkit-appearance: none; appearance: none; }
+  .frow input:focus, .frow select:focus { outline: none; border-bottom-color: var(--gold); }
+  .f-time { display: flex; align-items: center; gap: 14px; }
+  .f-time input[type=time] { flex: 1; min-width: 0; }
+  .f-sub { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; justify-self: start; }
+  .seg button { font: inherit; font-size: 14px; padding: 5px 22px; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; }
+  .seg button.on { background: var(--accent-grad); color: #FFFBF2; }
+  .form-card .dst-hint { margin: 10px 0 0; }
+  .adv { margin-top: 10px; font-size: 13.5px; }
+  .adv summary { cursor: pointer; color: var(--muted); list-style: none; padding: 4px 0; }
+  .adv summary::-webkit-details-marker { display: none; }
+  .adv summary::after { content: " ▾"; }
+  .adv[open] summary::after { content: " ▴"; }
+  .adv .checks { margin-top: 6px; flex-direction: column; gap: 8px; }
+  @media (max-width: 480px) { .form-card { padding: 2px 16px 8px; } .frow { grid-template-columns: 64px minmax(0, 1fr); gap: 10px; } .seg button { padding: 5px 18px; } }
   .app-head { text-align: center; padding: 26px 0 30px; }
   .app-head .eyebrow { font-size: 12px; letter-spacing: .32em; color: var(--gold); }
   .app-title { font-family: var(--serif); font-weight: 600; font-size: 38px; letter-spacing: .12em; margin: 10px 0 10px; }
@@ -806,21 +826,24 @@
       <p class="app-sub">六種系統一起上場，看看誰最懂你。<br>生命靈數、八字、紫微、星盤、人類圖，輸入一次生日就全部排好，還會幫你整理它們重複提到的地方。</p>
     </header>
     <div class="step-label"><span>1</span>出生資料</div>
-    <div class="controls">
-      <div class="f-name"><label class="f" for="name">稱呼（選填）</label><input type="text" id="name" placeholder="想怎麼稱呼都可以"></div>
-      <div class="f-gender"><label class="f" for="gender">性別</label>
-        <select id="gender"><option value="F">女</option><option value="M">男</option></select></div>
-      <div class="f-birth"><label class="f" for="birth">生日</label><input type="date" id="birth"></div>
-      <div class="f-time"><label class="f" for="time">出生時間</label><input type="time" id="time">
-        <label class="f-sub"><input type="checkbox" id="unknown"> 不知道出生時間</label></div>
-      <div class="f-place"><label class="f" for="place">出生地</label><select id="place"></select></div>
+    <div class="form-card">
+      <div class="frow"><span class="rl">性別</span>
+        <div class="seg" id="genderSeg" role="group" aria-label="性別"><button type="button" data-v="F" class="on">女</button><button type="button" data-v="M">男</button></div>
+        <select id="gender" hidden><option value="F">女</option><option value="M">男</option></select></div>
+      <div class="frow"><label class="rl" for="birth">生日</label><div class="fcell"><input type="date" id="birth" data-mode="inline"></div></div>
+      <div class="frow"><label class="rl" for="time">出生時間</label>
+        <div class="fcell f-time"><input type="time" id="time"><label class="f-sub"><input type="checkbox" id="unknown"> 不知道</label></div></div>
+      <div class="frow"><label class="rl" for="place">出生地</label><div class="fcell"><select id="place"></select></div></div>
+      <div class="frow"><label class="rl" for="name">稱呼<small>選填</small></label><div class="fcell"><input type="text" id="name" placeholder="會顯示在結果和分享圖上"></div></div>
+      <p class="dst-hint" id="dstHint" hidden></p>
+      <details class="adv"><summary>進階設定</summary>
+        <div class="checks">
+          <label><input type="checkbox" id="dst"> 出生時是日光節約時間（系統會自動判斷）</label>
+          <label><input type="checkbox" id="trueSolar"> 八字、紫微用真太陽時</label>
+        </div>
+        <p class="late-zi">23:00 以後出生（晚子時），八字和紫微斗數都以<b>隔天</b>計算。</p>
+      </details>
     </div>
-    <div class="checks">
-      <label><input type="checkbox" id="dst"> 出生時是日光節約時間</label>
-      <label><input type="checkbox" id="trueSolar"> 八字、紫微用真太陽時</label>
-    </div>
-    <p class="dst-hint" id="dstHint" hidden></p>
-    <p class="late-zi">23:00 以後出生（晚子時），八字和紫微斗數都以<b>隔天</b>計算。</p>
     <div class="step-label"><span>2</span>想分析的系統</div>
     <div class="presets" id="presets">
       <button type="button" data-preset="all">全選</button>
@@ -948,6 +971,12 @@
   addEventListener('scroll', function () {                    // 自己捲回原處附近，就收起來
     if (BACK && Date.now() - BACK.at > 1500 && Math.abs(window.scrollY - BACK.y) < 200) hideBack();
   }, { passive: true });
+  // 性別：按鈕切換，實際值存在隱藏的 select
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('#genderSeg button'); if (!b) return;
+    document.querySelectorAll('#genderSeg button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    var g = $('gender'); if (g.value !== b.getAttribute('data-v')) { g.value = b.getAttribute('data-v'); g.dispatchEvent(new Event('change', { bubbles: true })); }
+  });
   // ===== 簡易版／完整版 =====
   function getView() { try { return localStorage.getItem('chart-view') || 'simple'; } catch (e) { return 'simple'; } }
   function applyView(v) {
