@@ -226,27 +226,22 @@
   .bfaq { margin-top: 30px; }
   .bfaq .paid-title { margin-bottom: 8px; }
   .bfaq-a { margin: 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.85; }
-  .compare { margin: 16px 0 6px; border: 1px solid var(--line); background: #FFFDF8; font-size: 13.5px; }
-  .cmp-row { display: grid; grid-template-columns: 92px 1fr 1.4fr; }
-  .cmp-row > span { padding: 9px 12px; border-top: 1px solid var(--line); line-height: 1.6; }
-  .cmp-head > span { border-top: none; font-family: var(--serif); font-weight: 600; font-size: 14.5px; }
-  .cmp-head > span:nth-child(2) { color: #4F6B55; }
-  .cmp-head > span:nth-child(3) { color: #8A6A3A; background: #FBF5EA; }
-  .cmp-k { color: var(--muted); font-size: 12.5px; }
-  .cmp-free { color: var(--ink-2); }
+  .compare { margin: 16px 0 6px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #FFFDF8; font-size: 13px; }
+  .cmp-row { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .85fr) minmax(0, 1.25fr); align-items: stretch; }
+  .cmp-row > span { align-items: center; padding: 9px 10px; border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent); line-height: 1.45; display: flex; align-items: flex-start; gap: 6px; }
+  .cmp-head > span { border-top: none; font-family: var(--serif); font-weight: 600; font-size: 14px; padding-top: 11px; padding-bottom: 11px; }
+  .cmp-head > span:nth-child(2) { color: #4F6B55; justify-content: center; }
+  .cmp-head > span:nth-child(3) { color: #FFFBF2; background: var(--accent-grad); justify-content: center; }
+  .cmp-k { color: var(--ink); font-weight: 600; font-size: 12.5px; }
+  .cmp-free { color: var(--muted); font-size: 12px; }
   .cmp-paid { background: #FBF5EA; color: var(--ink); font-weight: 600; }
-  .cmp-paid::before { content: '✦ '; color: var(--gold); }
-  @media (max-width: 560px) {
-    .cmp-head { display: none; }
-    .cmp-row { grid-template-columns: 1fr; padding: 12px 14px; border-top: 1px solid var(--line); }
-    .cmp-row:nth-child(2) { border-top: none; }
-    .cmp-row > span { border-top: none; padding: 0; font-size: 13.5px; }
-    .cmp-k { font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink); margin-bottom: 6px; }
-    .cmp-free { display: flex; gap: 8px; color: var(--ink-2); margin-bottom: 6px; }
-    .cmp-free::before { content: '免費'; flex: none; font-size: 11px; line-height: 1.9; padding: 0 7px; height: 20px; border-radius: 999px; background: #E7EEE6; color: #4F6B55; }
-    .cmp-paid { display: flex; gap: 8px; background: #FBF5EA; padding: 8px 10px !important; border-radius: 6px; }
-    .cmp-paid::before { content: '完整版'; flex: none; font-size: 11px; line-height: 1.9; padding: 0 7px; height: 20px; border-radius: 999px; background: var(--accent); color: #FFFBF2; font-weight: 400; }
-  }
+  .cmp-yes { flex: none; width: 17px; height: 17px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .cmp-part { flex: none; color: #9DB39F; font-size: 13px; line-height: 1.3; }
+  .cmp-no { color: #C9BFAF; width: 100%; text-align: center; }
+  .cmp-price .cmp-paid { flex-direction: column; gap: 0; }
+  .cmp-price b { font-size: 14px; color: var(--ink); }
+  .cmp-price small { font-size: 11px; color: #6C8F74; font-weight: 400; }
+  @media (max-width: 420px) { .cmp-row > span { padding: 8px 7px; } .cmp-k { font-size: 12px; } }
   .bd-gift { font-size: 12.5px; color: #7A5A9C; margin-top: 4px; font-weight: 600; }
   .bd-after { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
   .paid-card .lock { font-size: 14px; color: var(--muted); white-space: nowrap; opacity: .8; }
@@ -451,6 +446,10 @@
   .bp-chips button i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
   .bp-chips button.on { border-color: var(--pc); background: color-mix(in srgb, var(--pc) 12%, #FFFDF8); color: var(--ink); font-weight: 600; }
   .bp-ok { font-size: 12.5px; color: #6C8F74; min-height: 1.2em; margin-top: 6px; }
+  .tr-dots { display: inline-flex; gap: 3px; margin-right: 2px; }
+  .tr-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--pc) 45%, var(--line)); box-sizing: border-box; }
+  .tr-dots i.on { background: var(--pc); border-color: var(--pc); }
+  .tr-head { flex-wrap: wrap; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -955,7 +954,7 @@
       <button class="btn line" id="print">列印／存成 PDF</button>
       <span class="changed-hint" id="changedHint">資料改了，按「更新分析」看新結果</span>
     </div>
-    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方。按「準／不準」只會送出投票和那一段的結果名稱；網站另用 Google Analytics 統計瀏覽和點擊，兩者都不含生日。</p>
+    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方（只會在這台裝置暫存 3 天，方便你離開後回來繼續看）。按「準／不準」只會送出投票和那一段的結果名稱；網站另用 Google Analytics 統計瀏覽和點擊，兩者都不含生日。</p>
   </div>
 
   <main id="out"></main>
@@ -1787,6 +1786,12 @@
     '我的人生使命、天命是什麼？', '我適合做身心靈或助人的工作嗎？', '今年適合搬家、結婚或做重大決定嗎？', '我為什麼容易焦慮、想太多？', '為什麼我和家人的關係總是卡卡的？'];
   // ===== 購買清單（像購物車：勾選 → 自動算最划算的價格 → 複製文字貼到 LINE）=====
   var CART = [];   // [{kind, name}]，依加入順序
+  var RESTORED = false;
+  function saveLast() {
+    if (!LAST || !LAST.birth) return;
+    var v = { birth: $('birth').value, time: $('time').value, place: $('place').value, name: $('name').value, gender: $('gender').value, unknown: $('unknown').checked, dst: $('dst').checked, trueSolar: $('trueSolar').checked };
+    try { localStorage.setItem('chart-last', JSON.stringify({ v: v, cart: CART, t: Date.now() })); } catch (e) {}
+  }
   function cartBtn(kind, name) {
     var on = CART.some(function (c) { return c.name === name; });
     return '<button type="button" class="cart-add' + (on ? ' on' : '') + '" data-kind="' + kind + '" data-name="' + name + '">' + (on ? '✓ 已加入' : '＋ 加入清單') + '</button>';
@@ -1853,6 +1858,7 @@
   }
   document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.la-btn')) cartSelectAll(); });
   function renderCart() {
+    saveLast();
     var box = document.querySelector('#cart .cart-body'); if (!box) return;
     ladderMark(CART.length ? cartPrice().n : 0);
     var bar = document.querySelector('.cart-bar');
@@ -1951,19 +1957,20 @@
     }).join('') + '</div>';
   }
   function compareTable() {
+    // [項目, 免費（null＝沒有）, 完整版]
     var rows = [
-      ['指令', '一段體驗指令', '每個主題專門設計的深度指令'],
-      ['命盤資料', '性格資料＋過去的轉折點', '完整資料：大運流年、合沖刑害、神煞、紫微流年四化、星盤行運、印度大運小運、生命靈數流月'],
-      ['回答內容', '約 800–1000 字，重點在「你是怎樣的人」', '分段的完整報告，依主題逐項分析'],
-      ['各系統整合', '簡單點出共同點', '逐一整理共同點，以及說法不同的地方'],
-      ['生活面向', '—', '依主題深入工作、金錢、感情、身心'],
-      ['時間節奏', '—', '流年、四季、這幾年的轉換時機'],
-      ['練習與建議', '一個接下來的方向', '三個以上可以馬上做的練習和行動'],
-      ['價格', '免費', '單份 NT$' + ladder()[1] + (earlyOn() ? '（早鳥）' : '') + '；滿 3 份 NT$' + ladder()[3] + '、滿 6 份 NT$' + ladder()[6] + ' 最划算']
+      ['專屬指令', '體驗版', '每個主題專屬'],
+      ['命盤資料', '性格', '完整＋流年、行運'],
+      ['報告長度', '800–1000 字', '分段完整報告'],
+      ['系統整合', '共同點', '共同點＋差異'],
+      ['工作・金錢・感情', null, '逐項深入'],
+      ['流年與轉換時機', null, '四季＋這幾年'],
+      ['練習與建議', '一個方向', '3 個以上行動']
     ];
-    return '<div class="compare"><div class="cmp-row cmp-head"><span></span><span>免費體驗版</span><span>完整版</span></div>' + rows.map(function (r) {
-      return '<div class="cmp-row"><span class="cmp-k">' + r[0] + '</span><span class="cmp-free">' + r[1] + '</span><span class="cmp-paid">' + r[2] + '</span></div>';
-    }).join('') + '</div>';
+    var cell = function (v, paid) { return v === null ? '<span class="cmp-no" aria-label="沒有">—</span>' : (paid ? '<span class="cmp-yes">✓</span>' : '<span class="cmp-part">◐</span>') + '<span class="cmp-v">' + v + '</span>'; };
+    return '<div class="compare"><div class="cmp-row cmp-head"><span></span><span>免費</span><span>完整版</span></div>' + rows.map(function (r) {
+      return '<div class="cmp-row"><span class="cmp-k">' + r[0] + '</span><span class="cmp-free">' + cell(r[1]) + '</span><span class="cmp-paid">' + cell(r[2], true) + '</span></div>';
+    }).join('') + '<div class="cmp-row cmp-price"><span class="cmp-k">價格</span><span class="cmp-free"><b>免費</b></span><span class="cmp-paid"><b>NT$' + ladder()[1] + ' 起</b><small>3 份 ' + ladder()[3] + '</small></span></div></div>';
   }
   // ===== 依使用者自己的命盤：每份懶人包的「你的盤」預告＋推薦組合 =====
   function chartHints(Y) {
@@ -2373,7 +2380,12 @@
       b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' +
         '<div class="kw">' + P.keywords.map(function (k) { return '<span>' + k + '</span>'; }).join('') + '</div>' +
         '<div class="traits">' + (P.traits || []).map(function (t) {
-          return '<div class="trait"><div class="tr-head"><b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + ' 個系統提到</span></div>' +
+          var picked = SYSTEMS.filter(function (x) { return LAST && LAST.picked.indexOf(x.id) !== -1; });
+          var dots = '<span class="tr-dots" title="' + t.n + ' 個系統提到">' + picked.map(function (x) {
+            var hit = t.evidence.some(function (e) { return e.indexOf(x.key) === 0; }), st = SYS_STYLE[x.key];
+            return '<i class="' + (hit ? 'on' : '') + '" style="--pc:' + st[1] + '" title="' + x.key + (hit ? '有提到' : '沒有提到') + '"></i>';
+          }).join('') + '</span>';
+          return '<div class="trait"><div class="tr-head">' + dots + '<b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + '/' + picked.length + '</span></div>' +
             '<p>' + t.scene + '</p><div class="ev">' + t.evidence.map(evChip).join('') + '</div></div>';
         }).join('') + '</div>' + fbBar('title:' + P.title, '整體來說，上面的描述像你嗎？') +
         (P.combo && P.combo.text ? '<div class="pcombo"><div class="pc-k">組合解讀・' + P.combo.label + '</div><p>' + P.combo.text + '</p></div>' : '') +
@@ -3087,7 +3099,23 @@
   ['birth', 'time', 'place'].forEach(function (id) { $(id).addEventListener('change', autoDst); });
   ['birth', 'time', 'place', 'gender', 'unknown', 'dst', 'trueSolar', 'name'].forEach(function (id) { $(id).addEventListener('change', markChanged); $(id).addEventListener('input', markChanged); });
   buildPicker();
-  if ($('birth').value) { run(); revealAll(); $('go').textContent = '重新分析'; }
+  // 上次的資料只存在這台裝置的瀏覽器（3 天內有效），從 LINE 或其他 App 回來時自動還原
+  (function restoreLast() {
+    var d = null; try { d = JSON.parse(localStorage.getItem('chart-last') || 'null'); } catch (e) {}
+    if (!d || !d.v || Date.now() - d.t > 3 * 864e5 || $('birth').value) return;
+    var v = d.v;
+    ['time', 'place', 'name'].forEach(function (id) { if (v[id] !== undefined) $(id).value = v[id]; });
+    ['unknown', 'dst', 'trueSolar'].forEach(function (id) { if (v[id] !== undefined) $(id).checked = v[id]; });
+    if (v.gender) { $('gender').value = v.gender; document.querySelectorAll('#genderSeg button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-v') === v.gender); }); }
+    $('birth').value = v.birth;
+    if (d.cart && d.cart.length) CART = d.cart;
+    RESTORED = true;
+  })();
+  var h = location.hash.slice(1);   // 回到離開前的分頁（例如 AI 懶人包）；要在 run() 改網址之前先記下
+  if ($('birth').value) {
+    run(); revealAll(); $('go').textContent = '重新分析';
+    if (RESTORED && h && TAB.on && TAB.order.indexOf(h) !== -1) showPane(h, { replace: true });
+  }
 })();
 </script>
 </body>
