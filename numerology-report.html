@@ -269,9 +269,10 @@
     // 未滿 18 歲：先略過工作、金錢、感情
     var now = new Date(), age = now.getFullYear() - y - ((now.getMonth() + 1 < m || (now.getMonth() + 1 === m && now.getDate() < d)) ? 1 : 0);
     var minor = age < 18;
-    var asp = minor ? '<p class="minor-note">你還未滿 18 歲，這一章先只看「人際關係」和「能量充電」。工作、金錢、感情的部分，等你長大一點再回來看，會更有感覺。</p><div class="aspects">' : '<div class="aspects">';
-    T.aspectList.filter(function (a) { return !minor || a.id === 'people' || a.id === 'self'; }).forEach(function (a, i) {
-      asp += '<div class="aspect"><div class="idx">0' + (i + 1) + '</div><div><h3>' + a.name + '</h3>';
+    var asp = minor ? '<p class="minor-note">你還未滿 18 歲，「工作與天賦」可以當成找興趣、選科系的參考；「金錢」的部分先跳過，等長大一點再回來看。</p><div class="aspects">' : '<div class="aspects">';
+    T.aspectList.filter(function (a) { return !minor || a.id !== 'money'; }).forEach(function (a, i) {
+      var title = minor && a.id === 'work' ? '天賦與未來方向' : a.name;
+      asp += '<div class="aspect"><div class="idx">0' + (i + 1) + '</div><div><h3>' + title + '</h3>';
       asp += entry('你的優勢', r.brightest, strength(r.brightest, a.id));
       if (giftId !== r.brightest) asp += entry('天賦加成', giftId, strength(giftId, a.id));
       if (r.potential) asp += entry('可以練習', r.potential, T.aspects[r.potential].growth[a.id]);

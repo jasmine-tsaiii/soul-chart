@@ -212,6 +212,8 @@
   .ld-p { font-size: 17px; font-weight: 700; color: var(--ink); margin: 2px 0; }
   .ld-avg { font-size: 11.5px; color: #6C8F74; }
   .ld-cell i { display: block; font-style: normal; font-size: 11px; color: var(--gold); margin-top: 3px; }
+  .ld-more { margin: 12px 0 0; font-size: 13.5px; padding: 8px 12px; border: 1px dashed var(--gold-soft); border-radius: 6px; }
+  .ld-more b { color: var(--ink); }
   .ld-note { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
   .bundles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 0 0 20px; }
   @media (max-width: 560px) { .bundles { grid-template-columns: 1fr; } }
@@ -831,7 +833,7 @@
       '<div class="meta">' + birth.y + '.' + pad(birth.m) + '.' + pad(birth.d) + (birth.timeKnown ? '　' + pad(birth.hour) + ':' + pad(birth.minute) : '　時間不確定') +
       '　' + birth.place.name + '<br>農曆 ' + (bz.lunar ? bz.lunar.text : '') + '　生肖' + bz.zodiac + '</div></header>';
     html += '<nav class="secnav no-print" id="secnav" aria-label="章節導覽"></nav>';
-    if (LAST.age < 18) html += '<div class="minor-note no-print"><b>給還在念書的你</b>你還未滿 18 歲，命盤裡講到「工作、事業、財運、感情」的地方，可以先想成「你讀書、做事、和人相處的方式」就好。命盤不是在替你決定未來，它只是幫你多認識自己一點，有煩惱的時候，記得找信任的大人聊聊。</div>';
+    if (LAST.age < 18) html += '<div class="minor-note no-print"><b>給還在念書的你</b>你還未滿 18 歲，命盤裡講到「工作、事業」的地方，可以當成選科系、找興趣和未來方向的參考；講到財運的地方先看看就好。命盤不是在替你決定未來，它只是幫你多認識自己一點，有煩惱的時候，記得找信任的大人聊聊。</div>';
 
     var only = SYSTEMS.filter(function (x) { return has(x.id); }).map(function (x) { return x.key; });
     if (picked.length >= 2) {
@@ -1217,13 +1219,14 @@
     return a;
   }
   // 未滿 18 歲的免費版：不談工作、金錢、感情，改成讀書、人際、家人
-  var FREE_PROMPT_MINOR = '我還未滿 18 歲。請根據下面的命盤資料，幫我做一份適合學生的自我認識，大約 600–800 字，語氣像一位溫暖的老師：\n' +
+  var FREE_PROMPT_MINOR = '我還未滿 18 歲，還在念書。請根據下面的命盤資料，幫我做一份適合學生的自我認識，大約 800–1000 字，語氣像一位溫暖、懂我的學長姐：\n' +
     '一、用一句話形容我，再給三個關鍵字。\n' +
-    '二、我最明顯的三個特質：每一個都用一個學校或家裡的生活情境來描述，並寫出是哪幾個系統這樣說。\n' +
-    '三、適合我的讀書和做事方式：我怎麼學東西最有效率、容易在哪裡卡住。\n' +
-    '四、我和朋友、家人相處的樣子：我的優點，以及一個可以練習的小地方。\n' +
-    '五、一句給我的鼓勵。\n' +
-    '請不要分析工作、金錢、感情、婚姻，也不要預測任何不好的事情；不要說我「一定」會怎樣，命盤只是參考。';
+    '二、我最明顯的三個特質：每一個都用一個學校、社團或家裡的生活情境來描述，並寫出是哪幾個系統這樣說。\n' +
+    '三、我的興趣和天賦：我天生對什麼有熱情、做什麼事會忘記時間，可以多去嘗試哪些活動。\n' +
+    '四、未來方向：適合我的學習方式，以及可以參考的類組、科系或領域（給 3–5 個方向和理由，不要只給一個答案）。\n' +
+    '五、感情與人際：我在友情和喜歡一個人的時候是什麼樣子、需要什麼，以及一個可以練習的地方。\n' +
+    '六、一句給我的鼓勵。\n' +
+    '請不要分析金錢和財運，也不要預測任何不好的事情；不要說我「一定」會怎樣，命盤只是幫我認識自己的參考，未來還是由我自己決定。';
   var FREE_PROMPT = '請根據下面的命盤資料，幫我做一份「免費體驗版」的自我認識，大約 800–1000 字，重點放在「我是怎樣的人」：\n' +
     '一、用一句話形容我，再給三個關鍵字。\n' +
     '二、我最明顯的三個特質：每一個都要（1）用一個具體的生活情境來描述，不要只用形容詞；（2）寫出是哪幾個系統、哪個位置這樣說。優先寫好幾個系統都提到的特質。\n' +
@@ -1281,7 +1284,7 @@
     var line = SHOP.lineUrl ? '<a class="btn line-btn" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">加官方 LINE 了解完整版</a>' : '<span class="btn line-btn disabled">官方 LINE 連結尚未設定</span>';
     return '<section class="ai-pack no-print" id="aipack"><div class="eyebrow">AI 分析懶人包</div><h2>先免費試試看，AI 怎麼讀你的命盤</h2>' +
       '<p class="lead">下面已經幫你準備好「免費體驗版指令＋你的命盤資料」。按複製，貼到 ChatGPT、Claude 或 Gemini，就能看到 AI 的分析。</p>' +
-      '<div class="ai-free"><span class="badge">免費體驗版</span><span>' + (LAST.age < 18 ? '一句話形容你・三個特質・適合的讀書方式・和朋友家人的相處（學生版）' : '一句話形容你・三個特質・兩個盲點・對照過去的轉折點') + '</span></div>' +
+      '<div class="ai-free"><span class="badge">免費體驗版</span><span>' + (LAST.age < 18 ? '一句話形容你・興趣和天賦・未來方向和科系參考・感情與人際（學生版）' : '一句話形容你・三個特質・兩個盲點・對照過去的轉折點') + '</span></div>' +
       '<textarea class="ai-text" id="aiText" readonly></textarea>' +
       '<div class="ai-actions"><button type="button" class="btn" id="aiCopy">複製免費版指令與資料</button><span class="meta" id="aiMeta"></span></div>' +
       '<ol class="ai-steps"><li>按「複製免費版指令與資料」。</li><li>打開你常用的 AI，開一個新對話，貼上送出。</li><li>看看準不準，覺得有共鳴的話，往下看完整版。</li></ol>' +
@@ -1289,7 +1292,7 @@
       '<div class="paid"><div class="eyebrow">覺得準嗎？</div><h3 class="paid-title">完整版懶人包</h3>' +
       '<p class="lead">完整版是更深入的專屬指令，AI 會整合你勾選的系統，寫出一份完整的分析。</p>' + compareTable() + sampleBlock() +
       earlyBanner() +
-      (LAST.age < 18 ? '<div class="minor-note"><b>未滿 18 歲想購買？</b>請先跟爸爸媽媽或監護人討論，由他們陪你一起購買。完整版裡有工作、金錢、感情的內容，比較適合成年人閱讀；如果想了解自己，「個人性格深度解析」和「單一系統深度解讀」會比較適合你。</div>' : '') +
+      (LAST.age < 18 ? '<div class="minor-note"><b>未滿 18 歲想購買？</b>請先跟爸爸媽媽或監護人討論，由他們陪你一起購買。如果想多了解自己，推薦「個人性格深度解析」「事業與天賦」（可以當選科系的參考）、「感情與關係」和「單一系統深度解讀」；「金錢與財運」比較適合成年以後再看。</div>' : '') +
       '<div class="paid-grid">' + PAID.map(function (x) {
         return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
           '<p class="pc-hook">' + x.hook + '</p>' +
@@ -1311,6 +1314,7 @@
           return '<div class="ld-cell' + (n === 3 || n === 6 ? ' hot' : '') + '"><div class="ld-n">' + n + ' 份</div><div class="ld-p">NT$' + t + '</div>' +
             '<div class="ld-avg">' + (n > 1 ? '每份 ' + Math.round(t / n) : '單份') + '</div>' + (n === 6 ? '<i>🎁 送常見問題</i>' : '') + '</div>';
         }).join('') + '</div>' +
+        '<p class="ld-more">想要更多？超過 6 份之後，每多 1 份只要 <b>NT$' + SHOP.extra + '</b>。全部 12 份 <b>NT$' + ladderTotal(12) + '</b>（平均每份 ' + Math.round(ladderTotal(12) / 12) + '），常見問題懶人包一樣送。</p>' +
         (earlyOn() ? '<p class="ld-note">早鳥價。早鳥結束後：單份 NT$' + SHOP.ladder.regular[1] + '、2 份 NT$' + SHOP.ladder.regular[2] + '，3 份以上不變。</p>' : '') + '</div>' +
       '<div class="cart" id="cart"><div class="cart-title">🛒 我的購買清單</div><div class="cart-body"></div></div>' +
       '<div class="flow"><div class="flow-title">購買流程</div><ol>' +
