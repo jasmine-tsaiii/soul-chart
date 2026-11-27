@@ -411,6 +411,17 @@
   .edit-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; margin: 10px 0 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: #FFFDF8; font-size: 13.5px; color: var(--ink-2); }
   .edit-bar[hidden] { display: none; }
   .edit-bar .btn { font-size: 13px; padding: 6px 14px; }
+  .fb.fb-mini { display: inline-flex; gap: 4px; margin: 0 0 0 auto; padding: 0; border: 0; background: transparent; }
+  .fb.fb-mini button { font-size: 11.5px; padding: 1px 9px; }
+  .fb.fb-mini .fb-ok { display: none; }
+  .tr-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+  .asp-list { list-style: none; margin: 4px 0 0; padding: 0; }
+  .asp-list li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; padding: 7px 0; font-size: 13.5px; line-height: 1.7; border-bottom: 1px dotted color-mix(in srgb, var(--line) 70%, transparent); }
+  .asp-list li:last-child { border-bottom: 0; }
+  .al-sys { display: inline-flex; align-items: flex-start; gap: 6px; color: var(--ink-2); font-size: 12.5px; white-space: nowrap; padding-top: 1px; }
+  .al-sys i { font-style: normal; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; margin-top: 2px; }
+  .al-t { color: var(--ink-2); }
+  @media (max-width: 480px) { .asp-list li { grid-template-columns: 1fr; gap: 2px; } }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -969,6 +980,9 @@
     return '<div class="fb no-print' + (small ? ' fb-sm' : '') + '" data-sec="' + esc(sec) + '"><span class="fb-q">' + q + '</span>' +
       '<button type="button" data-v="2" aria-label="準"><i>◎</i>準</button><button type="button" data-v="1" aria-label="有點準"><i>◐</i>有點</button><button type="button" data-v="0" aria-label="不準"><i>✕</i>不準</button>' +
       '<span class="fb-ok"></span></div>';
+  }
+  function fbMini(sec) {   // 特質旁邊的小按鈕：只有「像／不像」，不佔版面
+    return '<span class="fb fb-mini no-print" data-sec="' + esc(sec) + '"><button type="button" data-v="2" aria-label="像我">像</button><button type="button" data-v="0" aria-label="不像我">不像</button><span class="fb-ok"></span></span>';
   }
   function fbLabel(sec) {   // 這一段的結果名稱，方便後台看「哪一種結果最常被說不準」
     if (sec.indexOf(':') > 0) return sec.split(':').slice(1).join(':');
@@ -2282,12 +2296,12 @@
     var nTxt = n === 6 ? '六' : String(n);
     var b = '', P = s.portrait;
     if (P) {
-      b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' + fbBar('title:' + P.title, '這句話像你嗎？', true) +
+      b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' +
         '<div class="kw">' + P.keywords.map(function (k) { return '<span>' + k + '</span>'; }).join('') + '</div>' +
         '<div class="traits">' + (P.traits || []).map(function (t) {
-          return '<div class="trait"><div class="tr-head"><b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + ' 個系統提到</span></div>' +
-            '<p>' + t.scene + '</p><div class="ev">' + t.evidence.map(evChip).join('') + '</div>' + fbBar('trait:' + t.name, '像你嗎？', true) + '</div>';
-        }).join('') + '</div>' +
+          return '<div class="trait"><div class="tr-head"><b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + ' 個系統提到</span>' + fbMini('trait:' + t.name) + '</div>' +
+            '<p>' + t.scene + '</p><div class="ev">' + t.evidence.map(evChip).join('') + '</div></div>';
+        }).join('') + '</div>' + fbBar('title:' + P.title, '整體來說，上面的描述像你嗎？') +
         (P.combo && P.combo.text ? '<div class="pcombo"><div class="pc-k">組合解讀・' + P.combo.label + '</div><p>' + P.combo.text + '</p></div>' : '') +
         (P.tension ? '<div class="pcombo"><div class="pc-k">你身上的拉扯・' + P.tension.title + '</div><p>' + P.tension.text + '</p></div>' : '') +
         (P.nots && P.nots.length ? '<div class="pnots"><div class="pc-k">你比較不是</div>' + P.nots.map(function (x) { return '<p><b>' + x.name + '</b>' + x.text + '<span class="pn-n">（' + (x.n ? '只有 ' + x.n + ' 個系統' : '沒有系統') + '提到）</span></p>'; }).join('') + '</div>' : '') +
@@ -2312,11 +2326,11 @@
     b += s.aspects.map(function (a) {
       if (!a.items.length) return '';
       var hint = a.lead + (a.shared.length ? '<span class="f-tags">' + a.shared.map(function (x) { return '<span>✦ ' + x.name + '</span>'; }).join('') + '</span>' : '');
-      var body = (a.shared.length ? '<p class="notice" style="margin-bottom:8px">' + a.shared.map(function (x) {
-        return x.systems.join('、') + '都提到「' + x.name + '」';
-      }).join('；') + '。</p>' : '') +
-        '<ul class="list-plain sys-list">' + a.items.map(function (it) {
-          return irow(SYS_STYLE[it.sys], it.sys, '', [[it.label, 'sign']], it.text);
+      var merged = [];   // 同一個系統合併成一行
+      a.items.forEach(function (it) { var m = merged.filter(function (x) { return x.sys === it.sys; })[0]; if (m) m.text += '　' + it.text; else merged.push({ sys: it.sys, text: it.text, label: it.label }); });
+      var body = '<ul class="asp-list">' + merged.map(function (it) {
+          var st = SYS_STYLE[it.sys] || ['✦', '#A88550'];
+          return '<li style="--pc:' + st[1] + '"><span class="al-sys"><i>' + st[0] + '\uFE0E</i>' + it.sys + '</span><span class="al-t">' + it.text + '</span></li>';
         }).join('') + '</ul>';
       num++;
       return fold(a.name, hint, body, false, [(num < 10 ? '0' : '') + num, LIFE_STYLE[a.id][1]]);
