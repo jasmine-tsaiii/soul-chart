@@ -423,7 +423,7 @@
   .al-sys i { font-style: normal; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; margin-top: 2px; }
   .al-t { color: var(--ink-2); }
   @media (max-width: 480px) { .asp-list li { grid-template-columns: 1fr; gap: 2px; } }
-  .disclaimer { text-wrap: balance; }
+  .disclaimer span { display: inline-block; }
   .offer { margin: 22px 0 6px; padding: 18px 18px 14px; border-radius: 14px; border: 1.5px solid var(--gold-soft); background: color-mix(in srgb, var(--gold) 7%, #FFFDF8); }
   .offer-rec { border-color: var(--gold); }
   .of-k { font-size: 11.5px; letter-spacing: .14em; color: var(--accent); }
@@ -461,6 +461,7 @@
   .hub-t { position: relative; }
   .hub-t.seen::after { content: "✓"; position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #6C8F74; color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
   .hub-t.seen i { opacity: .85; }
+  .hub-t.cur { border-width: 2px; border-color: var(--pc); box-shadow: 0 0 0 3px color-mix(in srgb, var(--pc) 18%, transparent); }
   .sn-track a.seen::after { content: "✓"; margin-left: 4px; font-size: 11px; color: #6C8F74; }
   .sn-track a.on.seen::after { color: inherit; }
   .pn-dots i.seen { background: #A9C2AB; }
@@ -786,7 +787,7 @@
   .deep-link b { display: block; font-family: var(--serif); font-size: 16px; }
   .deep-link small { font-size: 12.5px; color: var(--muted); }
   .deep-link em { font-style: normal; font-size: 13px; color: var(--pc); white-space: nowrap; font-weight: 600; }
-  .sc-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: center; margin: 34px 0 6px; padding: 22px; border-radius: 10px; background: linear-gradient(135deg, #1F2353, #2E3270); color: #F3E6C8; }
+  .sc-wrap { display: grid; grid-template-columns: 180px 1fr; gap: 28px; align-items: center; margin: 34px 0 6px; padding: 22px; border-radius: 10px; background: linear-gradient(135deg, #1F2353, #2E3270); color: #F3E6C8; }
   .sc-preview canvas { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,.35); }
   .sc-side .eyebrow { font-size: 12px; letter-spacing: .28em; color: #E3CFA0; }
   .sc-side .paid-title { color: #FFF4DA; margin: 6px 0 8px; }
@@ -794,7 +795,7 @@
   .sc-btns { display: flex; flex-wrap: wrap; gap: 10px; }
   .sc-btns .btn { background: #E6C384; border-color: #E6C384; color: #1F2353; font-weight: 600; }
   .sc-btns .btn.line { background: transparent; color: #F3E6C8; border-color: rgba(243,230,200,.6); }
-  @media (max-width: 640px) { .sc-wrap { grid-template-columns: 1fr; } .sc-preview { max-width: 260px; margin: 0 auto; } }
+  @media (max-width: 640px) { .sc-wrap { grid-template-columns: 120px 1fr; gap: 14px; padding: 16px; } .sc-side h3 { font-size: 16px; } .sc-side p { font-size: 12.5px; } .sc-btns .btn { font-size: 12.5px; padding: 6px 10px; } }
   .focus { margin: 4px 0 26px; }
   .fc-k { font-size: 12px; letter-spacing: .16em; color: var(--sc, #8A6A3A); font-weight: 600; margin-bottom: 10px; }
   .fc-hero { display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: 14px; background: linear-gradient(135deg, color-mix(in srgb, var(--sc, #A88550) 14%, #FFFDF8), #FFFDF8 70%); border: 1px solid color-mix(in srgb, var(--sc, #A88550) 30%, var(--line)); }
@@ -1218,7 +1219,7 @@
       return '<button type="button" class="hub-t' + (el ? '' : ' off') + (id === 'aipack' ? ' hub-ai' : '') + '" data-go="' + id + '"' + (id === 'summary' ? ' data-scroll="summary"' : '') + (el ? '' : ' disabled') + ' style="--pc:' + st[1] + '">' +
         '<i>' + st[0] + '︎</i><b>' + name + '</b><span>' + esc(sub) + '</span></button>';
     }).join('');
-    return '<section class="hub" id="hub" data-pane="summary"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p id="hubCount">點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
+    return '<section class="hub" id="hub"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p id="hubCount">點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
   }
   // 分析完把輸入表單收起來，只留一行摘要＋「修改資料」
   function collapseInput(on) {
@@ -1367,6 +1368,7 @@
     });
     if (!opt.fromPop) { try { history[opt.replace ? 'replaceState' : 'pushState']({ pane: id }, '', location.pathname + location.search + (id === 'summary' ? '' : '#' + id)); } catch (e) {} }
     markSeen(id); updateSeen();
+    document.querySelectorAll('.hub-t[data-go]').forEach(function (t) { t.classList.toggle('cur', t.getAttribute('data-go') === id && id !== 'summary'); });
     spySections();
     if (!opt.noScroll) {   // 捲到新分頁的開頭（分頁列是 sticky，不能用它的位置算）
       var first = opt.scrollEl || Array.prototype.filter.call(out.querySelectorAll('#out > .pane-on'), function (el) { return !el.classList.contains('viewmode'); })[0];
@@ -1543,8 +1545,8 @@
     html += aiPackSection();
     html += inviteBlock('bottom');
 
-    html += '<p class="disclaimer">這份分析是自我覺察的參考，<wbr>不是醫療、心理治療或任何保證。<br>' +
-      '排盤由本站以天文公式與傳統規則計算，<wbr>已用實際命盤驗證；<wbr>重要決定建議再用專業軟體對照。</p>';
+    html += '<p class="disclaimer"><span>這份分析是自我覺察的參考，</span><span>不是醫療、心理治療或任何保證。</span>' +
+      '<span>排盤以天文公式與傳統規則計算，</span><span>重要決定建議再用專業軟體對照。</span></p>';
     $('out').innerHTML = html;
     buildSecNav();
     if ($('shareCanvas')) drawShareCard($('shareCanvas'), LAST.card);
@@ -1610,10 +1612,10 @@
 
   // ===== 分享卡：東西方命盤大亂鬥（1080×1920，IG 限動尺寸）=====
   function shareBlock() {
-    return '<details class="sc-fold no-print"><summary><span class="scf-ic">✦</span><span class="scf-t"><b>把結果做成分享圖</b><small>IG 限動尺寸，可以下載或直接分享</small></span><span class="scf-go">打開</span></summary>' +
+    return '<details class="sc-fold no-print"><summary><span class="scf-ic">✦</span><span class="scf-t"><b>把結果做成分享圖</b><small>可以下載或直接分享到限動</small></span><span class="scf-go">打開</span></summary>' +
       '<div class="sc-wrap"><div class="sc-preview"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>' +
       '<div class="sc-side"><div class="eyebrow">分享你的命盤卡</div><h3 class="paid-title">六種系統，看看誰最懂你</h3>' +
-      '<p>把六種命盤一起說的「你」做成一張卡，IG 限時動態尺寸（1080×1920），朋友看得懂，也會想來測。</p>' +
+      '<p>把六種命盤一起說的「你」做成一張卡，朋友看得懂，也會想來測。</p>' +
       '<div class="sc-btns"><button type="button" class="btn" id="scDownload">下載分享圖</button><button type="button" class="btn line" id="scShare">分享</button><button type="button" class="btn line" id="scCopy">複製分享文字</button></div></div></div></details>';
   }
   function wrapText(ctx, text, maxW) {
