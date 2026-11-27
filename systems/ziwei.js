@@ -116,6 +116,6 @@
     };
   }
 
-  var api = { calculate: calculate, MAIN: MAIN, PALACES: PALACES };
+  var api = { calculate: calculate, MAIN: MAIN, PALACES: PALACES, SIHUA: SIHUA, SIHUA_NAMES: SIHUA_NAMES };
   if (isNode) module.exports = api; else root.Ziwei = api;
 })(this);

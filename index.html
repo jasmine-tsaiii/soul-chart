@@ -274,6 +274,13 @@
   .deep-card { scroll-margin-top: 90px; }
   .deep-card.flash { animation: cardflash 1.6s ease; }
   @keyframes cardflash { 0%, 60% { box-shadow: 0 0 0 3px var(--pc); } 100% { box-shadow: 0 0 0 0 transparent; } }
+  .invite { display: flex; align-items: center; gap: 12px 16px; flex-wrap: wrap; margin: 24px 0; padding: 14px 18px; border-radius: 10px; background: linear-gradient(135deg, #1F2353, #2E3470); color: #F3E6C8; }
+  .iv-t { flex: 1 1 200px; display: flex; flex-direction: column; line-height: 1.6; }
+  .iv-t b { font-family: var(--serif); font-size: 17px; }
+  .iv-t span { font-size: 13px; color: rgba(243,230,200,.75); }
+  .iv-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .invite .btn { background: #E3C78E; border-color: #E3C78E; color: #1F2353; font-size: 13.5px; padding: 8px 14px; }
+  .invite .btn.line { background: transparent; color: #F3E6C8; border-color: rgba(243,230,200,.55); }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -1039,7 +1046,7 @@
         if (has('vedic')) rows.push(['印度占星', '月亮星宿 ' + ve.moonNakshatra.name + '（' + ve.moonNakshatra.zh + '）']);
         if (has('hd') && !hd.unknownTime) rows.push(['人類圖', X.hd.types[hd.type].name + '・' + hd.profile + '・' + X.hd.authorities[hd.authority].name]);
         LAST.card = { name: name, title: syn.portrait.title, keywords: syn.portrait.keywords, rows: rows, portrait: syn.portrait };
-        html += shareBlock();
+        html += shareBlock() + inviteBlock('result');
       }
     }
     html += midCta();
@@ -1064,6 +1071,7 @@
     if (has('vedic')) html += vedicSection(ve, we);
     if (has('hd')) html += hdSection(hd);
     html += aiPackSection();
+    html += inviteBlock('bottom');
 
     html += '<p class="disclaimer">這份分析以多種命理與占星系統為工具，提供自我覺察的參考，不是醫療、心理治療或任何形式的保證。<br>' +
       '所有排盤都由這個工具自行計算（天文公式與傳統排盤規則），已用實際命盤與已知天象驗證；重要的決定，建議再用專業軟體對照。</p>';
@@ -1216,9 +1224,34 @@
         .then(function () { drawShareCard(cv, d, true); }, function () {});
     }
   }
+  // ===== 分享給朋友玩（網址帶 UTM，GA 才知道是朋友分享來的）=====
+  function shareUrl(src, medium) {
+    return 'https://chart.jas-soul.com/?utm_source=' + src + '&utm_medium=' + (medium || 'referral') + '&utm_campaign=friend_share';
+  }
+  var INVITE_TEXT = '我剛玩了「東西方命盤大亂鬥」，輸入生日就能一次看六種命盤（生命靈數、八字、紫微、星盤、印度占星、人類圖），還滿準的！你也來試試，看看我們像不像：';
+  function inviteBlock(where) {
+    return '<div class="invite no-print" data-where="' + where + '"><div class="iv-t"><b>找朋友一起玩</b><span>看看你們的命盤哪裡像、哪裡不一樣</span></div>' +
+      '<div class="iv-btns"><button type="button" class="btn iv-share">分享給朋友</button>' +
+      '<a class="btn line iv-line" target="_blank" rel="noopener" href="https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(shareUrl('line', 'social')) + '">傳到 LINE</a>' +
+      '<button type="button" class="btn line iv-copy">複製連結</button></div></div>';
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('.iv-share, .iv-copy, .iv-line'); if (!t) return;
+    var where = t.closest('.invite').getAttribute('data-where');
+    if (t.classList.contains('iv-line')) { track('share_site', { method: 'line', where: where }); return; }
+    if (t.classList.contains('iv-copy')) { track('share_site', { method: 'copy', where: where }); copyText(INVITE_TEXT + '\n' + shareUrl('copy_link'), t, '複製連結', '已複製，貼給朋友就可以了'); return; }
+    var url = shareUrl('native_share');
+    if (navigator.share) {
+      track('share_site', { method: 'native', where: where });
+      navigator.share({ title: '東西方命盤大亂鬥', text: INVITE_TEXT, url: url }).catch(function () {});
+    } else {
+      track('share_site', { method: 'copy_fallback', where: where });
+      copyText(INVITE_TEXT + '\n' + shareUrl('copy_link'), t, '分享給朋友', '已複製邀請文字和連結，貼給朋友就可以了');
+    }
+  });
   function shareText() {
     var d = LAST && LAST.card; if (!d) return '';
-    return '我測了「東西方命盤大亂鬥」，六種系統都說我是「' + d.title.split('，')[0] + '」✦ 關鍵字：' + d.keywords.join('、') + '。你呢？來看看誰最懂你 → https://chart.jas-soul.com';
+    return '我測了「東西方命盤大亂鬥」，六種系統都說我是「' + d.title.split('，')[0] + '」✦ 關鍵字：' + d.keywords.join('、') + '。你呢？來看看誰最懂你 → ' + shareUrl('share_card');
   }
   // LINE、IG、FB 等 App 內建瀏覽器：常常不能下載檔案，改成跳出圖片讓使用者長按儲存
   var IN_APP = /\bLine\/|Instagram|FBAN|FBAV|FB_IAB|Messenger|MicroMessenger|Threads|Barcelona/i.test(navigator.userAgent);
@@ -1593,6 +1626,114 @@
       '<p class="note">命盤資料是在你的電腦上產生的，只有你按複製、自己貼上時才會給 AI。AI 的分析僅供自我覺察參考。</p></section>';
   }
   var AI_RULES = '請注意：\n- 用繁體中文、白話、溫暖的語氣，像在跟朋友聊天，少用艱深術語；用到術語時順便解釋。\n- 以自我覺察和成長為方向，不要宿命論、不要嚇人。\n- 不提供醫療、法律或投資建議。\n- 命盤資料已經算好，請直接使用，不要自己重新排盤；資料沒有的就說明無法判斷。\n';
+  // ===== 完整版才有的進階資料（給 AI 更多依據，提高準度）=====
+  var XB = '子丑寅卯辰巳午未申酉戌亥', XS = '甲乙丙丁戊己庚辛壬癸';
+  function xReduce(n) { while (n > 9) n = String(n).split('').reduce(function (a, c) { return a + +c; }, 0); return n; }
+  function brRel(a, b) {   // a, b：地支 index
+    var r = [], pair = function (list) { return list.some(function (p) { return (p[0] === a && p[1] === b) || (p[0] === b && p[1] === a); }); };
+    if (a === b && [4, 6, 9, 11].indexOf(a) >= 0) r.push('自刑');
+    if (pair([[0, 1], [2, 11], [3, 10], [4, 9], [5, 8], [6, 7]])) r.push('六合');
+    if ((a - b + 12) % 12 === 6) r.push('六沖');
+    if (pair([[0, 3], [2, 5], [5, 8], [2, 8], [1, 10], [10, 7], [1, 7]])) r.push('相刑');
+    if (pair([[0, 7], [1, 6], [2, 5], [3, 4], [8, 11], [9, 10]])) r.push('相害');
+    var SAN = [[8, 0, 4, '水'], [11, 3, 7, '木'], [2, 6, 10, '火'], [5, 9, 1, '金']];
+    SAN.forEach(function (g) { if (a !== b && g.indexOf(a) >= 0 && g.indexOf(b) >= 0 && g.indexOf(a) < 3 && g.indexOf(b) < 3) r.push('半三合' + g[3]); });
+    return r;
+  }
+  function stRel(a, b) { var HE = ['土', '金', '水', '木', '火']; return Math.abs(a - b) === 5 ? ['天干五合' + HE[Math.min(a, b)]] : []; }
+  function baziExtra(bz, Y, lk) {
+    var out = [], P = bz.pillars.filter(function (p) { return !p.unknown; });
+    var rel = [];
+    for (var i = 0; i < P.length; i++) for (var j = i + 1; j < P.length; j++) {
+      var rs = stRel(P[i].stemIndex, P[j].stemIndex).concat(brRel(P[i].branchIndex, P[j].branchIndex));
+      if (rs.length) rel.push(P[i].label + P[i].ganzhi + '×' + P[j].label + P[j].ganzhi + '：' + rs.join('、'));
+    }
+    out.push('原局合沖刑害：' + (rel.length ? rel.join('；') : '沒有明顯的合沖刑害'));
+    var fIdx = ((Y - 4) % 60 + 60) % 60, fs = fIdx % 10, fb = fIdx % 12;
+    var hit = function (label, s, bIdx) {
+      var r = [];
+      P.forEach(function (p) { var rs = stRel(s, p.stemIndex).concat(brRel(bIdx, p.branchIndex)); if (rs.length) r.push(p.label + p.ganzhi + '（' + rs.join('、') + '）'); });
+      return label + '：' + (r.length ? r.join('；') : '和原局沒有明顯合沖');
+    };
+    out.push(hit(Y + ' 年流年 ' + XS[fs] + XB[fb] + ' 與原局', fs, fb));
+    if (lk) { var li = XS.indexOf(lk.ganzhi[0]), lb = XB.indexOf(lk.ganzhi[1]); out.push(hit('目前大運 ' + lk.ganzhi + ' 與原局', li, lb));
+      var lf = stRel(li, fs).concat(brRel(lb, fb)); if (lf.length) out.push('大運 ' + lk.ganzhi + ' 與流年 ' + XS[fs] + XB[fb] + '：' + lf.join('、')); }
+    // 常用神煞
+    var ds = bz.dayMaster.index, day = bz.pillars[2], yr = bz.pillars[0];
+    var GUIREN = [[1, 7], [0, 8], [11, 9], [11, 9], [1, 7], [0, 8], [1, 7], [6, 2], [5, 3], [5, 3]];
+    var WENCHANG = [5, 6, 8, 9, 8, 9, 11, 0, 2, 3];
+    var grp = function (b) { return [[8, 0, 4], [2, 6, 10], [5, 9, 1], [11, 3, 7]].findIndex(function (g) { return g.indexOf(b) >= 0; }); };
+    var TAOHUA = [9, 3, 6, 0], YIMA = [2, 8, 11, 5], HUAGAI = [4, 10, 1, 7];
+    var stars = [['天乙貴人（遇到貴人、有人幫）', GUIREN[ds]], ['文昌（學習、考試、表達）', [WENCHANG[ds]]]];
+    [yr, day].forEach(function (base) {
+      if (!base || base.unknown) return; var g = grp(base.branchIndex);
+      stars.push(['桃花（人緣、感情，以' + base.label + '起）', [TAOHUA[g]]], ['驛馬（移動、出差、變動，以' + base.label + '起）', [YIMA[g]]], ['華蓋（獨處、藝術、宗教靈性，以' + base.label + '起）', [HUAGAI[g]]]);
+    });
+    var ss = stars.map(function (s) {
+      var at = P.filter(function (p) { return s[1].indexOf(p.branchIndex) >= 0; }).map(function (p) { return p.label; });
+      var flowHit = s[1].indexOf(fb) >= 0;
+      return s[0] + '在' + s[1].map(function (x) { return XB[x]; }).join('、') + '：原局' + (at.length ? '有（' + at.join('、') + '）' : '沒有') + (flowHit ? '；' + Y + ' 年流年引動' : '');
+    });
+    out.push('神煞：' + ss.join('；'));
+    return out;
+  }
+  function ziweiExtra(zw, Y) {
+    if (zw.unknownTime || !Ziwei.SIHUA) return [];
+    var fIdx = ((Y - 4) % 60 + 60) % 60, fs = fIdx % 10, fb = fIdx % 12;
+    var pal = function (star) { var r = zw.palaces.filter(function (p) { return p.stars.some(function (s) { return s.name === star; }); })[0]; return r ? r.name : '（不在十四主星與常用輔星中）'; };
+    var lm = zw.palaces.filter(function (p) { return p.branchIndex === fb; })[0];
+    var out = [];
+    if (lm) out.push(Y + ' 年（' + XS[fs] + XB[fb] + '）流年命宮：落在本命' + lm.name + '（' + (lm.stars.length ? lm.stars.map(function (s) { return s.name; }).join('、') : '無主星') + '）');
+    out.push(Y + ' 年流年四化：' + Ziwei.SIHUA[fs].map(function (star, i) { return star + Ziwei.SIHUA_NAMES[i] + '入' + pal(star); }).join('、'));
+    return out;
+  }
+  function westernExtra(we, Y) {
+    var nat = we.planets.filter(function (p) { return ['sun', 'moon', 'saturn', 'jupiter'].indexOf(p.id) >= 0; }).map(function (p) { return { n: '本命' + p.name, lon: p.lon }; });
+    if (we.asc) { nat.push({ n: '上升點', lon: we.asc.lon }); if (we.mc) nat.push({ n: '天頂', lon: we.mc.lon }); }
+    var ascSign = we.asc ? Math.floor(we.asc.lon / 30) : null;
+    var ASP = [[0, '合相'], [180, '對分'], [90, '四分'], [120, '三分']];
+    var NAMES = { jupiter: '木星', saturn: '土星', uranus: '天王星', neptune: '海王星', pluto: '冥王星' };
+    var out = [];
+    Object.keys(NAMES).forEach(function (id) {
+      var signs = [], hits = {};
+      for (var m = 1; m <= 12; m++) {
+        var lon = Astro.longitude(id, Astro.julianDay(Y, m, 15, 12)), s = Math.floor(lon / 30);
+        var lab = Astrology.SIGNS[s] + (ascSign === null ? '' : '（第' + ((s - ascSign + 12) % 12 + 1) + '宮）');
+        if (signs[signs.length - 1] !== lab) signs.push(lab);
+        nat.forEach(function (n) {
+          ASP.forEach(function (a) {
+            var d = Math.abs(((lon - n.lon - a[0]) % 360 + 540) % 360 - 180);
+            if (d <= 2) { var k = n.n + a[1]; (hits[k] = hits[k] || []).push(m); }
+          });
+        });
+      }
+      out.push('行運' + NAMES[id] + '：' + signs.join(' → ') + (Object.keys(hits).length ? '；' + Object.keys(hits).map(function (k) { return '與' + k + '（約 ' + hits[k].join('、') + ' 月）'; }).join('；') : ''));
+    });
+    return [Y + ' 年行運（每月 15 日取樣，容許度 2°）：'].concat(out);
+  }
+  function vedicExtra(ve, Y) {
+    var LORDS = ['Ketu 計都', 'Venus 金星', 'Sun 太陽', 'Moon 月亮', 'Mars 火星', 'Rahu 羅睺', 'Jupiter 木星', 'Saturn 土星', 'Mercury 水星'];
+    var YRS = [7, 20, 6, 10, 7, 18, 16, 19, 17];
+    var toY = function (t) { var p = t.split('.').map(Number); return p[0] + (p[1] - 1) / 12 + (p[2] - 1) / 365; };
+    var fy = function (t) { var yy = Math.floor(t), mm = Math.min(12, Math.floor((t - yy) * 12) + 1); return yy + ' 年 ' + mm + ' 月'; };
+    var res = [];
+    ve.dashas.forEach(function (d) {
+      var li = LORDS.indexOf(d.lord); if (li < 0) return;
+      var end = toY(d.to), full = YRS[li], start = end - full;   // 第一段只剩餘額，從理論起點往回推
+      var t = start;
+      for (var k = 0; k < 9; k++) {
+        var ai = (li + k) % 9, len = full * YRS[ai] / 120, e = t + len;
+        if (e > Y && t < Y + 1 && e > toY(d.from)) res.push(d.lord.split(' ')[1] + '大運／' + LORDS[ai].split(' ')[1] + '小運（' + fy(Math.max(t, toY(d.from))) + '～' + fy(e) + '）');
+        t = e;
+      }
+    });
+    return res.length ? [Y + ' 年經過的小運（Antardasha）：' + res.join('、')] : [];
+  }
+  function numerologyExtra(n, Y) {
+    var py = n.personalYear.number, ms = [];
+    for (var m = 1; m <= 12; m++) ms.push(m + '月 ' + xReduce(py + m));
+    return [Y + ' 年個人流月：' + ms.join('、')];
+  }
   function buildAiData(Y, full) {
     var L = LAST, b = L.birth, has = function (id) { return L.picked.indexOf(id) !== -1; }, out = [];
     var bzY = Bazi.calculate(b, { year: Y });
@@ -1607,6 +1748,7 @@
       out.push('最亮的脈輪：' + T.chakras[n.brightest].name + (n.potential ? '；潛在（未出現）：' + T.chakras[n.potential].name : ''));
       out.push('七脈輪出現次數：' + n.chakras.slice().reverse().map(function (c) { return c.name + ' ' + c.count; }).join('、'));
       if (full) out.push(Y + ' 年個人流年：' + n.personalYear.number + '（' + T.personalYear[n.personalYear.number].theme + '）');
+      if (full) out.push.apply(out, numerologyExtra(n, Y));
     }
     if (has('bazi')) {
       var bz = bzY, st = bz.strength;
@@ -1618,6 +1760,7 @@
       if (full) out.push('大運：' + bz.luck.map(function (l) { return l.ganzhi + '（' + l.startYear + '–' + l.endYear + '，' + l.stemGod + '/' + l.branchGod + '）'; }).join('、'));
       var lk = bz.luck.filter(function (l) { return Y >= l.startYear && Y <= l.endYear; })[0];
       if (full) out.push(Y + ' 年流年：' + bz.flow[0].ganzhi + '（天干' + bz.flow[0].stemGod + '、地支' + bz.flow[0].branchGod + '）' + (lk ? '，當時大運 ' + lk.ganzhi : ''));
+      if (full) out.push.apply(out, baziExtra(bz, Y, lk));
     }
     if (has('ziwei')) {
       var zw = Ziwei.calculate(b);
@@ -1630,6 +1773,7 @@
         var age = Y - b.y + 1, dec = zw.decades.filter(function (d) { return age >= d.from && age <= d.to; })[0];
         if (full) out.push('大限：' + zw.decades.slice(0, 9).map(function (d) { return d.palace + '（' + d.from + '–' + d.to + ' 歲）'; }).join('、'));
         if (full && dec) out.push(Y + ' 年（虛歲 ' + age + '）大限：' + dec.palace + '（' + dec.from + '–' + dec.to + ' 歲）');
+        if (full) out.push.apply(out, ziweiExtra(zw, Y));
       }
     }
     if (has('western')) {
@@ -1638,6 +1782,7 @@
       out.push(we.planets.map(function (p) { return p.name + ' ' + p.sign + ' ' + p.deg + (p.house ? ' 第' + p.house + '宮' : '') + (p.retro && p.id !== 'node' ? ' 逆行' : ''); }).join('；'));
       if (we.asc) out.push('上升：' + we.asc.sign + ' ' + we.asc.deg + '；天頂：' + we.mc.sign + ' ' + we.mc.deg);
       out.push('主要相位：' + we.aspects.slice(0, 10).map(function (a) { return a.a + a.type + a.b + '（' + a.orb + '°）'; }).join('、'));
+      if (full) out.push.apply(out, westernExtra(we, Y));
     }
     if (has('vedic')) {
       var ve = Astrology.vedic(b, Astro.julianDay(Y, 7, 1, 12));
@@ -1647,6 +1792,7 @@
       if (full) out.push('Vimshottari 大運：' + ve.dashas.map(function (d) { return d.lord + '（' + d.from + '–' + d.to + '）'; }).join('、'));
       var dy = ve.dashas.filter(function (d) { return d.from.slice(0, 4) <= String(Y) && d.to.slice(0, 4) >= String(Y); }).map(function (d) { return d.lord; });
       if (full && dy.length) out.push(Y + ' 年所在大運：' + dy.join(' → '));
+      if (full) out.push.apply(out, vedicExtra(ve, Y));
     }
     if (has('hd')) {
       var hd = HumanDesign.calculate(b);
@@ -1659,6 +1805,7 @@
         out.push('通道：' + (hd.channels.length ? hd.channels.map(function (c) { return c.gates.join('-'); }).join('、') : '無'));
         out.push('個性閘門：' + hd.personality.map(function (p) { return p.name + ' ' + p.gate + '.' + p.line; }).join('、'));
         out.push('設計閘門：' + hd.design.map(function (p) { return p.name + ' ' + p.gate + '.' + p.line; }).join('、'));
+        if (full) out.push('輪迴交叉（個性太陽／地球｜設計太陽／地球）：' + hd.cross[0] + '／' + hd.cross[1] + '｜' + hd.cross[2] + '／' + hd.cross[3] + '；設計日期（出生前約 88° 太陽弧）：' + hd.designDate);
       }
     }
     if (!full) {
