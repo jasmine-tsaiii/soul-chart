@@ -43,6 +43,16 @@
   }
   .controls input:focus, .controls select:focus { outline: none; border-bottom-color: var(--gold); }
   .checks { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 14px; font-size: 14px; color: var(--ink-2); }
+  .minor-note { margin: 0 0 20px; padding: 12px 16px; font-size: 14px; line-height: 1.8; background: #EEF3EC; border-left: 3px solid #6C8F74; color: var(--ink-2); }
+  .minor-note b { display: block; color: #4F6B55; margin-bottom: 2px; }
+  .save-modal { position: fixed; inset: 0; z-index: 100; background: rgba(15,16,40,.82); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .sm-box { max-width: 380px; width: 100%; max-height: 100%; overflow: auto; background: #FFFDF8; border-radius: 10px; padding: 16px; text-align: center; }
+  .sm-tip { margin: 0 0 12px; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
+  .sm-tip b { display: block; font-size: 15px; color: var(--ink); }
+  .sm-box img { width: 100%; max-width: 260px; display: block; margin: 0 auto 12px; border-radius: 6px; -webkit-touch-callout: default; }
+  .sm-sub { font-size: 12.5px; color: var(--muted); margin: 0 0 10px; }
+  .sm-box .btn { margin: 4px; }
+  .dst-hint { font-size: 12.5px; color: #8A6A3A; background: #F6EEDD; border-left: 3px solid var(--gold); padding: 6px 10px; margin: 8px 0 0; }
   .late-zi { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
   .late-zi b { color: var(--ink-2); }
   .checks label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -191,6 +201,18 @@
   .bd-gift { font-size: 12.5px; color: #7A5A9C; margin-top: 4px; font-weight: 600; }
   .bd-after { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
   .paid-card .lock { font-size: 14px; color: var(--muted); white-space: nowrap; opacity: .8; }
+  .ladder { margin: 0 0 20px; padding: 16px 18px; background: #FFFDF8; border: 1px solid var(--gold-soft); }
+  .ld-title { font-weight: 700; margin-bottom: 12px; }
+  .ld-title span { display: block; font-weight: 400; font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .ld-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  @media (max-width: 560px) { .ld-row { grid-template-columns: repeat(3, 1fr); } }
+  .ld-cell { position: relative; text-align: center; padding: 10px 4px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+  .ld-cell.hot { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 9%, #FFFDF8); }
+  .ld-n { font-size: 12.5px; color: var(--muted); }
+  .ld-p { font-size: 17px; font-weight: 700; color: var(--ink); margin: 2px 0; }
+  .ld-avg { font-size: 11.5px; color: #6C8F74; }
+  .ld-cell i { display: block; font-style: normal; font-size: 11px; color: var(--gold); margin-top: 3px; }
+  .ld-note { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
   .bundles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 0 0 20px; }
   @media (max-width: 560px) { .bundles { grid-template-columns: 1fr; } }
   .bundle { position: relative; text-align: center; padding: 18px 14px 14px; border: 1px solid var(--gold-soft); background: #FFFDF8; }
@@ -657,6 +679,7 @@
       <label><input type="checkbox" id="dst"> 出生時是日光節約時間</label>
       <label><input type="checkbox" id="trueSolar"> 八字、紫微用真太陽時</label>
     </div>
+    <p class="dst-hint" id="dstHint" hidden></p>
     <p class="late-zi">23:00 以後出生（晚子時），八字和紫微斗數都以<b>隔天</b>計算。</p>
     <div class="step-label"><span>2</span>想分析的系統</div>
     <div class="presets" id="presets">
@@ -799,7 +822,7 @@
     if (!picked.length) { $('out').innerHTML = '<p class="notice" style="margin-top:40px">請至少勾選一個想分析的系統。</p>'; return; }
     var has = function (id) { return picked.indexOf(id) !== -1; };
     chapterNo = 0;
-    LAST = { birth: birth, name: name, nowYear: nowYear, picked: picked };
+    LAST = { birth: birth, name: name, nowYear: nowYear, picked: picked, age: ageOf(birth) };
 
     var html = '';
     // 封面
@@ -808,6 +831,7 @@
       '<div class="meta">' + birth.y + '.' + pad(birth.m) + '.' + pad(birth.d) + (birth.timeKnown ? '　' + pad(birth.hour) + ':' + pad(birth.minute) : '　時間不確定') +
       '　' + birth.place.name + '<br>農曆 ' + (bz.lunar ? bz.lunar.text : '') + '　生肖' + bz.zodiac + '</div></header>';
     html += '<nav class="secnav no-print" id="secnav" aria-label="章節導覽"></nav>';
+    if (LAST.age < 18) html += '<div class="minor-note no-print"><b>給還在念書的你</b>你還未滿 18 歲，命盤裡講到「工作、事業、財運、感情」的地方，可以先想成「你讀書、做事、和人相處的方式」就好。命盤不是在替你決定未來，它只是幫你多認識自己一點，有煩惱的時候，記得找信任的大人聊聊。</div>';
 
     var only = SYSTEMS.filter(function (x) { return has(x.id); }).map(function (x) { return x.key; });
     if (picked.length >= 2) {
@@ -976,6 +1000,19 @@
     var d = LAST && LAST.card; if (!d) return '';
     return '我測了「東西方命盤大亂鬥」，六種系統都說我是「' + d.title.split('，')[0] + '」✦ 關鍵字：' + d.keywords.join('、') + '。你呢？來看看誰最懂你 → https://chart.jas-soul.com';
   }
+  // LINE、IG、FB 等 App 內建瀏覽器：常常不能下載檔案，改成跳出圖片讓使用者長按儲存
+  var IN_APP = /\bLine\/|Instagram|FBAN|FBAV|FB_IAB|Messenger|MicroMessenger|Threads|Barcelona/i.test(navigator.userAgent);
+  var IN_APP_NAME = /\bLine\//i.test(navigator.userAgent) ? 'LINE' : /Instagram|Threads|Barcelona/i.test(navigator.userAgent) ? 'IG' : /FBAN|FBAV|FB_IAB|Messenger/i.test(navigator.userAgent) ? 'Facebook' : 'App';
+  function showSaveImage(cv) {
+    var m = document.createElement('div'); m.className = 'save-modal';
+    var ext = IN_APP_NAME === 'LINE' ? location.origin + location.pathname + '?openExternalBrowser=1' : '';
+    m.innerHTML = '<div class="sm-box"><p class="sm-tip"><b>長按下面的圖片 →「儲存圖片」</b>' + IN_APP_NAME + ' 裡的瀏覽器沒辦法直接下載，長按就能存到相簿。</p>' +
+      '<img alt="東西方命盤大亂鬥分享圖" src="' + cv.toDataURL('image/png') + '">' +
+      (ext ? '<a class="btn line" href="' + ext + '">改用手機瀏覽器開啟</a>' : '<p class="sm-sub">也可以點右上角「⋯」，選「用瀏覽器開啟」。</p>') +
+      '<button type="button" class="btn sm-close">關閉</button></div>';
+    m.addEventListener('click', function (e) { if (e.target === m || e.target.classList.contains('sm-close')) m.remove(); });
+    document.body.appendChild(m);
+  }
   document.addEventListener('click', function (e) {
     var t = e.target; if (!t.id) return;
     if (t.id === 'scDownload' || t.id === 'scShare') {
@@ -984,6 +1021,8 @@
         var file = new File([blob], '東西方命盤大亂鬥.png', { type: 'image/png' });
         if (t.id === 'scShare' && navigator.canShare && navigator.canShare({ files: [file] })) {
           navigator.share({ files: [file], text: shareText() }).catch(function () {});
+        } else if (IN_APP) {
+          showSaveImage(cv);
         } else {
           var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
           toast(t.id === 'scShare' ? '這個瀏覽器不支援直接分享，已幫你下載圖片' : '已下載分享圖');
@@ -1002,10 +1041,14 @@
     // 早鳥限量：以「人」計算。名額賣完時把 open 改成 false（或跟 Claude 說「早鳥結束」），全站自動換成原價
     earlyBird: { limit: 30, open: true },
     price: { early: 399, regular: 599 },           // 單份價格（早鳥只影響單份）
-    bundles: [                                     // 組合價（改這裡就好）
-      { name: '任選三份', count: 3, early: 999, regular: 999 },
-      { name: '全套六份', count: 6, early: 1599, regular: 1599, best: true, gift: '加贈「常見問題懶人包」' }
-    ],
+    // 價格階梯：買 1～6 份的總價（任意混搭：主題懶人包、深度解讀、常見問題懶人包都算）。
+    // 超過 6 份：6 份價＋每多 1 份 extra。選滿 6 份，常見問題懶人包免費送。
+    ladder: {
+      early:   [0, 399, 749, 999, 1249, 1449, 1599],
+      regular: [0, 599, 899, 999, 1249, 1449, 1599]
+    },
+    giftAt: 6,
+    extra: 250,   // 超過 6 份，之後每多 1 份 NT$250
     // 解鎖碼：只放 SHA-256 雜湊，不放原本的碼。用「付費版懶人包/產生解鎖碼.html」產生新的，貼一行到這裡
     codeHashes: [
       '8e01507f14c50eecf81aca631cf11111ec6c76066d536e6fd21dc2449d3efaaa'
@@ -1099,39 +1142,29 @@
     var on = CART.some(function (c) { return c.name === name; });
     return '<button type="button" class="cart-add' + (on ? ' on' : '') + '" data-kind="' + kind + '" data-name="' + name + '">' + (on ? '✓ 已加入' : '＋ 加入清單') + '</button>';
   }
+  function ladder() { return earlyOn() ? SHOP.ladder.early : SHOP.ladder.regular; }
+  function ladderTotal(n) { var L = ladder(); return n <= 6 ? L[n] : L[6] + (n - 6) * SHOP.extra; }
   function cartPrice() {
-    var unit = earlyOn() ? SHOP.price.early : SHOP.price.regular;
-    var b3 = SHOP.bundles[0], b6 = SHOP.bundles[1];
-    var p3 = earlyOn() ? b3.early : b3.regular, p6 = earlyOn() ? b6.early : b6.regular;
-    var items = CART.filter(function (c) { return c.kind !== 'faq'; }), n = items.length;
-    var mains = CART.filter(function (c) { return c.kind === 'main'; }).length;
+    var L = ladder(), unit = L[1];
+    var others = CART.filter(function (c) { return c.kind !== 'faq'; }).length;
     var hasFaq = CART.some(function (c) { return c.kind === 'faq'; });
-    // 只有選齊六份主題懶人包才算「全套六份」（加贈常見問題懶人包）
-    var best = null;
-    for (var k6 = 0; k6 <= (mains === 6 ? 1 : 0); k6++) {
-      var rest = n - 6 * k6; if (rest < 0) continue;
-      var k3 = Math.floor(rest / 3), r = rest % 3;
-      var total = k6 * p6 + k3 * p3 + r * unit, parts = [];
-      if (k6) parts.push(b6.name + ' NT$' + p6);
-      if (k3) parts.push(b3.name + (k3 > 1 ? ' ×' + k3 : '') + ' NT$' + (k3 * p3));
-      if (r) parts.push('單份 ×' + r + ' NT$' + (r * unit));
-      if (!best || total < best.total) best = { total: total, parts: parts, gift: !!k6 };
-    }
-    if (hasFaq) {
-      if (best.gift) best.parts.push('常見問題懶人包 免費加贈');
-      else { best.total += unit; best.parts.push('常見問題懶人包 NT$' + unit); }
-    }
+    var gift = hasFaq && others >= SHOP.giftAt;          // 選滿 6 份：常見問題懶人包免費
+    var n = others + (hasFaq && !gift ? 1 : 0);          // 實際計價的份數
+    var total = ladderTotal(n), parts = [];
+    parts.push(n + ' 份組合價 NT$' + total + (n > 1 ? '（平均每份 NT$' + Math.round(total / n) + '）' : ''));
+    if (gift) parts.push('常見問題懶人包 免費加贈');
     var tip = '';
-    if (n % 3 === 2) tip = '再選 1 份，就能用「' + b3.name + ' NT$' + p3 + '」';
-    if (mains >= 4 && mains < 6) tip = '再選 ' + (6 - mains) + ' 份主題懶人包，就能用「' + b6.name + ' NT$' + p6 + '」，還加贈常見問題懶人包';
-    best.full = n * unit + (hasFaq ? unit : 0);
-    best.tip = tip;
-    return best;
+    if (n < 13) {
+      var add = ladderTotal(n + 1) - total;
+      tip = '再加 1 份只要多 NT$' + add;
+      if (others + 1 === SHOP.giftAt) tip += '，而且選滿 6 份就加贈「常見問題懶人包」';
+    }
+    return { total: total, parts: parts, full: (others + (hasFaq ? 1 : 0)) * unit, tip: tip };
   }
   function cartText() {
     var pr = cartPrice();
     return '你好！我想購買命盤 AI 懶人包：\n' + CART.map(function (c, i) { return (i + 1) + '. ' + c.name; }).join('\n') +
-      '\n\n共 ' + CART.length + ' 份\n' + pr.parts.join('＋') + '\n合計 NT$' + pr.total + (earlyOn() ? '（早鳥價）' : '') + '\n\n（從 chart.jas-soul.com 送出）';
+      '\n\n共 ' + CART.length + ' 份\n' + pr.parts.join('＋') + '\n合計 NT$' + pr.total + (earlyOn() ? '（早鳥價）' : '') + (LAST && LAST.age < 18 ? '\n\n※ 我未滿 18 歲，會請家長陪同購買' : '') + '\n\n（從 chart.jas-soul.com 送出）';
   }
   function renderCart() {
     var box = document.querySelector('#cart .cart-body'); if (!box) return;
@@ -1178,6 +1211,19 @@
     renderCart();
   });
   function earlyOn() { return !!(SHOP.earlyBird && SHOP.earlyBird.open); }
+  function ageOf(b) {
+    var t = new Date(), a = t.getFullYear() - b.y;
+    if (t.getMonth() + 1 < b.m || (t.getMonth() + 1 === b.m && t.getDate() < b.d)) a--;
+    return a;
+  }
+  // 未滿 18 歲的免費版：不談工作、金錢、感情，改成讀書、人際、家人
+  var FREE_PROMPT_MINOR = '我還未滿 18 歲。請根據下面的命盤資料，幫我做一份適合學生的自我認識，大約 600–800 字，語氣像一位溫暖的老師：\n' +
+    '一、用一句話形容我，再給三個關鍵字。\n' +
+    '二、我最明顯的三個特質：每一個都用一個學校或家裡的生活情境來描述，並寫出是哪幾個系統這樣說。\n' +
+    '三、適合我的讀書和做事方式：我怎麼學東西最有效率、容易在哪裡卡住。\n' +
+    '四、我和朋友、家人相處的樣子：我的優點，以及一個可以練習的小地方。\n' +
+    '五、一句給我的鼓勵。\n' +
+    '請不要分析工作、金錢、感情、婚姻，也不要預測任何不好的事情；不要說我「一定」會怎樣，命盤只是參考。';
   var FREE_PROMPT = '請根據下面的命盤資料，幫我做一份「免費體驗版」的自我認識，大約 800–1000 字，重點放在「我是怎樣的人」：\n' +
     '一、用一句話形容我，再給三個關鍵字。\n' +
     '二、我最明顯的三個特質：每一個都要（1）用一個具體的生活情境來描述，不要只用形容詞；（2）寫出是哪幾個系統、哪個位置這樣說。優先寫好幾個系統都提到的特質。\n' +
@@ -1235,7 +1281,7 @@
     var line = SHOP.lineUrl ? '<a class="btn line-btn" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">加官方 LINE 了解完整版</a>' : '<span class="btn line-btn disabled">官方 LINE 連結尚未設定</span>';
     return '<section class="ai-pack no-print" id="aipack"><div class="eyebrow">AI 分析懶人包</div><h2>先免費試試看，AI 怎麼讀你的命盤</h2>' +
       '<p class="lead">下面已經幫你準備好「免費體驗版指令＋你的命盤資料」。按複製，貼到 ChatGPT、Claude 或 Gemini，就能看到 AI 的分析。</p>' +
-      '<div class="ai-free"><span class="badge">免費體驗版</span><span>一句話形容你・三個關鍵字・核心性格・一個小提醒</span></div>' +
+      '<div class="ai-free"><span class="badge">免費體驗版</span><span>' + (LAST.age < 18 ? '一句話形容你・三個特質・適合的讀書方式・和朋友家人的相處（學生版）' : '一句話形容你・三個特質・兩個盲點・對照過去的轉折點') + '</span></div>' +
       '<textarea class="ai-text" id="aiText" readonly></textarea>' +
       '<div class="ai-actions"><button type="button" class="btn" id="aiCopy">複製免費版指令與資料</button><span class="meta" id="aiMeta"></span></div>' +
       '<ol class="ai-steps"><li>按「複製免費版指令與資料」。</li><li>打開你常用的 AI，開一個新對話，貼上送出。</li><li>看看準不準，覺得有共鳴的話，往下看完整版。</li></ol>' +
@@ -1243,6 +1289,7 @@
       '<div class="paid"><div class="eyebrow">覺得準嗎？</div><h3 class="paid-title">完整版懶人包</h3>' +
       '<p class="lead">完整版是更深入的專屬指令，AI 會整合你勾選的系統，寫出一份完整的分析。</p>' + compareTable() + sampleBlock() +
       earlyBanner() +
+      (LAST.age < 18 ? '<div class="minor-note"><b>未滿 18 歲想購買？</b>請先跟爸爸媽媽或監護人討論，由他們陪你一起購買。完整版裡有工作、金錢、感情的內容，比較適合成年人閱讀；如果想了解自己，「個人性格深度解析」和「單一系統深度解讀」會比較適合你。</div>' : '') +
       '<div class="paid-grid">' + PAID.map(function (x) {
         return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
           '<p class="pc-hook">' + x.hook + '</p>' +
@@ -1251,21 +1298,20 @@
       '<div class="faq-pack"><div class="faq-head"><span class="pc-ic" style="--pc:#7A5A9C">問</span><b>常見問題懶人包</b>' + priceTag(SHOP.price) + '</div>' +
         '<p class="faq-desc">10 個大家最常問的問題，每一題都根據你的命盤來回答：</p>' +
         '<ol class="faq-list">' + FAQ.map(function (qq) { return '<li>' + qq + '</li>'; }).join('') + '</ol>' +
-        '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。全套方案免費加贈。</p>' + cartBtn('faq', '常見問題懶人包') + '</div>' +
+        '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。任選滿 6 份就免費加贈。</p>' + cartBtn('faq', '常見問題懶人包') + '</div>' +
       '<div class="deep" id="deep"><div class="deep-head"><b>單一系統深度解讀</b><span>想真正看懂其中一個系統？AI 會像老師一樣，帶你一項一項讀懂自己的盤。</span></div>' +
         '<div class="deep-grid">' + DEEP.map(function (x) {
           var st = SYS_STYLE[x.key];
           return '<div class="deep-card" style="--pc:' + st[1] + '"><div class="dc-head"><i>' + st[0] + '\uFE0E</i><b>' + x.name + '</b></div><ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') +
             '<li>你的盤專屬名詞小辭典＋10 個延伸提問</li></ul>' + priceTag(SHOP.price) + cartBtn('deep', x.name) + '</div>';
-        }).join('') + '</div><p class="deep-note">可以和上面的主題懶人包一起算進「任選三份」。</p></div>' +
-      '<div class="bundles">' + SHOP.bundles.map(function (bd) {
-        var on = earlyOn(), unit = on ? SHOP.price.early : SHOP.price.regular, now = on ? bd.early : bd.regular, full = unit * bd.count;
-        return '<div class="bundle' + (bd.best ? ' best' : '') + '">' + (bd.best ? '<i class="bd-tag">最划算</i>' : '') +
-          '<div class="bd-name">' + bd.name + '</div><div class="bd-price"><s>NT$' + full + '</s><b>NT$' + now + '</b></div>' +
-          '<div class="bd-save">省 NT$' + (full - now) + '・平均每份 NT$' + Math.round(now / bd.count) + '</div>' +
-          (bd.gift ? '<div class="bd-gift">🎁 ' + bd.gift + '</div>' : '') +
-          (on && bd.regular !== bd.early ? '<div class="bd-after">早鳥結束後 NT$' + bd.regular + '</div>' : '') + '</div>';
-      }).join('') + '</div>' +
+        }).join('') + '</div><p class="deep-note">可以和上面的主題懶人包混搭，一起算進下面的組合價。</p></div>' +
+      '<div class="ladder"><div class="ld-title">買越多越划算<span>主題懶人包、深度解讀、常見問題懶人包都可以任意混搭</span></div><div class="ld-row">' +
+        [1, 2, 3, 4, 5, 6].map(function (n) {
+          var L = ladder(), t = L[n];
+          return '<div class="ld-cell' + (n === 3 || n === 6 ? ' hot' : '') + '"><div class="ld-n">' + n + ' 份</div><div class="ld-p">NT$' + t + '</div>' +
+            '<div class="ld-avg">' + (n > 1 ? '每份 ' + Math.round(t / n) : '單份') + '</div>' + (n === 6 ? '<i>🎁 送常見問題</i>' : '') + '</div>';
+        }).join('') + '</div>' +
+        (earlyOn() ? '<p class="ld-note">早鳥價。早鳥結束後：單份 NT$' + SHOP.ladder.regular[1] + '、2 份 NT$' + SHOP.ladder.regular[2] + '，3 份以上不變。</p>' : '') + '</div>' +
       '<div class="cart" id="cart"><div class="cart-title">🛒 我的購買清單</div><div class="cart-body"></div></div>' +
       '<div class="flow"><div class="flow-title">購買流程</div><ol>' +
         '<li>' + (SHOP.lineUrl ? '<a class="line-link" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">' : '') + '<b>加官方 LINE</b>' + (SHOP.lineId ? '（' + SHOP.lineId + '）' : '') + (SHOP.lineUrl ? '</a>' : '') + '，告訴我你想要哪一份</li>' +
@@ -1387,7 +1433,7 @@
   function updateAiText() {
     var ta = $('aiText'); if (!ta || !LAST) return;
     ta.value = '你是一位溫柔、專業的命理與占星老師，熟悉生命靈數、脈輪、八字、紫微斗數、西洋占星、印度占星和人類圖。\n' +
-      FREE_PROMPT + '\n\n' + AI_RULES + '\n===== 我的命盤資料（體驗版）=====\n' + buildAiData(LAST.nowYear, false);
+      (LAST.age < 18 ? FREE_PROMPT_MINOR : FREE_PROMPT) + '\n\n' + AI_RULES + '\n===== 我的命盤資料（體驗版）=====\n' + buildAiData(LAST.nowYear, false);
     $('aiMeta').textContent = '約 ' + ta.value.length + ' 字';
   }
   function copyText(text, btn, label, msg) {
@@ -2117,6 +2163,25 @@
   $('go').addEventListener('click', analyze);
   $('print').addEventListener('click', function () { window.print(); });
   window.addEventListener('beforeprint', function () { document.querySelectorAll('details.fold').forEach(function (d) { d.open = true; }); });
+  // 自動判斷日光節約時間：台灣 1945–1979 有幾年夏天撥快一小時，多數人不知道要勾
+  function dstOffset(zone, tz, y, m, d, h, mi) {
+    try {
+      var t = Date.UTC(y, m - 1, d, h, mi) - tz * 3600e3, p = {};
+      new Intl.DateTimeFormat('en-US', { timeZone: zone, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })
+        .formatToParts(new Date(t)).forEach(function (x) { p[x.type] = +x.value; });
+      return (Date.UTC(p.year, p.month - 1, p.day, p.hour % 24, p.minute) - Date.UTC(y, m - 1, d, h, mi)) / 60000;
+    } catch (e) { return 0; }
+  }
+  function autoDst() {
+    var v = $('birth').value, hint = $('dstHint'); if (!v) { hint.hidden = true; return; }
+    var pl = Birth.PLACES.filter(function (p) { return p.id === $('place').value; })[0]; if (!pl || !pl.zone) return;
+    var a = v.split('-').map(Number), tm = ($('time').value || '12:00').split(':').map(Number);
+    var on = dstOffset(pl.zone, pl.tz, a[0], a[1], a[2], tm[0], tm[1]) === 60;
+    $('dst').checked = on;
+    hint.hidden = !on;
+    if (on) hint.textContent = '你出生的那天，' + pl.name + '正在實施日光節約時間（時鐘撥快一小時），已經幫你自動勾選，排盤會換算回標準時間。';
+  }
+  ['birth', 'time', 'place'].forEach(function (id) { $(id).addEventListener('change', autoDst); });
   ['birth', 'time', 'place', 'gender', 'unknown', 'dst', 'trueSolar', 'name'].forEach(function (id) { $(id).addEventListener('change', markChanged); $(id).addEventListener('input', markChanged); });
   buildPicker();
   if ($('birth').value) { run(); revealAll(); $('go').textContent = '重新分析'; }
