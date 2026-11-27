@@ -509,6 +509,20 @@
   .sm-sys button { font: inherit; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px 4px 5px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-2); cursor: pointer; }
   .sm-sys button i { font-style: normal; width: 18px; height: 18px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
   .sm-sys .sm-all { padding: 4px 12px; background: var(--accent-grad); border-color: var(--accent); color: #FFFBF2; }
+  .lens { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 2px 0 14px; font-size: 13px; color: var(--muted); }
+  .lens > span { margin-right: 2px; letter-spacing: .08em; }
+  .lens button { font: inherit; font-size: 13.5px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--line); background: #FFFDF8; color: var(--ink-2); cursor: pointer; }
+  .lens button.on { background: var(--accent-grad); border-color: var(--accent); color: #FFFBF2; }
+  .lens-card { margin: 4px 0 22px; padding: 16px 18px 14px; border-radius: 14px; border: 1.5px solid color-mix(in srgb, var(--pc, #C27D8E) 45%, var(--line)); background: color-mix(in srgb, var(--pc, #C27D8E) 8%, #FFFDF8); }
+  .lens-card.lc-sum { --pc: #A88550; }
+  .lc-k { font-size: 12.5px; letter-spacing: .12em; color: var(--pc); font-weight: 600; margin-bottom: 4px; }
+  .lc-line { margin: 0; font-family: var(--serif); font-size: 16.5px; line-height: 1.75; color: var(--ink); }
+  .lc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 2px; }
+  .lc-tags span { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: #FFFDF8; border: 1px solid var(--gold-soft); color: #8A6A3A; }
+  .lens-card .asp-list { margin-top: 8px; }
+  .lc-buy { display: flex; align-items: center; justify-content: space-between; gap: 8px 12px; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--ink-2); }
+  .lc-buy b { color: var(--ink); margin: 0 2px; }
+  .cart-add.lc-add { margin: 0; align-self: auto; width: auto; padding: 5px 14px; border-style: solid; background: #FFFDF8; --pc: #A88550; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -1387,6 +1401,59 @@
     var t = e.target.closest && e.target.closest('[data-add]'); if (!t) return;
     addSystems(t.getAttribute('data-add') === 'all' ? SYSTEMS.map(function (x) { return x.id; }).filter(function (id) { return !document.getElementById(id); }) : [t.getAttribute('data-add')]);
   });
+  // ===== 主題切換：全部／感情／工作／金錢 =====
+  var LENS_DEF = {
+    love:  { label: '感情', icon: '♡', aspect: 'love',  product: 4, lead: '你在關係裡需要什麼、愛的樣子' },
+    work:  { label: '工作', icon: '✦', aspect: 'work',  product: 2, lead: '你擅長什麼、適合怎麼工作' },
+    money: { label: '金錢', icon: '◈', aspect: 'money', product: 3, lead: '你和錢、資源的關係' }
+  };
+  function lensDef(k) {
+    var d = LENS_DEF[k]; if (!d) return null;
+    if (k === 'work' && LAST && LAST.age < 18) return Object.assign({}, d, { label: '天賦方向', lead: '你擅長什麼、可以往哪個方向探索' });
+    return d;
+  }
+  function getLens() { try { var k = localStorage.getItem('chart-lens') || 'all'; return LENS_DEF[k] ? k : 'all'; } catch (e) { return 'all'; } }
+  function lensBar() {
+    var keys = ['all', 'love', 'work', 'money'].filter(function (k) { return !(k === 'money' && LAST && LAST.age < 18); });
+    return '<div class="lens no-print" id="lensBar"><span>我想看</span>' + keys.map(function (k) {
+      var d = lensDef(k); return '<button type="button" data-lens="' + k + '">' + (d ? d.icon + ' ' + d.label : '全部') + '</button>';
+    }).join('') + '</div>';
+  }
+  function lensProduct(d) {
+    var x = PAID[d.product], nm = x.name.replace('{Y}', LAST.nowYear + 1);
+    return '<div class="lc-buy"><span>想更深入看你的' + d.label + '？<b>' + nm + '</b> NT$' + ladder()[1] + '</span>' + cartBtn('main', nm).replace('cart-add', 'cart-add lc-add') + '</div>';
+  }
+  function applyLens(k) {
+    document.querySelectorAll('#out .lens-card').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('#lensBar button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-lens') === k); });
+    var d = lensDef(k), syn = LAST && LAST.syn; if (!d || !syn) return;
+    var asp = (syn.aspects || []).filter(function (a) { return a.id === d.aspect; })[0];
+    var P = syn.portrait || {}, line = (P.lines || []).filter(function (l) { return l.id === d.aspect; })[0];
+    var bySys = {}; if (asp) asp.items.forEach(function (it) { bySys[it.sys] = (bySys[it.sys] ? bySys[it.sys] + '　' : '') + it.text; });
+    // 總覽：這個主題的一句話＋各系統怎麼說
+    var sm = $('summary');
+    if (sm) {
+      var list = Object.keys(bySys).map(function (k2) { var st = SYS_STYLE[k2] || ['✦', '#A88550']; return '<li style="--pc:' + st[1] + '"><span class="al-sys"><i>' + st[0] + '︎</i>' + k2 + '</span><span class="al-t">' + bySys[k2] + '</span></li>'; }).join('');
+      sm.querySelector('.sys-head').insertAdjacentHTML('afterend', '<div class="lens-card lc-sum"><div class="lc-k">' + d.icon + ' 你的' + d.label + '</div>' +
+        (line ? '<p class="lc-line">' + line.text + '</p>' : '<p class="lc-line">' + d.lead + '</p>') +
+        (asp && asp.shared && asp.shared.length ? '<div class="lc-tags">' + asp.shared.map(function (x) { return '<span>✦ ' + x.name + '・' + x.systems.length + ' 個系統提到</span>'; }).join('') + '</div>' : '') +
+        (list ? '<ul class="asp-list">' + list + '</ul>' : '') + lensProduct(d) + '</div>');
+    }
+    // 每個系統：從這個主題來看
+    SYSTEMS.forEach(function (x) {
+      var sec = document.getElementById(x.id); if (!sec) return;
+      var t = bySys[x.key], st = SYS_STYLE[x.key];
+      sec.querySelector('.sys-head').insertAdjacentHTML('afterend', '<div class="lens-card" style="--pc:' + st[1] + '"><div class="lc-k">' + d.icon + ' 從' + d.label + '來看，' + x.key + '說</div>' +
+        '<p class="lc-line">' + (t || '這個系統對「' + d.label + '」著墨比較少，可以看看其他系統怎麼說。') + '</p>' + lensProduct(d) + '</div>');
+    });
+    iconize($('out'));
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('#lensBar [data-lens]'); if (!b) return;
+    var k = b.getAttribute('data-lens'); try { localStorage.setItem('chart-lens', k); } catch (x) {}
+    applyLens(k); track('lens', { topic: k });
+    if (k !== 'all' && TAB.on) { var sec = document.getElementById(TAB.pane); var lc = sec && sec.querySelector('.lens-card'); if (lc) lc.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  });
   function setupTabs() {
     heroIcons();
     var out = $('out'); if (!out || !out.querySelector('.cover')) return;
@@ -1443,6 +1510,7 @@
     }
     out.classList.add('tabbed');
     TAB.on = true;
+    if (LAST && LAST.syn) { $('secnav').insertAdjacentHTML('afterend', lensBar()); applyLens(getLens()); }
     loadSeen();
     buildSecNav();
     showPane('summary', { replace: true, noScroll: true });
@@ -1599,6 +1667,7 @@
     if (picked.length >= 2) {
       var syn = Synthesis.build({ nu: nu, bz: bz, zw: zw, we: we, ve: ve, hd: hd },
         { T: T, X: X, E: EXPLAIN, nowYear: nowYear, birthYear: birth.y, only: only, centerName: function (c) { return HumanDesign.CENTERS[c].name; } });
+      LAST.syn = syn;
       html += synthesisSection(syn, name ? esc(name) : '', picked.length);
       if (syn.portrait) {
         var rows = [];
