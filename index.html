@@ -422,6 +422,35 @@
   .al-sys i { font-style: normal; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; margin-top: 2px; }
   .al-t { color: var(--ink-2); }
   @media (max-width: 480px) { .asp-list li { grid-template-columns: 1fr; gap: 2px; } }
+  .disclaimer { text-wrap: balance; }
+  .offer { margin: 22px 0 6px; padding: 18px 18px 14px; border-radius: 14px; border: 1.5px solid var(--gold-soft); background: color-mix(in srgb, var(--gold) 7%, #FFFDF8); }
+  .offer-rec { border-color: var(--gold); }
+  .of-k { font-size: 11.5px; letter-spacing: .14em; color: var(--accent); }
+  .of-t { display: flex; align-items: center; gap: 8px; font-family: var(--serif); font-size: 18px; font-weight: 600; margin: 4px 0 8px; }
+  .of-t .pc-ic { width: 26px; height: 26px; font-size: 13px; }
+  .of-hook { margin: 0 0 8px; font-size: 13.5px; color: var(--pc, var(--accent)); font-weight: 600; }
+  .of-list { list-style: none; margin: 0 0 10px; padding: 0; }
+  .of-list li { padding: 6px 0; border-bottom: 1px dotted var(--line); line-height: 1.5; }
+  .of-list li b { display: block; font-size: 14.5px; }
+  .of-list li small { font-size: 12px; color: var(--muted); }
+  .of-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; margin-top: 8px; }
+  .of-price { display: flex; align-items: baseline; gap: 8px; }
+  .of-price s { font-size: 13px; color: var(--muted); }
+  .of-price b { font-size: 22px; color: var(--ink); }
+  .of-price small { font-size: 12px; color: #6C8F74; }
+  .of-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .of-btns .btn { font-size: 13.5px; padding: 8px 14px; }
+  .cart-add.of-add { margin: 0; align-self: auto; width: auto; padding: 8px 14px; border-style: solid; background: #FFFDF8; }
+  .of-free { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+  .of-free a { color: var(--accent); }
+  @media (max-width: 480px) { .of-btns { width: 100%; } .of-btns > * { flex: 1; text-align: center; } }
+  .best { margin: 22px 0 6px; padding: 14px 16px; border: 1px dashed var(--line); border-radius: 12px; background: #FFFDF8; text-align: center; }
+  .bp-q { font-size: 14px; color: var(--ink-2); margin-bottom: 10px; }
+  .bp-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .bp-chips button { font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-2); cursor: pointer; }
+  .bp-chips button i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+  .bp-chips button.on { border-color: var(--pc); background: color-mix(in srgb, var(--pc) 12%, #FFFDF8); color: var(--ink); font-weight: 600; }
+  .bp-ok { font-size: 12.5px; color: #6C8F74; min-height: 1.2em; margin-top: 6px; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -1173,6 +1202,48 @@
         '<span class="pn-dots" aria-label="第 ' + (i + 1) + ' / ' + TAB.order.length + ' 塊">' + dots + '</span>' +
         '<button type="button" data-go="hub">九宮格 ▦</button></div></div>';
   }
+  // 總覽：依你的盤推薦的 3 份（把銷售資訊分散到大家會看的地方）
+  function recOffer() {
+    var H = LAST && LAST.hints; if (!H || !H.rec.length) return '';
+    var Y = LAST.nowYear + 1, L = ladder();
+    return '<div class="offer offer-rec no-print" data-pane="summary"><div class="of-k">✦ 依你的盤推薦</div><div class="of-t">想看懂更多？這 3 份最適合你</div>' +
+      '<ul class="of-list">' + H.rec.map(function (r) { return '<li><b>' + PAID[r.i].name.replace('{Y}', Y) + '</b><small>' + r.why + '</small></li>'; }).join('') + '</ul>' +
+      '<div class="of-foot"><div class="of-price"><s>NT$' + (L[1] * 3) + '</s><b>NT$' + L[3] + '</b><small>3 份組合價</small></div>' +
+      '<div class="of-btns"><button type="button" class="btn pk-add" data-pack="rec">加入這 3 份</button><button type="button" class="btn line" data-go="aipack">看全部方案</button></div></div>' +
+      '<p class="of-free">還在猶豫？<a href="#aipack">先免費試試看 AI 怎麼讀你的盤 →</a></p></div>';
+  }
+  // 每個系統頁：一份最相關的懶人包＋「你的盤」預告
+  var SYS_OFFER = { numerology: 5, bazi: 1, ziwei: 3, western: 4, vedic: 0, hd: 2 };
+  function sysOffer(id) {
+    var i = SYS_OFFER[id], H = LAST && LAST.hints; if (i === undefined || !H) return '';
+    var x = PAID[i], Y = LAST.nowYear + 1, nm = x.name.replace('{Y}', Y), L = ladder();
+    return '<div class="offer offer-sys no-print" data-pane="' + id + '" style="--pc:' + x.color + '"><div class="of-k">延伸閱讀・完整版懶人包</div>' +
+      '<div class="of-t"><span class="pc-ic">' + x.icon + '︎</span>' + nm + '</div><p class="of-hook">' + x.hook + '</p>' +
+      (H.teasers[i] ? '<div class="pc-tease"><span>你的盤</span>' + H.teasers[i] + '<b>這代表什麼？完整版告訴你</b></div>' : '') +
+      '<div class="of-foot"><div class="of-price"><b>NT$' + L[1] + '</b><small>任選 3 份 NT$' + L[3] + '</small></div>' +
+      '<div class="of-btns">' + cartBtn('main', nm).replace('cart-add', 'cart-add of-add') + '<button type="button" class="btn line" data-go="aipack">看全部方案</button></div></div></div>';
+  }
+  // 「哪個系統最懂你？」一鍵選一個，後台就知道大家覺得哪個最準
+  function bestPick() {
+    var ids = TAB.order.filter(function (id) { return SYSTEMS.some(function (x) { return x.id === id; }); });
+    if (ids.length < 2) return '';
+    return '<div class="best no-print" data-pane="summary"><div class="bp-q">看了幾個系統之後，你覺得<b>哪一個最懂你？</b></div><div class="bp-chips">' +
+      ids.map(function (id) { var sd = SYSTEMS.filter(function (x) { return x.id === id; })[0], st = SYS_STYLE[sd.key]; return '<button type="button" data-best="' + sd.key + '" style="--pc:' + st[1] + '"><i>' + st[0] + '︎</i>' + sd.key + '</button>'; }).join('') +
+      '</div><div class="bp-ok"></div></div>';
+  }
+  function bestRestore() {
+    var rid = fbChartKey(), v = rid && fbStore('fb|' + rid + '|best');
+    document.querySelectorAll('.best [data-best]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-best') === v); });
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.best [data-best]'); if (!b) return;
+    var v = b.getAttribute('data-best'), rid = fbChartKey(), k = 'fb|' + rid + '|best';
+    if (fbStore(k) === v) return;
+    fbStore(k, v); bestRestore();
+    var ok = b.closest('.best').querySelector('.bp-ok'); ok.textContent = '謝謝你，已記下 ✦';
+    track('best_system', { system: v });
+    if (SHOP.feedbackUrl) try { fetch(SHOP.feedbackUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ cid: fbDevice(), rid: rid, sec: 'best', label: v, vote: 2, page: 'chart' }), keepalive: true }); } catch (err) {}
+  });
   function setupTabs() {
     var out = $('out'); if (!out || !out.querySelector('.cover')) return;
     TAB.order = ['summary'].concat(SYSTEMS.map(function (x) { return x.id; })).concat(['aipack']).filter(function (id) { return document.getElementById(id); });
@@ -1191,12 +1262,15 @@
     });
     var nav = $('secnav');
     nav.insertAdjacentHTML('afterend', hubBlock());
+    var mc = out.querySelector('.mid-cta'); if (mc) mc.setAttribute('data-pane', 'none');   // 由「依你的盤推薦」取代
+    var sm = $('summary'); if (sm) sm.insertAdjacentHTML('afterend', recOffer());
+    var inv = out.querySelector('.invite[data-where="result"]'); if (inv) inv.insertAdjacentHTML('afterend', bestPick());
+    SYSTEMS.forEach(function (x) { var sec = document.getElementById(x.id); if (sec) sec.insertAdjacentHTML('afterend', sysOffer(x.id)); });
+    bestRestore();
     TAB.order.forEach(function (id) {
       var last = Array.prototype.filter.call(out.children, function (el) { return el.getAttribute('data-pane') === id; }).pop();
       if (last) last.insertAdjacentHTML('afterend', paneNav(id));
     });
-    var mc = out.querySelector('.mid-cta'), inv = out.querySelector('.invite[data-where="result"]');
-    if (mc && inv) inv.insertAdjacentElement('afterend', mc);   // 總覽最後才推 AI 懶人包
     out.classList.add('tabbed');
     TAB.on = true;
     buildSecNav();
@@ -1388,8 +1462,8 @@
     html += aiPackSection();
     html += inviteBlock('bottom');
 
-    html += '<p class="disclaimer">這份分析以多種命理與占星系統為工具，提供自我覺察的參考，不是醫療、心理治療或任何形式的保證。<br>' +
-      '所有排盤都由這個工具自行計算（天文公式與傳統排盤規則），已用實際命盤與已知天象驗證；重要的決定，建議再用專業軟體對照。</p>';
+    html += '<p class="disclaimer">這份分析是自我覺察的參考，<wbr>不是醫療、心理治療或任何保證。<br>' +
+      '排盤由本站以天文公式與傳統規則計算，<wbr>已用實際命盤驗證；<wbr>重要決定建議再用專業軟體對照。</p>';
     $('out').innerHTML = html;
     buildSecNav();
     if ($('shareCanvas')) drawShareCard($('shareCanvas'), LAST.card);
@@ -1962,7 +2036,7 @@
       if (CART.some(function (c) { return c.name === bt.getAttribute('data-name'); })) { bt.classList.add('on'); bt.textContent = '✓ 已加入'; }
     });
     renderCart(); toast(msg);
-    $('cart').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!TAB.on || paneOf($('cart')) === TAB.pane) $('cart').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function packsBlock(H, Y) {
     var L = ladder();
@@ -2299,7 +2373,7 @@
       b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' +
         '<div class="kw">' + P.keywords.map(function (k) { return '<span>' + k + '</span>'; }).join('') + '</div>' +
         '<div class="traits">' + (P.traits || []).map(function (t) {
-          return '<div class="trait"><div class="tr-head"><b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + ' 個系統提到</span>' + fbMini('trait:' + t.name) + '</div>' +
+          return '<div class="trait"><div class="tr-head"><b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + ' 個系統提到</span></div>' +
             '<p>' + t.scene + '</p><div class="ev">' + t.evidence.map(evChip).join('') + '</div></div>';
         }).join('') + '</div>' + fbBar('title:' + P.title, '整體來說，上面的描述像你嗎？') +
         (P.combo && P.combo.text ? '<div class="pcombo"><div class="pc-k">組合解讀・' + P.combo.label + '</div><p>' + P.combo.text + '</p></div>' : '') +
