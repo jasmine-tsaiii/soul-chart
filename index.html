@@ -603,6 +603,8 @@
   .ld-row input { flex: 1 1 200px; min-width: 0; font: inherit; font-size: 15px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #FFFDF8; }
   .ld-row input:focus { outline: none; border-color: var(--gold); }
   .ld-row .btn { flex: none; }
+  .ld-row .ld-name { flex: 0 1 150px; }
+  @media (max-width: 480px) { .ld-row .ld-name, .ld-row input[type=email] { flex: 1 1 100%; } .ld-row .btn { flex: 1 1 100%; } }
   .ld-ok { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; font-size: 12px; color: var(--ink-2); line-height: 1.6; cursor: pointer; }
   .ld-ok input { margin-top: 3px; }
   .ld-err { font-size: 12.5px; color: var(--red, #A85A4A); min-height: 1em; margin-top: 4px; }
@@ -2339,7 +2341,8 @@
     };
     if (!SHOP.kitFormId) { done(); return; }
     var body = new URLSearchParams(); body.append('email_address', em);
-    if (LAST && LAST.name) body.append('fields[first_name]', LAST.name);
+    var nm = ($('leadName') && $('leadName').value || '').trim().slice(0, 40);   // 之後寄信可以叫名字
+    if (nm) body.append('fields[first_name]', nm);
     fetch('https://app.kit.com/forms/' + SHOP.kitFormId + '/subscriptions', { method: 'POST', headers: { 'Accept': 'application/json' }, body: body })
       .then(function () { done(); }, function () { done(); });   // 就算 Kit 連不上，也不要擋住使用者
   });
@@ -2352,7 +2355,8 @@
       '<div class="ai-free"><span class="badge">免費體驗版</span><span>' + (LAST.age < 18 ? '一句話形容你・興趣和天賦・未來方向和科系參考・感情與人際（學生版）' : '一句話形容你・三個特質・兩個盲點・對照過去的轉折點') + '</span></div>' +
       '<div class="ai-box' + (leadOk() ? '' : ' locked') + '" id="aiBox"><textarea class="ai-text" id="aiText" readonly></textarea><div class="ai-veil"></div></div>' +
       '<form class="lead" id="leadForm"' + (leadOk() ? ' hidden' : '') + ' novalidate><div class="ld-h"><b>留下 Email，免費取得完整指令</b><span>指令會直接顯示在這裡讓你複製，也會寄一份到信箱，之後還有每月流年小提醒</span></div>' +
-        '<div class="ld-row"><input type="email" id="leadEmail" placeholder="你的 Email" autocomplete="email" required><button type="submit" class="btn">取得免費指令</button></div>' +
+        '<div class="ld-row"><input type="text" id="leadName" class="ld-name" placeholder="怎麼稱呼你（選填）" autocomplete="given-name" value="' + esc(LAST && LAST.name || '') + '">' +
+        '<input type="email" id="leadEmail" placeholder="你的 Email" autocomplete="email" required><button type="submit" class="btn">取得免費指令</button></div>' +
         '<label class="ld-ok"><input type="checkbox" id="leadAgree" checked> 我同意收到 Jasmine 寄來的命盤相關 Email，隨時可以取消訂閱</label>' +
         '<div class="ld-err" id="leadErr"></div></form>' +
       '<div class="ai-actions"' + (leadOk() ? '' : ' hidden') + ' id="aiActions"><button type="button" class="btn" id="aiCopy">複製免費版指令與資料</button><span class="meta" id="aiMeta"></span></div>' +
