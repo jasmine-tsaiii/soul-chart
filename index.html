@@ -342,7 +342,7 @@
   .facts .v { font-family: var(--serif); font-size: 20px; font-weight: 600; line-height: 1.4; }
 
   .bodygraph { display: grid; grid-template-columns: 1fr; gap: 20px; }
-  .bodygraph svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+  .bodygraph svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
 
   .list-plain { margin: 0; padding: 0; list-style: none; }
   .list-plain li { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--ink-2); }
@@ -1239,6 +1239,7 @@
     sun: ['☉', '#C9963A'], moon: ['☽', '#7F92AA'], mercury: ['☿', '#5E9A8A'], venus: ['♀', '#C27D8E'], mars: ['♂', '#B0594C'],
     jupiter: ['♃', '#A0763D'], saturn: ['♄', '#6D6658'], uranus: ['♅', '#4F8FA8'], neptune: ['♆', '#5B6FA8'], pluto: ['♇', '#7A5A78'], node: ['☊', '#8A8076'], ketu: ['☋', '#8A8076']
   };
+  var HD_CENTER_COLOR = { head: '#E8C35A', ajna: '#7FA37A', throat: '#B08A57', g: '#E2B04A', heart: '#C8574D', sacral: '#D67A45', spleen: '#9C7650', solar: '#C9884E', root: '#8E6E52' };
   var ZH_PLANET = { '太陽': 'sun', '月亮': 'moon', '水星': 'mercury', '金星': 'venus', '火星': 'mars', '木星': 'jupiter', '土星': 'saturn', '天王星': 'uranus', '海王星': 'neptune', '冥王星': 'pluto', '北交點': 'node', '羅睺': 'node', '計都': 'ketu' };
   var SYS_STYLE = { '生命靈數': ['∞', '#90719C'], '八字': ['☯', '#A0763D'], '紫微斗數': ['★', '#7A5A9C'], '西洋占星': ['☉', '#C9963A'], '印度占星': ['ॐ', '#C3824F'], '人類圖': ['◇', '#5B6FA8'] };
   var GOD_STYLE = { '比肩': ['比', '#6C8F74'], '劫財': ['劫', '#6C8F74'], '食神': ['食', '#C3824F'], '傷官': ['傷', '#C3824F'], '正財': ['財', '#BF9A45'], '偏財': ['才', '#BF9A45'],
@@ -1685,7 +1686,7 @@
       keys.map(function (c) {
         var on = r.definedCenters.indexOf(c) !== -1;
         var shape = { head: '▲', ajna: '▼', throat: '■', g: '◆', heart: '▲', sacral: '■', spleen: '▶', solar: '◀', root: '■' }[c];
-        return irow([shape, on ? '#A88550' : '#B9AE9E'], C[c].name, X.hd.centers[c].split('：')[1], [[on ? '有定義' : '開放', on ? 'on' : 'off']], H.centers[c][on ? 'on' : 'off'], '', !on);
+        return irow([shape, on ? HD_CENTER_COLOR[c] : '#B9AE9E'], C[c].name, X.hd.centers[c].split('：')[1], [[on ? '有定義' : '開放', on ? 'on' : 'off']], H.centers[c][on ? 'on' : 'off'], '', !on);
       }).join('') + '</ul></div></div>';
 
     b += '<h3>通道' + q('通道') + '</h3><div class="howto">' + H.channelsHow + '</div>' + (r.channels.length ? '<ul class="list-plain">' + r.channels.map(function (c) {
@@ -1725,6 +1726,18 @@
       53: [192, 538], 60: [210, 538], 52: [228, 538], 54: [180, 556], 38: [180, 574], 58: [180, 592], 19: [240, 556], 39: [240, 574], 41: [240, 592]
     };
     var ROUTE = { '20-34': [146, 346] }; // 繞過 G 中心
+    // 把圖拉寬：整體往右移，直覺中心往左、情緒中心和意志力中心往右，通道才不會擠在一起
+    var DX = 40, EXTRA = { spleen: -34, solar: 34, heart: 26 };
+    Object.keys(C).forEach(function (c) {
+      var d = DX + (EXTRA[c] || 0);
+      C[c].pts = C[c].pts.map(function (p) { return [p[0] + d, p[1]]; });
+      if (C[c].label) C[c].label = [C[c].label[0] + d, C[c].label[1], C[c].label[2]];
+    });
+    Object.keys(G).forEach(function (g) { var d = DX + (EXTRA[HumanDesign.gateCenter[g]] || 0); G[g] = [G[g][0] + d, G[g][1]]; });
+    Object.keys(ROUTE).forEach(function (k) { ROUTE[k] = [ROUTE[k][0] + DX - 8, ROUTE[k][1]]; });
+    // 每個有定義的中心用不同顏色（參考常見人體圖配色）
+    var CENTER_COLOR = HD_CENTER_COLOR;
+    var LIGHT = { head: 1, g: 1 };
     var INK = '#2B2622', RED = '#A85A4A', PIPE = '#E6DDCF';
     var defined = {}; r.definedCenters.forEach(function (c) { defined[c] = true; });
     function color(g) { var v = r.gates[g]; return !v ? null : v.indexOf('P') !== -1 ? INK : RED; }
@@ -1732,7 +1745,7 @@
     var base = '', active = '';
     HumanDesign.CHANNELS.forEach(function (ch) {
       var a = G[ch[0]], b = G[ch[1]], q = ROUTE[ch[0] + '-' + ch[1]];
-      base += '<path d="' + path(a, b, q) + '" fill="none" stroke="' + PIPE + '" stroke-width="7" stroke-linecap="round"/>';
+      base += '<path d="' + path(a, b, q) + '" fill="none" stroke="' + PIPE + '" stroke-width="5" stroke-linecap="round"/>';
       var mid = q ? [(a[0] + 2 * q[0] + b[0]) / 4, (a[1] + 2 * q[1] + b[1]) / 4] : [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
       var qa = q ? [(a[0] + q[0]) / 2, (a[1] + q[1]) / 2] : null, qb = q ? [(b[0] + q[0]) / 2, (b[1] + q[1]) / 2] : null;
       var ca = color(ch[0]), cb = color(ch[1]), both = ca && cb;
@@ -1744,10 +1757,11 @@
     Object.keys(C).forEach(function (c) {
       var on = defined[c], pts = C[c].pts, x = 0, y = 0;
       pts.forEach(function (p) { x += p[0]; y += p[1]; }); x /= pts.length; y /= pts.length;
-      shapes += '<polygon points="' + pts.map(function (p) { return p.join(','); }).join(' ') + '" fill="' + (on ? '#CDB78F' : '#FFFDF8') + '" stroke="' + (on ? '#8A6A3A' : '#B9AE9E') + '" stroke-width="' + (on ? 2 : 1.5) + '"' + (on ? '' : ' stroke-dasharray="4 3"') + '/>';
-      var L = C[c].label, fill = on ? INK : '#8A8076';
-      labels += L ? '<text x="' + L[0] + '" y="' + L[1] + '" text-anchor="' + L[2] + '" font-size="13" font-weight="600" fill="' + fill + '">' + C[c].name + '</text>'
-        : '<text x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" font-size="14" font-weight="600" fill="' + fill + '">' + C[c].name + '</text>';
+      var cc = CENTER_COLOR[c];
+      shapes += '<polygon points="' + pts.map(function (p) { return p.join(','); }).join(' ') + '" fill="' + (on ? cc : '#FFFDF8') + '" stroke="' + (on ? 'rgba(43,38,34,.45)' : '#B9AE9E') + '" stroke-width="' + (on ? 1.5 : 1.5) + '"' + (on ? '' : ' stroke-dasharray="4 3"') + ' stroke-linejoin="round"/>';
+      var L = C[c].label;
+      labels += L ? '<text x="' + L[0] + '" y="' + L[1] + '" text-anchor="' + L[2] + '" font-size="13" font-weight="600" fill="' + (on ? cc : '#8A8076') + '" style="paint-order:stroke" stroke="#F7F3EC" stroke-width="3">' + C[c].name + '</text>'
+        : '<text x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" font-size="14" font-weight="600" fill="' + (on ? (LIGHT[c] ? INK : '#fff') : '#8A8076') + '">' + C[c].name + '</text>';
     });
     Object.keys(G).forEach(function (g) {
       var p = G[g], v = r.gates[g], col = color(g);
@@ -1755,12 +1769,12 @@
         '<text x="' + p[0] + '" y="' + (p[1] + 3) + '" text-anchor="middle" font-size="8" font-weight="600" fill="' + (col ? '#fff' : '#8A8076') + '">' + g + '</text>';
     });
     var legend = '<g font-size="10.5" fill="#4A433D">' +
-      '<rect x="14" y="624" width="14" height="10" fill="#CDB78F" stroke="#8A6A3A"/><text x="33" y="633">有定義</text>' +
-      '<rect x="80" y="624" width="14" height="10" fill="#FFFDF8" stroke="#B9AE9E" stroke-dasharray="3 2"/><text x="99" y="633">開放</text>' +
-      '<line x1="140" y1="629" x2="162" y2="629" stroke="' + INK + '" stroke-width="5"/><text x="167" y="633">接通的通道</text>' +
-      '<circle cx="246" cy="629" r="6" fill="' + INK + '"/><text x="256" y="633">個性（黑）</text>' +
-      '<circle cx="324" cy="629" r="6" fill="' + RED + '"/><text x="334" y="633">設計（紅）</text></g>';
-    return '<svg viewBox="0 0 420 644" xmlns="http://www.w3.org/2000/svg" font-family="inherit">' + base + shapes + active + dots + labels + legend + '</svg>';
+      '<rect x="20" y="624" width="7" height="10" fill="#E8C35A"/><rect x="27" y="624" width="7" height="10" fill="#7FA37A"/><rect x="34" y="624" width="7" height="10" fill="#C8574D"/><text x="46" y="633">有定義</text>' +
+      '<rect x="92" y="624" width="14" height="10" fill="#FFFDF8" stroke="#B9AE9E" stroke-dasharray="3 2"/><text x="111" y="633">開放</text>' +
+      '<line x1="148" y1="629" x2="168" y2="629" stroke="' + INK + '" stroke-width="5"/><text x="173" y="633">接通的通道</text>' +
+      '<circle cx="250" cy="629" r="6" fill="' + INK + '"/><text x="260" y="633">個性・有意識（黑）</text>' +
+      '<circle cx="372" cy="629" r="6" fill="' + RED + '"/><text x="382" y="633">設計・潛意識（紅）</text></g>';
+    return '<svg viewBox="0 0 500 644" xmlns="http://www.w3.org/2000/svg" font-family="inherit">' + base + shapes + active + dots + labels + legend + '</svg>';
   }
 
   // 小問號：點一下看名詞解釋
