@@ -216,6 +216,18 @@
   .ld-more b { color: var(--ink); }
   .ld-cell.cur { border-color: var(--ink); box-shadow: 0 0 0 2px var(--ink) inset; }
   .ld-cell.cur::before { content: "你目前在這"; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 10.5px; white-space: nowrap; padding: 0 7px; border-radius: 999px; background: var(--ink); color: var(--paper); }
+  .fb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 22px 0 0; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 8px; background: #FFFDF8; }
+  .fb-q { font-size: 13.5px; color: var(--ink-2); margin-right: 4px; }
+  .fb button { font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--ink-2); cursor: pointer; transition: all .15s; }
+  .fb button i { font-style: normal; font-size: 12px; color: var(--gold); }
+  .fb button:hover { border-color: var(--gold-soft); }
+  .fb button.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .fb button.on i { color: #E3C78E; }
+  .fb-ok { font-size: 12.5px; color: #6C8F74; }
+  .fb.fb-sm { margin: 10px 0 0; padding: 0; border: 0; background: transparent; }
+  .fb.fb-sm .fb-q { font-size: 12.5px; color: var(--muted); }
+  .fb.fb-sm button { font-size: 12px; padding: 2px 10px; }
+  .portrait > .fb.fb-sm { margin: 8px 0 14px; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -709,7 +721,7 @@
       <button class="btn line" id="print">列印／存成 PDF</button>
       <span class="changed-hint" id="changedHint">資料改了，按「更新分析」看新結果</span>
     </div>
-    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方。</p>
+    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方。按「準／不準」只會送出投票和那一段的結果名稱，用來改進解讀。</p>
   </div>
 
   <main id="out"></main>
@@ -746,10 +758,56 @@
     var st = SYS_STYLE[d.key];
     return '<a class="deep-link no-print" href="#deep" style="--pc:' + st[1] + '"><i>' + st[0] + '\uFE0E</i><span><b>想更深入看懂你的' + d.key + '？</b><small>' + d.name + '：AI 帶你一項一項讀懂自己的盤</small></span><em>看看 →</em></a>';
   }
+  // ===== 「準不準」回饋：每一段只記一票，可以改，重複按不會重複記 =====
+  // 送出的內容只有：隨機裝置碼、隨機的命盤代號、哪一段、那一段的結果名稱、投票。不含生日和稱呼。
+  var FB_LABELS = { 2: '準', 1: '有點', 0: '不準' };
+  function fbStore(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
+  function fbRand() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
+  function fbDevice() { var c = fbStore('fb-cid'); if (!c) { c = fbRand(); fbStore('fb-cid', c); } return c; }
+  function fbChartKey() {   // 同一個命盤 → 同一個隨機代號（生日本身不會送出）
+    var b = LAST && LAST.birth; if (!b) return '';
+    var sig = [b.y, b.m, b.d, b.timeKnown ? b.hour + ':' + b.minute : '-', b.place.id, b.gender].join('|');
+    var map = {}; try { map = JSON.parse(fbStore('fb-charts') || '{}'); } catch (e) {}
+    if (!map[sig]) { map[sig] = fbRand(); fbStore('fb-charts', JSON.stringify(map)); }
+    return map[sig];
+  }
+  function fbBar(sec, q, small) {
+    return '<div class="fb no-print' + (small ? ' fb-sm' : '') + '" data-sec="' + esc(sec) + '"><span class="fb-q">' + q + '</span>' +
+      '<button type="button" data-v="2" aria-label="準"><i>◎</i>準</button><button type="button" data-v="1" aria-label="有點準"><i>◐</i>有點</button><button type="button" data-v="0" aria-label="不準"><i>✕</i>不準</button>' +
+      '<span class="fb-ok"></span></div>';
+  }
+  function fbLabel(sec) {   // 這一段的結果名稱，方便後台看「哪一種結果最常被說不準」
+    if (sec.indexOf(':') > 0) return sec.split(':').slice(1).join(':');
+    var key = (SYSTEMS.filter(function (x) { return x.id === sec; })[0] || {}).key;
+    var row = LAST && LAST.card && LAST.card.rows.filter(function (r) { return r[0] === key || r[0].indexOf(key) === 0; })[0];
+    return row ? row[1] : '';
+  }
+  function fbRestore() {
+    var rid = fbChartKey(); if (!rid) return;
+    document.querySelectorAll('.fb').forEach(function (el) {
+      var v = fbStore('fb|' + rid + '|' + el.getAttribute('data-sec'));
+      if (v !== null && v !== undefined) fbMark(el, v, true);
+    });
+  }
+  function fbMark(el, v, quiet) {
+    el.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-v') === String(v)); });
+    el.querySelector('.fb-ok').textContent = quiet ? '' : '謝謝你 ✦';
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.fb button'); if (!b) return;
+    var el = b.closest('.fb'), sec = el.getAttribute('data-sec'), v = b.getAttribute('data-v');
+    var rid = fbChartKey(), k = 'fb|' + rid + '|' + sec;
+    if (fbStore(k) === v) { el.querySelector('.fb-ok').textContent = '已經記下了'; return; }   // 重複按同一個：不再送
+    if (el._busy) return; el._busy = true; setTimeout(function () { el._busy = false; }, 800);  // 連點保護
+    fbStore(k, v); fbMark(el, v);
+    if (!SHOP.feedbackUrl) return;
+    var data = JSON.stringify({ cid: fbDevice(), rid: rid, sec: sec.split(':')[0], label: fbLabel(sec), vote: +v, page: 'chart' });
+    try { fetch(SHOP.feedbackUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: data, keepalive: true }); } catch (err) {}
+  });
   function sys(no, id, title, lead, body) {
     no = chapterNo++;
     return '<section class="system" id="' + id + '"><div class="sys-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
-      '<p class="lead">' + lead + '</p></div>' + body + deepLink(id) + '</section>';
+      '<p class="lead">' + lead + '</p></div>' + body + fbBar(id, '這一章準嗎？') + deepLink(id) + '</section>';
   }
   function table(head, rows, nowFlags) {
     var h = '<div class="table-wrap"><table><thead><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>';
@@ -894,6 +952,7 @@
     buildSecNav();
     if ($('shareCanvas')) drawShareCard($('shareCanvas'), LAST.card);
     renderCart();
+    fbRestore();
     updateAiText();
     renderUnlock();
   }
@@ -1087,6 +1146,8 @@
       early:   [0, 399, 749, 999, 1249, 1449, 1599],
       regular: [0, 599, 899, 999, 1249, 1449, 1599]
     },
+    // 「準不準」回饋要送去哪裡：貼上 Google Apps Script 部署後的網址（空白＝只記在使用者自己的瀏覽器，不送出）
+    feedbackUrl: '',
     giftAt: 6,
     extra: 250,   // 超過 6 份，之後每多 1 份 NT$250
     // 解鎖碼：只放 SHA-256 雜湊，不放原本的碼。用「付費版懶人包/產生解鎖碼.html」產生新的，貼一行到這裡
@@ -1100,10 +1161,8 @@
     title: '身心靈事業陪伴・生命靈數 × 脈輪',
     photo: 'jasmine.jpg',                        // 照片檔名，空白就顯示名字縮寫
     bio: [
-      '我也有過很迷惘的時候。不知道自己適合什麼、該往哪裡走，常常半夜睡不著，一直問自己：我到底是個什麼樣的人？',
-      '那段時間，我開始到處找答案。算生命靈數、排八字、看紫微和星盤，後來又遇到人類圖。每看一個，就像多了一面鏡子，有時候被說中到起雞皮疙瘩，有時候又覺得「這不是我吧」。',
-      '慢慢地，我習慣把它們放在一起比對：哪些地方好幾個系統都這樣說？哪些地方說法不一樣？再拿去對照自己真實的經驗。我發現，真正讓我安心的，是在一次次對照裡，越來越認得自己。',
-      '所以我做了這個網站。希望你在迷惘的時候，也能多幾面鏡子可以照照看，多一份參考，陪你找到自己的方向。'
+      '我也有過很迷惘的時候，不知道自己適合什麼、該往哪裡走。那段時間我到處找答案，生命靈數、八字、紫微、星盤、人類圖，每一個都像一面鏡子，照出我不同的樣子。',
+      '後來我習慣把它們放在一起，對照自己真實的經驗，慢慢越來越認得自己。希望你在迷惘的時候，也能多幾面鏡子可以照照看，陪你找到自己的方向。'
     ],
     link: 'https://jasmine.jas-soul.com/',
     linkName: '認識我'
@@ -1533,11 +1592,11 @@
     var nTxt = n === 6 ? '六' : String(n);
     var b = '', P = s.portrait;
     if (P) {
-      b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' +
+      b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' + fbBar('title:' + P.title, '這句話像你嗎？', true) +
         '<div class="kw">' + P.keywords.map(function (k) { return '<span>' + k + '</span>'; }).join('') + '</div>' +
         '<div class="traits">' + (P.traits || []).map(function (t) {
           return '<div class="trait"><div class="tr-head"><b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + ' 個系統提到</span></div>' +
-            '<p>' + t.scene + '</p><div class="ev">' + t.evidence.map(evChip).join('') + '</div></div>';
+            '<p>' + t.scene + '</p><div class="ev">' + t.evidence.map(evChip).join('') + '</div>' + fbBar('trait:' + t.name, '像你嗎？', true) + '</div>';
         }).join('') + '</div>' +
         (P.combo && P.combo.text ? '<div class="pcombo"><div class="pc-k">組合解讀・' + P.combo.label + '</div><p>' + P.combo.text + '</p></div>' : '') +
         (P.tension ? '<div class="pcombo"><div class="pc-k">你身上的拉扯・' + P.tension.title + '</div><p>' + P.tension.text + '</p></div>' : '') +
