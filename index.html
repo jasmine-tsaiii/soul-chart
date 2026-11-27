@@ -406,6 +406,11 @@
   .pn-dots { display: inline-flex; gap: 6px; }
   .pn-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
   .pn-dots i.on { width: 18px; border-radius: 3px; background: var(--accent); }
+  .input-area.collapsed > :not(.app-head):not(.edit-bar) { display: none !important; }
+  .input-area.collapsed { padding-bottom: 14px; }
+  .edit-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; margin: 10px 0 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: #FFFDF8; font-size: 13.5px; color: var(--ink-2); }
+  .edit-bar[hidden] { display: none; }
+  .edit-bar .btn { font-size: 13px; padding: 6px 14px; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -875,6 +880,7 @@
       <h1 class="app-title">東西方命盤大亂鬥</h1>
       <p class="app-sub">六種系統一起上場，看看誰最懂你。<br>生命靈數、八字、紫微、星盤、人類圖，輸入一次生日就全部排好，還會幫你整理它們重複提到的地方。</p>
     </header>
+    <div class="edit-bar" id="editBar" hidden><span id="editSummary"></span><button type="button" class="btn line" id="editBtn">修改資料／重新分析</button></div>
     <div class="step-label"><span>1</span>出生資料</div>
     <div class="form-card">
       <div class="frow"><span class="rl">性別</span>
@@ -1099,7 +1105,7 @@
     .observe(document.documentElement, { childList: true, subtree: true });
   document.addEventListener('DOMContentLoaded', function () { iconize(document.body); });
   // ===== 九宮格＋分頁：一次只看一個區塊，知道自己在哪裡 =====
-  var TAB = { on: false, pane: 'hub', order: [] };
+  var TAB = { on: false, pane: 'summary', order: [] };
   var HUB_ORDER = ['numerology', 'bazi', 'ziwei', 'summary', '*', 'western', 'vedic', 'hd', 'aipack'];
   var PANE_LABEL = { hub: '九宮格', summary: '綜合', aipack: 'AI 懶人包' };
   function paneLabel(id) { var s = SYSTEMS.filter(function (x) { return x.id === id; })[0]; return PANE_LABEL[id] || (s ? s.key : id); }
@@ -1115,11 +1121,25 @@
       var st = id === 'summary' ? ['✦', '#A88550'] : id === 'aipack' ? ['◈', '#8C6A2F'] : (SYS_STYLE[sysDef ? sysDef.key : ''] || ['✦', '#A88550']);
       var name = id === 'summary' ? '綜合分析' : id === 'aipack' ? 'AI 懶人包' : sysDef.key;
       var sub = id === 'summary' ? '六種系統都說到的你' : id === 'aipack' ? '完整版 3 份 NT$' + ladder()[3] + ' 起' : (el ? res(id) || '點進去看' : '沒有勾選');
-      return '<button type="button" class="hub-t' + (el ? '' : ' off') + (id === 'aipack' ? ' hub-ai' : '') + '" data-go="' + id + '"' + (el ? '' : ' disabled') + ' style="--pc:' + st[1] + '">' +
+      return '<button type="button" class="hub-t' + (el ? '' : ' off') + (id === 'aipack' ? ' hub-ai' : '') + '" data-go="' + id + '"' + (id === 'summary' ? ' data-scroll="summary"' : '') + (el ? '' : ' disabled') + ' style="--pc:' + st[1] + '">' +
         '<i>' + st[0] + '︎</i><b>' + name + '</b><span>' + esc(sub) + '</span></button>';
     }).join('');
-    return '<section class="hub" data-pane="hub"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p>點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
+    return '<section class="hub" id="hub" data-pane="summary"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p>點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
   }
+  // 分析完把輸入表單收起來，只留一行摘要＋「修改資料」
+  function collapseInput(on) {
+    var area = document.querySelector('.input-area'), bar = $('editBar'); if (!area || !bar) return;
+    area.classList.toggle('collapsed', on); bar.hidden = !on;
+    if (on && LAST && LAST.birth) {
+      var b = LAST.birth;
+      $('editSummary').textContent = '想看別人的盤，或資料要修改？';
+    }
+  }
+  document.addEventListener('click', function (e) {
+    if (!(e.target.closest && e.target.closest('#editBtn'))) return;
+    collapseInput(false); track('edit_input');
+    var fc = document.querySelector('.form-card'); if (fc) window.scrollTo({ top: fc.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+  });
   function paneMeta(id) {
     var L = LAST || {}, rows = (L.card && L.card.rows) || [], sd = SYSTEMS.filter(function (x) { return x.id === id; })[0];
     if (id === 'summary') return { icon: '✦', color: '#A88550', name: '綜合分析', sub: '六種系統都說到的你' };
@@ -1148,7 +1168,7 @@
       var p = null;
       if (el.matches('.cover, .secnav, .disclaimer')) p = null;
       else if (el.matches('.viewmode')) p = 'content';
-      else if (el.matches('.minor-note, .mid-cta')) p = 'hub';
+      else if (el.matches('.minor-note, .mid-cta')) p = 'summary';
       else if (el.matches('#summary, .sc-fold, .invite[data-where="result"]')) p = 'summary';
       else if (el.matches('h3, nav.overview')) p = 'none';
       else if (el.matches('section.system')) p = el.id;
@@ -1161,36 +1181,38 @@
       var last = Array.prototype.filter.call(out.children, function (el) { return el.getAttribute('data-pane') === id; }).pop();
       if (last) last.insertAdjacentHTML('afterend', paneNav(id));
     });
-    var mc = out.querySelector('.mid-cta'); if (mc) out.querySelector('.hub').appendChild(mc);
+    var mc = out.querySelector('.mid-cta'), inv = out.querySelector('.invite[data-where="result"]');
+    if (mc && inv) inv.insertAdjacentElement('afterend', mc);   // 總覽最後才推 AI 懶人包
     out.classList.add('tabbed');
     TAB.on = true;
     buildSecNav();
-    showPane('hub', { replace: true, noScroll: true });
+    showPane('summary', { replace: true, noScroll: true });
   }
   function showPane(id, opt) {
     opt = opt || {};
     var out = $('out'); if (!out || !TAB.on) return;
-    if (id !== 'hub' && TAB.order.indexOf(id) < 0) id = 'hub';
+    if (id === 'hub') { id = 'summary'; opt.scrollEl = opt.scrollEl || $('hub'); }   // 「九宮格」就是總覽的最上面
+    if (TAB.order.indexOf(id) < 0) id = 'summary';
     var prev = TAB.pane; TAB.pane = id;
     Array.prototype.forEach.call(out.querySelectorAll('[data-pane]'), function (el) {
       var p = el.getAttribute('data-pane');
-      el.classList.toggle('pane-on', p === id || (p === 'content' && id !== 'hub' && id !== 'aipack'));
+      el.classList.toggle('pane-on', p === id || (p === 'content' && id !== 'aipack'));
     });
-    if (!opt.fromPop) { try { history[opt.replace ? 'replaceState' : 'pushState']({ pane: id }, '', location.pathname + location.search + (id === 'hub' ? '' : '#' + id)); } catch (e) {} }
+    if (!opt.fromPop) { try { history[opt.replace ? 'replaceState' : 'pushState']({ pane: id }, '', location.pathname + location.search + (id === 'summary' ? '' : '#' + id)); } catch (e) {} }
     spySections();
     if (!opt.noScroll) {   // 捲到新分頁的開頭（分頁列是 sticky，不能用它的位置算）
-      var first = Array.prototype.filter.call(out.querySelectorAll('#out > .pane-on'), function (el) { return !el.classList.contains('viewmode'); })[0];
+      var first = opt.scrollEl || Array.prototype.filter.call(out.querySelectorAll('#out > .pane-on'), function (el) { return !el.classList.contains('viewmode'); })[0];
       if (first) window.scrollTo({ top: Math.max(0, first.getBoundingClientRect().top + window.scrollY - navOffset() - 8), behavior: 'auto' });
     }
     document.querySelectorAll('#out .reveal').forEach(function (el) { if (el.closest('.pane-on')) el.classList.add('in'); });
     if (prev !== id) track('open_pane', { pane: id, from: prev });
   }
   function paneOf(el) { var p = el && el.closest && el.closest('[data-pane]'); return p ? p.getAttribute('data-pane') : null; }
-  window.addEventListener('popstate', function (e) { if (TAB.on) showPane((e.state && e.state.pane) || 'hub', { fromPop: true }); });
+  window.addEventListener('popstate', function (e) { if (TAB.on) showPane((e.state && e.state.pane) || 'summary', { fromPop: true }); });
   document.addEventListener('click', function (e) {
     if (!TAB.on) return;
     var go = e.target.closest && e.target.closest('[data-go]');
-    if (go && go.closest('#out')) { e.preventDefault(); showPane(go.getAttribute('data-go')); return; }
+    if (go && go.closest('#out')) { e.preventDefault(); var sc = go.getAttribute('data-scroll'); showPane(go.getAttribute('data-go'), sc ? { scrollEl: $(sc) } : {}); return; }
     var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a || !a.closest('#out, body')) return;
     var id = a.getAttribute('href').slice(1), target = id === 'hub' ? null : document.getElementById(id);
     if (id === 'hub') { e.preventDefault(); e.stopPropagation(); showPane('hub'); return; }
@@ -1361,13 +1383,14 @@
     fbRestore();
     applyView(getView());
     setupTabs();
+    collapseInput(true);
     updateAiText();
     renderUnlock();
   }
 
   // ===== 章節導覽列：固定在上方，可左右滑，捲動時自動標示目前章節 =====
   var NAV_ITEMS = [
-    { id: 'summary', label: '綜合', icon: ['✦', '#A88550'] },
+    { id: 'summary', label: '總覽', icon: ['▦', '#8C6A2F'] },
     { id: 'numerology', label: '生命靈數', key: '生命靈數' },
     { id: 'bazi', label: '八字', key: '八字' },
     { id: 'ziwei', label: '紫微', key: '紫微斗數' },
@@ -1378,7 +1401,7 @@
   ];
   function buildSecNav() {
     var nav = $('secnav'); if (!nav) return;
-    var items = (TAB.on ? [{ id: 'hub', label: '九宮格', icon: ['▦', '#8C6A2F'] }] : []).concat(NAV_ITEMS.filter(function (it) { return document.getElementById(it.id); }));
+    var items = NAV_ITEMS.filter(function (it) { return document.getElementById(it.id); });
     nav.innerHTML = '<div class="sn-track">' + items.map(function (it) {
       var st = it.icon || SYS_STYLE[it.key] || ['•', '#A88550'];
       return '<a href="#' + it.id + '" data-sec="' + it.id + '" style="--pc:' + st[1] + '"><i>' + st[0] + '︎</i>' + it.label + '</a>';
