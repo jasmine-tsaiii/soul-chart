@@ -228,6 +228,17 @@
   .fb.fb-sm .fb-q { font-size: 12.5px; color: var(--muted); }
   .fb.fb-sm button { font-size: 12px; padding: 2px 10px; }
   .portrait > .fb.fb-sm { margin: 8px 0 14px; }
+  .sc-fold { margin: 28px 0; border: 1px solid var(--gold-soft); border-radius: 10px; background: #FFFDF8; overflow: hidden; }
+  .sc-fold > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; }
+  .sc-fold > summary::-webkit-details-marker { display: none; }
+  .scf-ic { width: 34px; height: 34px; flex: none; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #1E2148; color: #E3C78E; font-size: 15px; }
+  .scf-t { flex: 1; display: flex; flex-direction: column; line-height: 1.5; }
+  .scf-t small { font-size: 12.5px; color: var(--muted); }
+  .scf-go { font-size: 13px; color: var(--gold); }
+  .scf-go::after { content: " ▾"; }
+  .sc-fold[open] .scf-go { font-size: 0; }
+  .sc-fold[open] .scf-go::after { content: "收起 ▴"; font-size: 13px; }
+  .sc-fold .sc-wrap { margin: 0; border-radius: 0; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -1008,10 +1019,11 @@
 
   // ===== 分享卡：東西方命盤大亂鬥（1080×1920，IG 限動尺寸）=====
   function shareBlock() {
-    return '<div class="sc-wrap no-print"><div class="sc-preview"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>' +
+    return '<details class="sc-fold no-print"><summary><span class="scf-ic">✦</span><span class="scf-t"><b>把結果做成分享圖</b><small>IG 限動尺寸，可以下載或直接分享</small></span><span class="scf-go">打開</span></summary>' +
+      '<div class="sc-wrap"><div class="sc-preview"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>' +
       '<div class="sc-side"><div class="eyebrow">分享你的命盤卡</div><h3 class="paid-title">六種系統，看看誰最懂你</h3>' +
       '<p>把六種命盤一起說的「你」做成一張卡，IG 限時動態尺寸（1080×1920），朋友看得懂，也會想來測。</p>' +
-      '<div class="sc-btns"><button type="button" class="btn" id="scDownload">下載分享圖</button><button type="button" class="btn line" id="scShare">分享</button><button type="button" class="btn line" id="scCopy">複製分享文字</button></div></div></div>';
+      '<div class="sc-btns"><button type="button" class="btn" id="scDownload">下載分享圖</button><button type="button" class="btn line" id="scShare">分享</button><button type="button" class="btn line" id="scCopy">複製分享文字</button></div></div></div></details>';
   }
   function wrapText(ctx, text, maxW) {
     var lines = [], cur = '';
