@@ -387,6 +387,65 @@
   .portrait .kw span { font-size: 14px; padding: 5px 12px; border: 1px solid var(--gold-soft); border-radius: 999px; color: var(--ink-2); background: var(--paper); }
   .portrait .kw span::before { content: '✦'; color: var(--gold); margin-right: 6px; }
   .portrait .pp p { font-size: 16px; line-height: 1.95; color: var(--ink-2); }
+  .af { margin: 0 0 22px; padding: 16px 18px; background: var(--paper-2); border-left: 2px solid var(--gold); }
+  .af-row { display: flex; align-items: stretch; gap: 10px; }
+  .af-cell { flex: 1; min-width: 0; background: #FFFDF8; border: 1px solid var(--line); border-top: 3px solid var(--pc); padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; }
+  .af-k { font-size: 11.5px; letter-spacing: .08em; color: var(--pc); font-weight: 600; }
+  .af-cell b { font-family: var(--serif); font-size: 18px; display: flex; align-items: center; gap: 6px; }
+  .af-cell b i { font-style: normal; width: 24px; height: 24px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
+  .af-cell small { font-size: 12.5px; color: var(--ink-2); line-height: 1.6; }
+  .af-op { align-self: center; font-size: 20px; color: var(--gold); }
+  .af-sum { margin: 12px 0 0; font-size: 14.5px; color: var(--ink-2); }
+  @media (max-width: 640px) { .af-row { flex-direction: column; } .af-op { align-self: flex-start; margin-left: 12px; line-height: 1; } }
+  .hg { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 4px 0 6px; }
+  .hg-cell { position: relative; min-height: 86px; padding: 8px 8px 6px; border-radius: 6px; border: 1px solid var(--line); background: color-mix(in srgb, #A88550 calc(var(--lv) * 28%), #FFFDF8); }
+  .hg-cell.empty { background: var(--paper); border-style: dashed; }
+  .hg-n { font-family: var(--serif); font-size: 12px; color: var(--muted); }
+  .hg-t { font-size: 12.5px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+  .hg-cell.empty .hg-t { color: var(--muted); font-weight: 400; }
+  .hg-p { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
+  .hg-p i { font-style: normal; width: 20px; height: 20px; border-radius: 50%; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
+  @media (max-width: 640px) { .hg { grid-template-columns: repeat(3, 1fr); } }
+  .tl { position: relative; margin: 10px 0 30px; padding-top: 26px; }
+  .tl-bar { display: flex; height: 58px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+  .tl-seg { position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 0; background: color-mix(in srgb, var(--pc) 16%, #FFFDF8); border-right: 1px solid rgba(255,255,255,.7); text-align: center; overflow: hidden; }
+  .tl-seg:last-child { border-right: none; }
+  .tl-seg b { font-family: var(--serif); font-size: 15px; color: var(--ink); white-space: nowrap; }
+  .tl-seg small { font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+  .tl-seg.on { background: var(--pc); }
+  .tl-seg.on b, .tl-seg.on small { color: #fff; }
+  .tl-now { position: absolute; top: 0; bottom: 18px; width: 2px; background: var(--ink); margin-left: -1px; }
+  .tl-now span { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 11.5px; white-space: nowrap; background: var(--ink); color: var(--paper); padding: 1px 8px; border-radius: 999px; }
+  .tl-axis { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+  @media (max-width: 640px) { .tl-seg small { display: none; } .tl-seg b { font-size: 12px; } }
+  .yc { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; margin: 16px 0 4px; }
+  .yc-cell { text-align: center; padding: 8px 2px 6px; border-radius: 6px; border: 1px solid var(--line); background: #FFFDF8; display: flex; flex-direction: column; gap: 2px; }
+  .yc-cell b { font-family: var(--serif); font-size: 18px; color: var(--ink); }
+  .yc-cell small { font-size: 11px; color: var(--ink-2); }
+  .yc-cell em { font-style: normal; font-size: 10.5px; color: var(--muted); }
+  .yc-cell.past { opacity: .55; }
+  .yc-cell.on { background: var(--gold); border-color: var(--gold); }
+  .yc-cell.on b, .yc-cell.on small, .yc-cell.on em { color: #fff; }
+  @media (max-width: 560px) { .yc { grid-template-columns: repeat(5, 1fr); } }
+  .ec { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 6px 0 10px; }
+  @media (max-width: 760px) { .ec { grid-template-columns: repeat(2, 1fr); } }
+  .ec-card { position: relative; padding: 14px 14px 12px; border-radius: 8px; background: color-mix(in srgb, var(--pc) 7%, #FFFDF8); border: 1px solid color-mix(in srgb, var(--pc) 25%, var(--line)); display: flex; flex-direction: column; gap: 8px; }
+  .ec-card.most { background: color-mix(in srgb, var(--pc) 16%, #FFFDF8); border-color: var(--pc); box-shadow: 0 6px 18px color-mix(in srgb, var(--pc) 18%, transparent); }
+  .ec-card.zero { opacity: .7; border-style: dashed; }
+  .ec-top { display: flex; align-items: center; gap: 10px; }
+  .ec-top b { display: block; font-family: var(--serif); font-size: 18px; color: var(--pc); line-height: 1.2; }
+  .ec-top small { font-size: 12px; color: var(--muted); }
+  .ec-tag { margin-left: auto; align-self: flex-start; font-style: normal; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--pc); color: #fff; }
+  .ec-tag.low { background: transparent; color: var(--pc); border: 1px solid var(--pc); }
+  .ec-num { font-family: var(--serif); font-size: 34px; font-weight: 600; color: var(--ink); line-height: 1; }
+  .ec-num span { font-size: 14px; color: var(--muted); font-weight: 400; margin-left: 2px; }
+  .ec-dots { display: flex; gap: 4px; flex-wrap: wrap; }
+  .ec-dots span { width: 9px; height: 9px; border-radius: 50%; background: color-mix(in srgb, var(--pc) 15%, #EFE8DC); }
+  .ec-dots span.on { background: var(--pc); }
+  .ec-pl { display: flex; flex-wrap: wrap; gap: 4px; min-height: 22px; }
+  .ec-pl em { font-style: normal; min-width: 22px; height: 22px; padding: 0 3px; box-sizing: border-box; border-radius: 999px; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-family: "Apple Symbols", "Segoe UI Symbol", sans-serif; }
+  .ec-pl span { font-size: 12px; color: var(--muted); }
+  .ec-card p { margin: 2px 0 0; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
   .focus { margin: 4px 0 26px; padding: 16px 20px 6px; background: #FBF8F2; border: 1px solid var(--gold-soft); border-radius: 4px; }
   .fc-k { font-size: 12.5px; letter-spacing: .14em; color: #8A6A3A; font-weight: 600; margin-bottom: 8px; }
   .fc-row { padding: 10px 0; border-top: 1px dashed var(--line); }
@@ -1131,7 +1190,7 @@
     b += '<h3>流年' + q('個人流年') + '</h3><div class="trio">' + [r.personalYear, r.personalYearNext].map(function (py) {
       var t = T.personalYear[py.number];
       return trio(py.year + ' 年', py.number + '・' + t.theme, t.line);
-    }).join('') + '</div>';
+    }).join('') + '</div>' + yearCycle(r.personalYear, T);
     b += '<div class="btns no-print"><a class="btn line" id="toReport" href="numerology-report.html" target="_blank" rel="noopener">看完整報告與分享卡 →</a></div>';
     return sys(0, 'numerology', '生命靈數 × 脈輪', X.intro.numerology, b);
   }
@@ -1220,6 +1279,73 @@
     }).join('') + (nots.length ? '<div class="fc-row fc-not"><b>你比較不是</b>' + nots.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div>' : '') + '</div>';
   }
   var EL4 = ['火', '土', '風', '水'];
+  // ===== 圖像化小工具 =====
+  var HOUSE_SHORT = ['', '自我形象', '金錢價值', '溝通學習', '家庭根源', '創作戀愛', '工作健康', '伴侶合作', '深層轉化', '學習旅行', '事業成就', '朋友社群', '內在潛意識'];
+  // 西洋占星：行星 + 星座 + 宮位 = 一句話（用你自己的盤舉例）
+  function astroFormula(p, W) {
+    var st = PLANET_STYLE[p.id] || ['•', '#A88550'];
+    var cell = function (k, big, small, col) { return '<div class="af-cell" style="--pc:' + col + '"><span class="af-k">' + k + '</span><b>' + big + '</b><small>' + small + '</small></div>'; };
+    return '<div class="af"><div class="af-row">' +
+      cell('行星＝什麼能量', '<i>' + st[0] + '︎</i>' + p.name, W.planetsLong[p.name], st[1]) + '<span class="af-op">＋</span>' +
+      cell('星座＝用什麼方式', p.sign, '「' + W.signStyle[p.sign] + '」', '#7A5A9C') + '<span class="af-op">＋</span>' +
+      (p.house ? cell('宮位＝在哪個領域', '第 ' + p.house + ' 宮', W.houses[p.house], '#5D7FA6') : '') +
+      '</div><p class="af-sum">合起來讀：' + W.planetLine[p.id][0].replace('{s}', W.signStyle[p.sign]) + (p.house ? W.planetLine[p.id][1].replace('{h}', W.houses[p.house]) : '') + '。</p></div>';
+  }
+  // 西洋占星：十二宮格子，看行星集中在哪些生活領域
+  function houseGrid(planets) {
+    var by = {}; planets.forEach(function (p) { if (p.house && p.id !== 'node') (by[p.house] = by[p.house] || []).push(p); });
+    var max = Math.max.apply(null, Object.keys(by).map(function (k) { return by[k].length; }).concat([1]));
+    var cells = '';
+    for (var h = 1; h <= 12; h++) {
+      var ps = by[h] || [], lv = ps.length / max;
+      cells += '<div class="hg-cell' + (ps.length ? '' : ' empty') + '" style="--lv:' + lv.toFixed(2) + '"><div class="hg-n">' + h + '</div><div class="hg-t">' + HOUSE_SHORT[h] + '</div><div class="hg-p">' +
+        ps.map(function (p) { var st = PLANET_STYLE[p.id]; return '<i style="background:' + st[1] + '" title="' + p.name + '">' + st[0] + '︎</i>'; }).join('') + '</div></div>';
+    }
+    return '<div class="hg">' + cells + '</div><p class="note">顏色越深，代表這個生活領域的行星越多；空白的格子不代表不重要，只是比較不是你天生的焦點。</p>';
+  }
+  // 時間軸（八字大運、印度大運共用）
+  function timeline(items, nowYear) {
+    var start = items[0].from, end = items[items.length - 1].to, span = end - start;
+    var nowPct = Math.max(0, Math.min(100, (nowYear + 0.5 - start) / span * 100));
+    return '<div class="tl"><div class="tl-bar">' + items.map(function (it) {
+      var w = (it.to - it.from) / span * 100, on = nowYear >= it.from && nowYear < it.to;
+      return '<div class="tl-seg' + (on ? ' on' : '') + '" style="width:' + w + '%;--pc:' + it.color + '"><b>' + it.label + '</b><small>' + it.sub + '</small></div>';
+    }).join('') + '</div><div class="tl-now" style="left:' + nowPct + '%"><span>現在 ' + nowYear + '</span></div>' +
+      '<div class="tl-axis"><span>' + Math.floor(start) + '</span><span>' + Math.floor(end) + '</span></div></div>';
+  }
+  var GOD_COLOR = { '比肩': '#6C8F74', '劫財': '#6C8F74', '食神': '#C3824F', '傷官': '#C3824F', '正財': '#BF9A45', '偏財': '#BF9A45', '正官': '#5D7FA6', '七殺': '#5D7FA6', '正印': '#90719C', '偏印': '#90719C' };
+  // 生命靈數：九年一輪的流年位置
+  function yearCycle(py, Tx) {
+    var start = py.year - py.number + 1, out = '';
+    for (var n = 1; n <= 9; n++) {
+      var th = Tx.personalYear[n] ? Tx.personalYear[n].theme : '';
+      out += '<div class="yc-cell' + (n === py.number ? ' on' : n < py.number ? ' past' : '') + '"><b>' + n + '</b><small>' + th + '</small><em>' + (start + n - 1) + '</em></div>';
+    }
+    return '<div class="yc">' + out + '</div><p class="note">流年每 9 年一輪：1 是播種、9 是收尾。你現在走到第 ' + py.number + ' 年。</p>';
+  }
+  // 西洋占星：四元素卡片（符號、點數、落在這裡的行星、解讀）
+  var EL_META = {
+    '火': { color: '#C0634F', tri: 'M20 4 L36 34 L4 34 Z', bar: false },
+    '土': { color: '#8A7444', tri: 'M4 6 L36 6 L20 36 Z', bar: true },
+    '風': { color: '#5E95B0', tri: 'M20 4 L36 34 L4 34 Z', bar: true },
+    '水': { color: '#4F6FA8', tri: 'M4 6 L36 6 L20 36 Z', bar: false }
+  };
+  function elementCards(r, W, maxE) {
+    var total = 0, pts = { '火': [], '土': [], '風': [], '水': [] };
+    var add = function (name, idx, glyph, col) { pts[['火', '土', '風', '水'][idx % 4]].push({ name: name, glyph: glyph, col: col }); total++; };
+    r.planets.slice(0, 7).forEach(function (p) { var st = PLANET_STYLE[p.id]; add(p.name, p.signIndex, st[0], st[1]); });
+    if (r.asc) add('上升', r.asc.signIndex, 'AC', '#8A8076');
+    return '<div class="ec">' + ['火', '土', '風', '水'].map(function (k) {
+      var m = EL_META[k], n = r.elements[k], most = n === maxE && n > 0, few = n <= 1 && !most;
+      var tri = '<svg viewBox="0 0 40 40" width="34" height="34"><path d="' + m.tri + '" fill="none" stroke="' + m.color + '" stroke-width="2.4" stroke-linejoin="round"/>' + (m.bar ? '<line x1="9" y1="' + (m.tri.indexOf('M20 4') === 0 ? 24 : 16) + '" x2="31" y2="' + (m.tri.indexOf('M20 4') === 0 ? 24 : 16) + '" stroke="' + m.color + '" stroke-width="2.4"/>' : '') + '</svg>';
+      var dots = ''; for (var i = 0; i < total; i++) dots += '<span' + (i < n ? ' class="on"' : '') + '></span>';
+      return '<div class="ec-card' + (most ? ' most' : '') + (n === 0 ? ' zero' : '') + '" style="--pc:' + m.color + '">' +
+        '<div class="ec-top">' + tri + '<div><b>' + k + '象</b><small>' + X.western.elements[k] + '</small></div>' + (most ? '<i class="ec-tag">最多</i>' : few ? '<i class="ec-tag low">偏少</i>' : '') + '</div>' +
+        '<div class="ec-num">' + n + '<span>／' + total + '</span></div><div class="ec-dots">' + dots + '</div>' +
+        '<div class="ec-pl">' + (pts[k].length ? pts[k].map(function (p) { return '<em style="background:' + p.col + '" title="' + p.name + '">' + p.glyph + (p.glyph === 'AC' ? '' : '︎') + '</em>'; }).join('') : '<span>沒有行星</span>') + '</div>' +
+        (most ? '<p>' + W.elementMany[k].replace(/^[^：]+：/, '') + '</p>' : few ? '<p>' + W.elementFew[k].replace(/^[^：]+：/, '') + '</p>' : '') + '</div>';
+    }).join('') + '</div>';
+  }
   function trio(label, name, text) {
     return '<div class="item"><div class="label">' + label + '</div><div class="name">' + name + '</div><p>' + text + '</p></div>';
   }
@@ -1334,6 +1460,7 @@
     if (cur) b += '<div class="prose"><p>你現在走「<b class="serif">' + cur.ganzhi + '</b>」大運（' + cur.startYear + '–' + cur.endYear + '）：天干是<b>' + cur.stemGod + '</b>，' + X.bazi.tenGods[cur.stemGod] +
       '；地支是<b>' + cur.branchGod + '</b>，' + X.bazi.tenGods[cur.branchGod] + '。</p>' +
       '<p>' + flowNow.year + ' 年是「<b class="serif">' + flowNow.ganzhi + '</b>」年：天干' + flowNow.stemGod + '（' + X.bazi.tenGods[flowNow.stemGod] + '），地支' + flowNow.branchGod + '（' + X.bazi.tenGods[flowNow.branchGod] + '）。</p></div>';
+    b += timeline(r.luck.map(function (l) { return { from: l.startYear, to: l.endYear + 1, label: l.ganzhi, sub: l.stemGod + '・' + l.branchGod, color: GOD_COLOR[l.stemGod] || '#A88550' }; }), nowYear);
     b += fold('九步大運', '每十年一步，從起運到 90 多歲', '<p class="note" style="margin-top:0">' + (r.forward ? '順行' : '逆行') + q('順行逆行') + '，出生後 ' + r.luckStart.years + ' 年 ' + r.luckStart.months + ' 個月 ' + r.luckStart.days + ' 天起運' + q('起運') + '（約 ' + r.luckStart.date.y + '.' + pad(r.luckStart.date.m) + '.' + pad(r.luckStart.date.d) + '）。底色是現在這一步。</p>' +
       table(['大運', '虛歲', '年份', '天干（外在）', '地支（內在）'], r.luck.map(function (l) {
         return ['<span class="serif" style="font-size:17px">' + l.ganzhi + '</span>', l.age + ' 歲', l.startYear + '–' + l.endYear,
@@ -1390,7 +1517,7 @@
   // ===== 四、西洋占星 =====
   function westernSection(r, birth) {
     var W = EXPLAIN.western, sun = r.planets[0], moon = r.planets[1];
-    var b = '<div class="howto">' + W.howTo + '</div><div class="trio">' +
+    var b = astroFormula(r.planets.filter(function (p) { return p.id === 'venus'; })[0] || sun, W) + '<div class="trio">' +
       trio(X.western.roles.sun.split('：')[0], sun.sign, X.western.roles.sun.split('：')[1] + '。' + X.western.signs[sun.sign]) +
       trio(X.western.roles.moon.split('：')[0], moon.sign, X.western.roles.moon.split('：')[1] + '。' + X.western.signs[moon.sign]) +
       (r.asc ? trio(X.western.roles.asc.split('：')[0] + q('上升'), r.asc.sign, X.western.roles.asc.split('：')[1] + '。' + X.western.signs[r.asc.sign]) : trio('上升' + q('上升'), '—', '需要出生時間。')) +
@@ -1419,6 +1546,7 @@
     var bySign = {};
     r.planets.slice(0, 10).forEach(function (p) { (bySign[p.sign] = bySign[p.sign] || []).push(p); });
     var stell = Object.keys(bySign).filter(function (k) { return bySign[k].length >= 3; });
+    if (r.asc) b += '<h3>行星落在哪些生活領域' + q('宮位') + '</h3>' + houseGrid(r.planets);
     b += '<h3>每顆行星在說什麼' + q('宮位') + '</h3>';
     stell.forEach(function (k) {
       var ps = bySign[k], h = ps[0].house;
@@ -1431,14 +1559,7 @@
     if (r.asc) b += '<p class="note">上升 ' + r.asc.sign + ' ' + r.asc.deg + '。天頂（MC）' + q('天頂') + r.mc.sign + ' ' + r.mc.deg + '：天頂是你在社會上、事業上想被看見的樣子。宮位採整宮制，從上升星座算第 1 宮。</p>';
 
     var maxE = Math.max.apply(null, Object.values(r.elements));
-    b += '<h3>元素平衡' + q('元素') + '</h3>' + bars(Object.keys(r.elements).map(function (k) {
-      return { label: k + '象', value: r.elements[k], note: X.western.elements[k] + ' ' + r.elements[k] };
-    }), maxE);
-    var ek = Object.keys(r.elements);
-    var many = ek.filter(function (k) { return r.elements[k] === maxE; });
-    var few = ek.filter(function (k) { return r.elements[k] <= 1 && r.elements[k] !== maxE; });
-    b += '<div class="prose" style="margin-top:16px">' + many.map(function (k) { return '<p>' + W.elementMany[k] + '</p>'; }).join('') +
-      few.map(function (k) { return '<p>' + W.elementFew[k] + '</p>'; }).join('') + '</div>';
+    b += '<h3>元素平衡' + q('元素') + '</h3>' + elementCards(r, W, maxE);
     b += '<p class="note">' + W.elementsHow + '</p>';
 
     var short = function (n) { return n === '太陽' ? '核心自我' : n === '月亮' ? '情緒需求' : X.western.planets[n]; };
@@ -1481,6 +1602,8 @@
     var cur = r.dashas.filter(function (d) { return d.current; })[0];
     b += '<h3>大運（Vimshottari Dasha）' + q('Dasha') + '</h3><div class="howto">' + V.dasha + '</div>';
     if (cur) b += '<div class="prose"><p>你現在走 <b class="serif">' + cur.lord + '</b> 大運（' + cur.from + ' – ' + cur.to + '）：' + X.vedic.dasha[cur.lord] + '。這顆星代表' + grahaMeaning(V, cur.lord) + '。</p></div>';
+    var vy = new Date().getFullYear();
+    b += timeline(r.dashas.map(function (d) { var zh = d.lord.split(' ')[1]; var st = PLANET_STYLE[ZH_PLANET[zh]] || ['', '#8A8076']; var f = +d.from.slice(0, 4) + (+d.from.slice(5, 7) - 1) / 12, t = +d.to.slice(0, 4) + (+d.to.slice(5, 7) - 1) / 12; return { from: f, to: t, label: zh, sub: d.from.slice(0, 4) + '–' + d.to.slice(0, 4), color: st[1] }; }), vy);
     b += fold('全部九個大運', '一生的順序', table(['大運主星', '期間', '年數', '主題'], r.dashas.map(function (d) {
       return ['<span class="serif">' + d.lord + '</span>', d.from + ' – ' + d.to, d.years, X.vedic.dasha[d.lord]];
     }), r.dashas.map(function (d) { return d.current; })));
