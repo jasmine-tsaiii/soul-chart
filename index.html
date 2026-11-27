@@ -568,6 +568,21 @@
   .ai-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 12px; font-size: 14px; color: var(--ink-2); }
   .ai-row input { width: 84px; font: inherit; padding: 4px 8px; border: 1px solid var(--line); background: var(--paper); }
   .ai-text { width: 100%; box-sizing: border-box; height: 260px; font: 13px/1.7 ui-monospace, "SF Mono", Menlo, monospace; padding: 14px; border: 1px solid var(--line); background: #FFFDF8; color: var(--ink-2); resize: vertical; }
+  .ai-box { position: relative; }
+  .ai-box.locked .ai-text { height: 150px; overflow: hidden; resize: none; user-select: none; -webkit-user-select: none; pointer-events: none; }
+  .ai-box .ai-veil { display: none; }
+  .ai-box.locked .ai-veil { display: block; position: absolute; left: 1px; right: 1px; bottom: 1px; height: 90px; background: linear-gradient(rgba(255,253,248,0), #FFFDF8 85%); pointer-events: none; }
+  .lead { margin-top: 10px; padding: 16px; border-radius: 12px; border: 1.5px solid var(--gold-soft); background: color-mix(in srgb, var(--gold) 8%, #FFFDF8); }
+  .lead[hidden], .ai-actions[hidden] { display: none; }
+  .ld-h b { display: block; font-family: var(--serif); font-size: 16px; }
+  .ld-h span { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .ld-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .ld-row input { flex: 1 1 200px; min-width: 0; font: inherit; font-size: 15px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: #FFFDF8; }
+  .ld-row input:focus { outline: none; border-color: var(--gold); }
+  .ld-row .btn { flex: none; }
+  .ld-ok { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; font-size: 12px; color: var(--ink-2); line-height: 1.6; cursor: pointer; }
+  .ld-ok input { margin-top: 3px; }
+  .ld-err { font-size: 12.5px; color: var(--red, #A85A4A); min-height: 1em; margin-top: 4px; }
   .ai-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
   .ai-actions .meta { font-size: 12.5px; color: var(--muted); }
   .ai-steps { margin: 16px 0 0; padding-left: 20px; font-size: 13.5px; color: var(--ink-2); line-height: 1.9; }
@@ -1017,7 +1032,7 @@
       <button class="btn line" id="print">列印／存成 PDF</button>
       <span class="changed-hint" id="changedHint">資料改了，按「更新分析」看新結果</span>
     </div>
-    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方（只會在這台裝置暫存 3 天，方便你離開後回來繼續看）。按「準／不準」只會送出投票和那一段的結果名稱；網站另用 Google Analytics 統計瀏覽和點擊，兩者都不含生日。</p>
+    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方（只會在這台裝置暫存 3 天，方便你離開後回來繼續看）。按「準／不準」只會送出投票和那一段的結果名稱；網站另用 Google Analytics 統計瀏覽和點擊，兩者都不含生日。留下的 Email 只用來寄指令和命盤相關電子報（透過 Kit），可以隨時取消。</p>
   </div>
 
   <main id="out"></main>
@@ -1827,6 +1842,8 @@
     },
     // 「準不準」回饋要送去哪裡：貼上 Google Apps Script 部署後的網址（空白＝只記在使用者自己的瀏覽器，不送出）
     feedbackUrl: 'https://script.google.com/macros/s/AKfycbyuV8bRPV4Pw4No6BCrpvH9vftI-7fbFrZ9TGiLJ8wWtJY69rCrM2AXszfEHtcHcAzlFw/exec',
+    // Kit（ConvertKit）表單 ID：免費指令要先留 Email 才能複製。空白＝先不送 Kit，只在本機解鎖
+    kitFormId: '10251516',
     giftAt: 6,
     extra: 250,   // 超過 6 份，之後每多 1 份 NT$250
     allCount: 12, allPrice: 2999,   // 全選 12 份一口價
@@ -2198,6 +2215,31 @@
     track('add_pack', { pack: w });
     addItems(packItems(w), w === 'rec' ? '已加入推薦的 3 份' : w === 'six' ? '已加入主題全套 6 份＋常見問題懶人包' : '已全選 12 份＋常見問題懶人包');
   });
+  // ===== 免費指令：留 Email 才能複製（收名單，送到 Kit）=====
+  function leadOk() { try { return !!localStorage.getItem('chart-lead'); } catch (e) { return false; } }
+  function unlockLead() {
+    var box = $('aiBox'), f = $('leadForm'), a = $('aiActions');
+    if (box) box.classList.remove('locked'); if (f) f.hidden = true; if (a) a.hidden = false;
+  }
+  document.addEventListener('submit', function (e) {
+    if (!e.target || e.target.id !== 'leadForm') return;
+    e.preventDefault();
+    var em = ($('leadEmail').value || '').trim(), err = $('leadErr'), btn = e.target.querySelector('button');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { err.textContent = '請填正確的 Email'; return; }
+    if (!$('leadAgree').checked) { err.textContent = '要勾選同意收信，才能寄指令給你喔'; return; }
+    err.textContent = ''; btn.disabled = true; btn.textContent = '處理中…';
+    var done = function () {
+      try { localStorage.setItem('chart-lead', '1'); } catch (x) {}
+      unlockLead(); btn.disabled = false; btn.textContent = '取得免費指令';
+      track('generate_lead', { method: SHOP.kitFormId ? 'kit' : 'local', minor: !!(LAST && LAST.age < 18) });
+      toast('完成！下面可以複製指令了，也請到信箱收信');
+    };
+    if (!SHOP.kitFormId) { done(); return; }
+    var body = new URLSearchParams(); body.append('email_address', em);
+    if (LAST && LAST.name) body.append('fields[first_name]', LAST.name);
+    fetch('https://app.kit.com/forms/' + SHOP.kitFormId + '/subscriptions', { method: 'POST', headers: { 'Accept': 'application/json' }, body: body })
+      .then(function () { done(); }, function () { done(); });   // 就算 Kit 連不上，也不要擋住使用者
+  });
   function aiPackSection() {
     var H = LAST.hints = chartHints(LAST.nowYear + 1);
     var Y = (LAST ? LAST.nowYear : new Date().getFullYear()) + 1;
@@ -2205,8 +2247,12 @@
     return '<section class="ai-pack no-print" id="aipack"><div class="eyebrow">AI 分析懶人包</div><h2>先免費試試看，AI 怎麼讀你的命盤</h2>' +
       '<p class="lead">下面已經幫你準備好「免費體驗版指令＋你的命盤資料」。按複製，貼到 ChatGPT、Claude 或 Gemini，就能看到 AI 的分析。</p>' +
       '<div class="ai-free"><span class="badge">免費體驗版</span><span>' + (LAST.age < 18 ? '一句話形容你・興趣和天賦・未來方向和科系參考・感情與人際（學生版）' : '一句話形容你・三個特質・兩個盲點・對照過去的轉折點') + '</span></div>' +
-      '<textarea class="ai-text" id="aiText" readonly></textarea>' +
-      '<div class="ai-actions"><button type="button" class="btn" id="aiCopy">複製免費版指令與資料</button><span class="meta" id="aiMeta"></span></div>' +
+      '<div class="ai-box' + (leadOk() ? '' : ' locked') + '" id="aiBox"><textarea class="ai-text" id="aiText" readonly></textarea><div class="ai-veil"></div></div>' +
+      '<form class="lead" id="leadForm"' + (leadOk() ? ' hidden' : '') + ' novalidate><div class="ld-h"><b>留下 Email，免費取得完整指令</b><span>指令會直接顯示在這裡讓你複製，也會寄一份到信箱，之後還有每月流年小提醒</span></div>' +
+        '<div class="ld-row"><input type="email" id="leadEmail" placeholder="你的 Email" autocomplete="email" required><button type="submit" class="btn">取得免費指令</button></div>' +
+        '<label class="ld-ok"><input type="checkbox" id="leadAgree" checked> 我同意收到 Jasmine 寄來的命盤相關 Email，隨時可以取消訂閱</label>' +
+        '<div class="ld-err" id="leadErr"></div></form>' +
+      '<div class="ai-actions"' + (leadOk() ? '' : ' hidden') + ' id="aiActions"><button type="button" class="btn" id="aiCopy">複製免費版指令與資料</button><span class="meta" id="aiMeta"></span></div>' +
       '<ol class="ai-steps"><li>按「複製免費版指令與資料」。</li><li>打開你常用的 AI，開一個新對話，貼上送出。</li><li>看看準不準，覺得有共鳴的話，往下看完整版。</li></ol>' +
 
       '<div class="paid"><div class="eyebrow">覺得準嗎？</div><h3 class="paid-title">完整版懶人包</h3>' +
