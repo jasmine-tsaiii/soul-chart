@@ -450,6 +450,14 @@
   .tr-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--pc) 45%, var(--line)); box-sizing: border-box; }
   .tr-dots i.on { background: var(--pc); border-color: var(--pc); }
   .tr-head { flex-wrap: wrap; }
+  .fc-ic.has-ico { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; }
+  .best:not(.ready) { display: none !important; }
+  .hub-t { position: relative; }
+  .hub-t.seen::after { content: "✓"; position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #6C8F74; color: #fff; font-size: 11px; line-height: 18px; text-align: center; }
+  .hub-t.seen i { opacity: .85; }
+  .sn-track a.seen::after { content: "✓"; margin-left: 4px; font-size: 11px; color: #6C8F74; }
+  .sn-track a.on.seen::after { color: inherit; }
+  .pn-dots i.seen { background: #A9C2AB; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -774,14 +782,27 @@
   .sc-btns .btn { background: #E6C384; border-color: #E6C384; color: #1F2353; font-weight: 600; }
   .sc-btns .btn.line { background: transparent; color: #F3E6C8; border-color: rgba(243,230,200,.6); }
   @media (max-width: 640px) { .sc-wrap { grid-template-columns: 1fr; } .sc-preview { max-width: 260px; margin: 0 auto; } }
-  .focus { margin: 4px 0 26px; padding: 16px 20px 6px; background: #FBF8F2; border: 1px solid var(--gold-soft); border-radius: 4px; }
-  .fc-k { font-size: 12.5px; letter-spacing: .14em; color: #8A6A3A; font-weight: 600; margin-bottom: 8px; }
-  .fc-row { padding: 10px 0; border-top: 1px dashed var(--line); }
-  .fc-row:first-of-type { border-top: none; padding-top: 2px; }
-  .fc-row b { font-family: var(--serif); font-size: 16px; color: var(--ink); }
-  .fc-row p { margin: 4px 0 0; font-size: 15px; line-height: 1.85; color: var(--ink-2); }
-  .fc-row small { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
-  .fc-not b { color: #5D7FA6; }
+  .focus { margin: 4px 0 26px; }
+  .fc-k { font-size: 12px; letter-spacing: .16em; color: var(--sc, #8A6A3A); font-weight: 600; margin-bottom: 10px; }
+  .fc-hero { display: flex; gap: 14px; align-items: flex-start; padding: 18px; border-radius: 14px; background: linear-gradient(135deg, color-mix(in srgb, var(--sc, #A88550) 14%, #FFFDF8), #FFFDF8 70%); border: 1px solid color-mix(in srgb, var(--sc, #A88550) 30%, var(--line)); }
+  .fc-ic { flex: none; width: 46px; height: 46px; border-radius: 50%; background: var(--sc, #A88550); box-shadow: 0 4px 12px color-mix(in srgb, var(--sc, #A88550) 35%, transparent); position: relative; }
+  .fc-ic::after { content: attr(data-ic); }
+  .fc-hero b { display: block; font-family: var(--serif); font-size: 19px; line-height: 1.4; color: var(--ink); }
+  .fc-hero p { margin: 6px 0 0; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
+  .fc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 10px; }
+  .fc-card { position: relative; padding: 14px 14px 12px; border-radius: 12px; background: #FFFDF8; border: 1px solid var(--line); border-top: 3px solid color-mix(in srgb, var(--sc, #A88550) 70%, #fff); }
+  .fc-n { position: absolute; top: 10px; right: 12px; font-family: var(--serif); font-size: 13px; color: color-mix(in srgb, var(--sc, #A88550) 60%, var(--muted)); }
+  .fc-card b { display: block; font-family: var(--serif); font-size: 15.5px; padding-right: 18px; color: var(--ink); }
+  .fc-card p { margin: 5px 0 0; font-size: 14px; line-height: 1.75; color: var(--ink-2); }
+  .fc-not { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; padding: 12px 14px; border-radius: 12px; background: #F2F1EE; }
+  .fc-x { flex: none; width: 22px; height: 22px; border-radius: 50%; background: #B8B0A4; color: #fff; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .fc-not b { display: block; font-size: 13px; color: #6F6A62; letter-spacing: .06em; }
+  .fc-not p { margin: 3px 0 0; font-size: 13.5px; line-height: 1.7; color: #6F6A62; }
+  .fc-ev { margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .fc-ev summary { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; list-style: none; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); }
+  .fc-ev summary::-webkit-details-marker { display: none; }
+  .fc-ev summary::before { content: "ⓘ"; font-size: 11px; }
+  .fc-ev span { display: block; margin-top: 5px; line-height: 1.6; }
   .traits { display: grid; gap: 14px; margin: 4px 0 18px; }
   .trait { background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--gold); padding: 12px 16px 10px; }
   .tr-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
@@ -1147,7 +1168,25 @@
     .observe(document.documentElement, { childList: true, subtree: true });
   document.addEventListener('DOMContentLoaded', function () { iconize(document.body); });
   // ===== 九宮格＋分頁：一次只看一個區塊，知道自己在哪裡 =====
-  var TAB = { on: false, pane: 'summary', order: [] };
+  var TAB = { on: false, pane: 'summary', order: [], seen: {} };
+  // 看過的系統打勾（記在這台裝置，跟著命盤走）
+  function seenKey() { var rid = fbChartKey(); return rid ? 'chart-seen|' + rid : ''; }
+  function loadSeen() { try { TAB.seen = JSON.parse(localStorage.getItem(seenKey()) || '{}') || {}; } catch (e) { TAB.seen = {}; } }
+  function markSeen(id) {
+    if (!SYSTEMS.some(function (x) { return x.id === id; }) || TAB.seen[id]) return;
+    TAB.seen[id] = 1; try { localStorage.setItem(seenKey(), JSON.stringify(TAB.seen)); } catch (e) {}
+  }
+  function updateSeen() {
+    var sysIds = TAB.order.filter(function (id) { return SYSTEMS.some(function (x) { return x.id === id; }); });
+    var n = sysIds.filter(function (id) { return TAB.seen[id]; }).length;
+    document.querySelectorAll('.hub-t[data-go], .secnav a[data-sec]').forEach(function (el) {
+      var id = el.getAttribute('data-go') || el.getAttribute('data-sec'); el.classList.toggle('seen', !!TAB.seen[id]);
+    });
+    var c = $('hubCount'); if (c) c.textContent = n ? '已看 ' + n + '／' + sysIds.length + ' 個系統' : '點一格，進去看那個系統怎麼說你';
+    var need = Math.min(3, sysIds.length);   // 至少看過 3 個系統，才問「哪一個最懂你」
+    document.querySelectorAll('.best').forEach(function (b) { b.classList.toggle('ready', n >= need); });
+    document.querySelectorAll('.pn-dots i[data-d]').forEach(function (d) { d.classList.toggle('seen', !!TAB.seen[d.getAttribute('data-d')]); });
+  }
   var HUB_ORDER = ['numerology', 'bazi', 'ziwei', 'summary', '*', 'western', 'vedic', 'hd', 'aipack'];
   var PANE_LABEL = { hub: '九宮格', summary: '綜合', aipack: 'AI 懶人包' };
   function paneLabel(id) { var s = SYSTEMS.filter(function (x) { return x.id === id; })[0]; return PANE_LABEL[id] || (s ? s.key : id); }
@@ -1166,7 +1205,7 @@
       return '<button type="button" class="hub-t' + (el ? '' : ' off') + (id === 'aipack' ? ' hub-ai' : '') + '" data-go="' + id + '"' + (id === 'summary' ? ' data-scroll="summary"' : '') + (el ? '' : ' disabled') + ' style="--pc:' + st[1] + '">' +
         '<i>' + st[0] + '︎</i><b>' + name + '</b><span>' + esc(sub) + '</span></button>';
     }).join('');
-    return '<section class="hub" id="hub" data-pane="summary"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p>點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
+    return '<section class="hub" id="hub" data-pane="summary"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p id="hubCount">點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
   }
   // 分析完把輸入表單收起來，只留一行摘要＋「修改資料」
   function collapseInput(on) {
@@ -1192,7 +1231,7 @@
   }
   function paneNav(id) {
     var i = TAB.order.indexOf(id), nx = TAB.order[i + 1] || 'hub', pv = TAB.order[i - 1], m = paneMeta(nx);
-    var dots = TAB.order.map(function (o) { return '<i class="' + (o === id ? 'on' : '') + '"></i>'; }).join('');
+    var dots = TAB.order.map(function (o) { return '<i data-d="' + o + '" class="' + (o === id ? 'on' : '') + '"></i>'; }).join('');
     return '<div class="pane-nav no-print" data-pane="' + id + '">' +
       '<button type="button" class="pn-card' + (nx === 'aipack' ? ' pn-gold' : '') + '" data-go="' + nx + '" style="--pc:' + m.color + '">' +
         '<span class="pn-k">' + (nx === 'hub' ? '看完了' : '下一個') + '</span>' +
@@ -1243,7 +1282,13 @@
     track('best_system', { system: v });
     if (SHOP.feedbackUrl) try { fetch(SHOP.feedbackUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ cid: fbDevice(), rid: rid, sec: 'best', label: v, vote: 2, page: 'chart' }), keepalive: true }); } catch (err) {}
   });
+  function heroIcons() {
+    document.querySelectorAll('#out section.system[data-ic] .fc-ic').forEach(function (el) {
+      var k = el.closest('section').getAttribute('data-ic'); if (ICON_SVG[k]) { el.innerHTML = ICON_SVG[k]; el.classList.add('has-ico'); }
+    });
+  }
   function setupTabs() {
+    heroIcons();
     var out = $('out'); if (!out || !out.querySelector('.cover')) return;
     TAB.order = ['summary'].concat(SYSTEMS.map(function (x) { return x.id; })).concat(['aipack']).filter(function (id) { return document.getElementById(id); });
     if (TAB.order.length < 2) { TAB.on = false; return; }
@@ -1272,6 +1317,7 @@
     });
     out.classList.add('tabbed');
     TAB.on = true;
+    loadSeen();
     buildSecNav();
     showPane('summary', { replace: true, noScroll: true });
   }
@@ -1286,6 +1332,7 @@
       el.classList.toggle('pane-on', p === id || (p === 'content' && id !== 'aipack'));
     });
     if (!opt.fromPop) { try { history[opt.replace ? 'replaceState' : 'pushState']({ pane: id }, '', location.pathname + location.search + (id === 'summary' ? '' : '#' + id)); } catch (e) {} }
+    markSeen(id); updateSeen();
     spySections();
     if (!opt.noScroll) {   // 捲到新分頁的開頭（分頁列是 sticky，不能用它的位置算）
       var first = opt.scrollEl || Array.prototype.filter.call(out.querySelectorAll('#out > .pane-on'), function (el) { return !el.classList.contains('viewmode'); })[0];
@@ -1319,7 +1366,8 @@
   }, true);
   function sys(no, id, title, lead, body) {
     no = chapterNo++;
-    return '<section class="system" id="' + id + '"><div class="sys-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
+    var sd = SYSTEMS.filter(function (x) { return x.id === id; })[0], sst = sd ? SYS_STYLE[sd.key] : null;
+    return '<section class="system" id="' + id + '"' + (sst ? ' style="--sc:' + sst[1] + '" data-ic="' + sst[0] + '"' : '') + '><div class="sys-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
       '<p class="lead">' + lead + '</p></div>' + body + '<button type="button" class="sv-more no-print">看這一章的完整內容 ▾</button>' + fbBar(id, '這一章準嗎？') + deepLink(id) + '</section>';
   }
   function table(head, rows, nowFlags) {
@@ -2530,9 +2578,14 @@
     rows = rows.filter(function (r) { return r && r.text; });
     nots = (nots || []).filter(Boolean);
     if (!rows.length && !nots.length) return '';
-    return '<div class="focus"><div class="fc-k">這個系統最能看出你的地方</div>' + rows.map(function (r) {
-      return '<div class="fc-row"><b>' + r.title + '</b><p>' + r.text + '</p>' + (r.ev ? '<small>依據：' + r.ev + '</small>' : '') + '</div>';
-    }).join('') + (nots.length ? '<div class="fc-row fc-not"><b>你比較不是</b>' + nots.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div>' : '') + '</div>';
+    var ev = function (r) { return r.ev ? '<details class="fc-ev"><summary>依據</summary><span>' + r.ev + '</span></details>' : ''; };
+    var hero = rows[0], rest = rows.slice(1);
+    return '<div class="focus"><div class="fc-k">這個系統最能看出你的地方</div>' +
+      (hero ? '<div class="fc-hero"><span class="fc-ic"></span><div><b>' + hero.title + '</b><p>' + hero.text + '</p>' + ev(hero) + '</div></div>' : '') +
+      (rest.length ? '<div class="fc-grid">' + rest.map(function (r, i) {
+        return '<div class="fc-card"><span class="fc-n">' + (i + 2) + '</span><b>' + r.title + '</b><p>' + r.text + '</p>' + ev(r) + '</div>';
+      }).join('') + '</div>' : '') +
+      (nots.length ? '<div class="fc-not"><span class="fc-x">✕</span><div><b>你比較不是</b>' + nots.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div></div>' : '') + '</div>';
   }
   var EL4 = ['火', '土', '風', '水'];
   // ===== 圖像化小工具 =====
