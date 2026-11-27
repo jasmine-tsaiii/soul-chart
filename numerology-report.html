@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>生命靈數 × 脈輪報告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F7F3EC; --paper-2: #EFE8DC; --ink: #2B2622; --ink-2: #4A433D;
+    --muted: #8A8076; --line: #DED4C4; --gold: #A88550; --gold-soft: #CDB78F;
+    --serif: "Noto Serif TC", "Songti TC", "STSong", serif;
+    --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.9; letter-spacing: .02em;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 80px; }
+  @media (max-width: 560px) { .wrap { padding: 24px 18px 64px; } }
+
+  /* 輸入區 */
+  .controls {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px 20px;
+    padding-bottom: 24px; border-bottom: 1px solid var(--line); margin-bottom: 8px;
+  }
+  .controls label { display: block; font-size: 12px; letter-spacing: .12em; color: var(--muted); margin-bottom: 4px; }
+  .controls input {
+    width: 100%; font: inherit; font-size: 15px; padding: 8px 0; border: none;
+    border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 0;
+  }
+  .controls input:focus { outline: none; border-bottom-color: var(--gold); }
+  .btns { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 0; }
+  .btn {
+    font: inherit; font-size: 14px; letter-spacing: .1em; padding: 9px 20px; cursor: pointer;
+    background: var(--ink); color: var(--paper); border: 1px solid var(--ink); border-radius: 2px;
+  }
+  .btn.line { background: transparent; color: var(--ink); }
+  .hint { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+
+  /* 封面 */
+  .cover { text-align: center; padding: 64px 0 56px; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-size: 12px; letter-spacing: .32em; color: var(--gold); }
+  .cover .who { font-family: var(--serif); font-size: 18px; color: var(--ink-2); margin: 18px 0 6px; }
+  .cover .type { font-family: var(--serif); font-weight: 700; font-size: 52px; line-height: 1.25; margin: 0; letter-spacing: .08em; }
+  .cover .quote { font-family: var(--serif); font-size: 19px; color: var(--ink-2); margin: 18px auto 0; max-width: 26em; }
+  .rarity { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 28px; font-size: 14px; color: var(--gold); letter-spacing: .08em; }
+  .rarity::before, .rarity::after { content: ""; width: 40px; height: 1px; background: var(--gold-soft); }
+  .cover .date { font-size: 13px; color: var(--muted); margin-top: 24px; letter-spacing: .1em; }
+  @media (max-width: 560px) { .cover .type { font-size: 40px; } .cover { padding: 48px 0 40px; } }
+
+  /* 章節 */
+  section.chapter { padding: 52px 0 8px; }
+  .chapter-head { margin-bottom: 22px; }
+  .chapter-head .no { font-family: var(--serif); font-size: 13px; letter-spacing: .24em; color: var(--gold); }
+  .chapter-head h2 { font-family: var(--serif); font-weight: 600; font-size: 26px; line-height: 1.4; margin: 4px 0 0; letter-spacing: .06em; }
+  .lead { font-size: 15px; color: var(--muted); margin: 6px 0 0; }
+  p { margin: 0 0 14px; }
+  .prose { max-width: 34em; }
+  .keywords { font-size: 13px; letter-spacing: .14em; color: var(--muted); margin-bottom: 14px; }
+  .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 2px; }
+
+  /* 能量圖 */
+  .bars { display: grid; gap: 14px; max-width: 560px; }
+  .bar-row { display: grid; grid-template-columns: 96px 1fr 96px; gap: 14px; align-items: center; }
+  .bar-name { font-family: var(--serif); font-size: 15px; }
+  .bar-track { height: 4px; background: var(--paper-2); position: relative; }
+  .bar-fill { position: absolute; left: 0; top: 0; bottom: 0; }
+  .bar-note { font-size: 12px; color: var(--muted); text-align: right; letter-spacing: .04em; }
+  .chakra-col { position: relative; display: grid; gap: 16px; max-width: 600px; padding: 6px 0; }
+  .chakra-col::before { content: ''; position: absolute; left: 15px; top: 18px; bottom: 18px; width: 2px; background: var(--line); }
+  .ck-row { position: relative; display: grid; grid-template-columns: 32px 100px 1fr 108px; gap: 12px; align-items: center; }
+  .ck-orb { justify-self: center; border-radius: 50%; background: var(--c); border: 2px solid var(--c); box-shadow: 0 0 var(--g) var(--c); }
+  .ck-orb.off { background: var(--paper); border-style: dashed; box-shadow: none; opacity: .75; }
+  .ck-name { font-family: var(--serif); font-size: 15px; line-height: 1.3; }
+  .ck-name small { display: block; font-family: inherit; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+  .ck-track { height: 10px; border-radius: 5px; background: var(--paper-2); overflow: hidden; }
+  .ck-fill { height: 100%; border-radius: 5px; }
+  .ck-note { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+  @media (max-width: 560px) { .ck-row { grid-template-columns: 28px 84px 1fr 80px; gap: 8px; } .ck-note { font-size: 11px; } }
+  .footnote { font-size: 12px; color: var(--muted); margin-top: 18px; }
+  @media (max-width: 560px) { .bar-row { grid-template-columns: 80px 1fr 84px; gap: 10px; } }
+
+  /* 三個重點 */
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .trio .item { border-top: 2px solid var(--line); padding-top: 16px; }
+  .trio .label { font-size: 12px; letter-spacing: .2em; color: var(--muted); }
+  .trio .name { font-family: var(--serif); font-size: 22px; font-weight: 600; margin: 4px 0 10px; }
+  .trio p { font-size: 15px; color: var(--ink-2); }
+  @media (max-width: 640px) { .trio { grid-template-columns: 1fr; gap: 22px; } }
+
+  /* 生活各面向 */
+  .aspects { border-top: 1px solid var(--line); }
+  .aspect { display: grid; grid-template-columns: 56px 1fr; gap: 8px; padding: 30px 0; border-bottom: 1px solid var(--line); }
+  .aspect .idx { font-family: var(--serif); font-size: 15px; color: var(--gold); padding-top: 4px; letter-spacing: .1em; }
+  .aspect h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; margin: 0 0 18px; letter-spacing: .06em; }
+  .aspect .entry { margin: 0 0 18px; max-width: 32em; }
+  .aspect .entry:last-child { margin-bottom: 0; }
+  .aspect .entry .k { display: block; font-size: 12px; letter-spacing: .2em; color: var(--muted); margin-bottom: 4px; }
+  .aspect .entry .k .swatch { width: 6px; height: 6px; margin-right: 6px; vertical-align: 1px; }
+  .aspect .entry p { margin: 0; color: var(--ink-2); }
+  @media (max-width: 560px) { .aspect { grid-template-columns: 1fr; gap: 4px; padding: 26px 0; } }
+
+  /* 流年 */
+  .years { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .year { border-top: 2px solid var(--line); padding-top: 16px; }
+  .year .y { font-size: 12px; letter-spacing: .2em; color: var(--muted); }
+  .year .n { font-family: var(--serif); font-size: 44px; font-weight: 600; line-height: 1.2; margin: 6px 0 2px; }
+  .year .n small { font-size: 20px; margin-left: 10px; letter-spacing: .1em; }
+  .year .c { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .year p { font-size: 15px; color: var(--ink-2); }
+  @media (max-width: 560px) { .years { grid-template-columns: 1fr; gap: 22px; } }
+
+  /* 練習 */
+  .practice { border-left: 2px solid var(--gold); padding: 4px 0 4px 20px; font-family: var(--serif); font-size: 18px; line-height: 1.9; max-width: 30em; }
+
+  .disclaimer { font-size: 12px; color: var(--muted); text-align: center; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); line-height: 1.8; }
+  .debug { font-size: 11px; color: var(--muted); margin-top: 12px; text-align: center; }
+
+  /* 分享 */
+  .share { margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 240px 1fr; gap: 28px; align-items: start; }
+  .share canvas { width: 240px; height: auto; box-shadow: 0 10px 30px rgba(43,38,34,.12); }
+  .share h2 { font-family: var(--serif); font-weight: 600; font-size: 22px; margin: 0 0 8px; }
+  .share .btns { flex-direction: column; align-items: flex-start; }
+  @media (max-width: 560px) { .share { grid-template-columns: 1fr; justify-items: center; text-align: center; } .share .btns { align-items: center; } }
+
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    section.chapter, .aspect { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="no-print">
+    <div class="controls">
+      <div><label for="name">稱呼（選填）</label><input id="name" placeholder="例如：Jasmine"></div>
+      <div><label for="birth">生日</label><input id="birth" type="date" value="1997-05-03"></div>
+      <div><label for="year">流年年份</label><input id="year" type="number" min="1900" max="2100"></div>
+    </div>
+    <div class="btns">
+      <button class="btn" id="go">產生報告</button>
+      <button class="btn line" id="print">列印／存成 PDF</button>
+    </div>
+    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方。</p>
+  </div>
+
+  <main id="report"></main>
+
+  <div class="share no-print" id="sharePanel" hidden>
+    <canvas id="card" width="1080" height="1920"></canvas>
+    <div>
+      <h2>分享你的能量卡</h2>
+      <p class="hint" style="margin:0 0 6px">IG 限時動態尺寸（1080×1920），下載後可以直接上傳。</p>
+      <div class="btns">
+        <button class="btn" id="download">下載分享圖</button>
+        <button class="btn line" id="copy">複製分享文字</button>
+      </div>
+      <p id="copyMsg" class="hint"></p>
+    </div>
+  </div>
+</div>
+
+<script src="engine.js"></script>
+<script src="texts.js"></script>
+<script>
+(function () {
+  var E = NumerologyEngine, T = TEXTS;
+  var $ = function (id) { return document.getElementById(id); };
+  var SERIF = '"Noto Serif TC","Songti TC","STSong",serif';
+  var SANS = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif';
+  var NUMS = ['一', '二', '三', '四', '五', '六', '七', '八'];
+  var last = null;
+  $('year').value = new Date().getFullYear();
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+  function chakraName(id) { return T.chakras[id].name; }
+  function color(id) { return T.chakras[id].color; }
+  function pct(x) { return Math.round(x * 100) + '%'; }
+  function chakraColumn(chakras, max, colorOf, noteOf) {
+    return '<div class="chakra-col">' + chakras.slice().reverse().map(function (c) {
+      var col = colorOf(c.id), w = c.count ? Math.round(c.count / max * 100) : 0, size = c.count ? Math.min(30, 18 + c.count * 4) : 18;
+      return '<div class="ck-row"><span class="ck-orb' + (c.count ? '' : ' off') + '" style="--c:' + col + ';--g:' + (c.count ? 4 + c.count * 5 : 0) + 'px;width:' + size + 'px;height:' + size + 'px"></span>' +
+        '<div class="ck-name">' + c.name + '<small>' + (c.count ? '出現 ' + c.count + ' 次' : '還沒出現') + '</small></div>' +
+        '<div class="ck-track"><div class="ck-fill" style="width:' + w + '%;background:' + col + '"></div></div>' +
+        '<div class="ck-note">' + noteOf(c) + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function rarityText(x) { return (x * 100).toFixed(1) + '%'; }
+  function sw(id) { return '<span class="swatch" style="background:' + color(id) + '"></span>'; }
+  function strength(id, aspect) {
+    if (aspect === 'work' || aspect === 'people' || aspect === 'love') return T.chakras[id].scenes[aspect];
+    return T.aspects[id][aspect];
+  }
+  function chapter(no, title, lead, body) {
+    return '<section class="chapter"><div class="chapter-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
+      (lead ? '<p class="lead">' + lead + '</p>' : '') + '</div>' + body + '</section>';
+  }
+
+  function render() {
+    var parts = ($('birth').value || '').split('-').map(Number);
+    if (parts.length !== 3 || !parts[0]) { $('report').innerHTML = ''; $('sharePanel').hidden = true; return; }
+    var y = parts[0], m = parts[1], d = parts[2];
+    var r = E.calculate(y, m, d, { method: 'A', year: Number($('year').value) });
+    var name = $('name').value.trim();
+    last = { r: r, name: name };
+
+    var type = T.types[r.energyType];
+    var giftId = r.lifePathChakras[0];
+    var brightest = T.chakras[r.brightest];
+    var potential = r.potential ? T.chakras[r.potential] : null;
+    var maxCount = Math.max.apply(null, r.chakras.map(function (c) { return c.count; }).concat([1]));
+    var html = '';
+
+    // 封面
+    html += '<header class="cover">' +
+      '<div class="eyebrow">生命靈數 × 脈輪能量報告</div>' +
+      '<div class="who">' + (name ? esc(name) + ' 的能量類型' : '你的能量類型') + '</div>' +
+      '<h1 class="type">' + type.name + '</h1>' +
+      '<p class="quote">「' + (T.quotes[r.energyType] || type.line) + '」</p>' +
+      (r.healer ? '<div class="rarity">' + T.healerTag.name + '</div>' : '') +
+      '<div class="rarity">同類型、同天賦脈輪的人，只有 ' + rarityText(r.comboRate) + '</div>' +
+      '<div class="date">' + y + '.' + String(m).padStart(2, '0') + '.' + String(d).padStart(2, '0') + '　・　' + r.input.reportYear + ' 年版</div>' +
+      '</header>';
+
+    // 一、能量類型
+    html += chapter(0, type.name, type.line,
+      '<div class="prose"><p>' + type.desc + '</p>' + (r.healer ? '<p>' + T.healerTag.desc + '</p>' : '') + '</div>');
+
+    // 二、天賦脈輪
+    html += chapter(1, '天賦脈輪　' + r.lifePathChakras.map(chakraName).join('＋'), '生命靈數 ' + r.lifePath,
+      '<div class="prose"><div class="keywords">' + r.lifePathChakras.map(function (id) { return sw(id) + T.chakras[id].keywords; }).join('　') + '</div>' +
+      '<p>' + T.lifePath[r.lifePath] + '</p>' +
+      r.lifePathChakras.map(function (id) { return '<p>' + T.chakras[id].gift + '</p>'; }).join('') +
+      (r.giftIsLesson ? '<p>' + T.giftLesson + '</p>' : '') + '</div>');
+
+    // 三、七脈輪能量圖
+    var bars = chakraColumn(r.chakras, maxCount, color, function (c) { return c.count === 0 ? '潛在能量' : '比 ' + pct(c.brighterThan) + ' 的人亮'; });
+    bars += '<p class="footnote">比較對象：1965–2010 年每一天出生的人。</p>';
+    html += chapter(2, '七脈輪能量圖', '', bars);
+
+    // 四、三個重點
+    function trioItem(label, id, text) {
+      return '<div class="item" style="border-top-color:' + color(id) + '"><div class="label">' + label + '</div>' +
+        '<div class="name">' + chakraName(id) + '</div><p>' + text + '</p></div>';
+    }
+    html += chapter(3, '你的三個重點', '',
+      '<div class="trio">' + trioItem('最亮', r.brightest, brightest.bright) +
+      trioItem('天賦', giftId, T.lifePath[r.lifePath]) +
+      (potential ? trioItem('潛在', r.potential, potential.potential) : '') + '</div>');
+
+    // 五、生活各面向
+    var asp = '<div class="aspects">';
+    T.aspectList.forEach(function (a, i) {
+      asp += '<div class="aspect"><div class="idx">0' + (i + 1) + '</div><div><h3>' + a.name + '</h3>';
+      asp += entry('你的優勢', r.brightest, strength(r.brightest, a.id));
+      if (giftId !== r.brightest) asp += entry('天賦加成', giftId, strength(giftId, a.id));
+      if (r.potential) asp += entry('可以練習', r.potential, T.aspects[r.potential].growth[a.id]);
+      asp += '</div></div>';
+    });
+    asp += '</div>';
+    html += chapter(4, '生活各面向',
+      '從最亮的' + brightest.name + '、天賦的' + chakraName(giftId) + (potential ? '、潛在的' + potential.name : '') + '來看', asp);
+
+    // 六、流年
+    html += chapter(5, '流年脈輪', '',
+      '<div class="years">' + yearCard(r.personalYear) + yearCard(r.personalYearNext) + '</div>');
+
+    // 七、小練習
+    var practiceId = r.potential || r.brightest;
+    html += chapter(6, '給你的小練習', '從你的' + (r.potential ? '潛在脈輪' : '最亮脈輪') + '「' + chakraName(practiceId) + '」開始',
+      '<div class="practice">' + T.chakras[practiceId].practice + '</div>');
+
+    html += '<p class="disclaimer">' + T.disclaimer + '</p>';
+    html += '<p class="debug no-print">計算細節（不會印出）：使用數字 ' + r.numbersUsed.join('、') +
+      '；上三輪平均 ' + r.upperAvg.toFixed(2) + '、下三輪平均 ' + r.lowerAvg.toFixed(2) + '</p>';
+
+    $('report').innerHTML = html;
+    $('sharePanel').hidden = false;
+    $('copyMsg').textContent = '';
+    drawWhenFontsReady(r, name);
+  }
+
+  function entry(label, id, text) {
+    return '<div class="entry"><span class="k">' + sw(id) + label + '・' + chakraName(id) + '</span><p>' + text + '</p></div>';
+  }
+
+  function yearCard(py) {
+    var t = T.personalYear[py.number];
+    return '<div class="year"><div class="y">' + py.year + ' 年</div>' +
+      '<div class="n">' + py.number + '<small>' + t.theme + '</small></div>' +
+      '<div class="c">' + py.chakras.map(chakraName).join('＋') + '</div><p>' + t.line + '</p></div>';
+  }
+
+  // ===== 分享卡（1080×1920）=====
+  var NO_LINE_START = '，。、！？；：」』）…';
+  function wrapText(ctx, text, maxWidth) {
+    var lines = [], line = '';
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i], test = line + ch;
+      if (ctx.measureText(test).width > maxWidth && line && NO_LINE_START.indexOf(ch) === -1) { lines.push(line); line = ch; }
+      else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  function spaced(ctx, text, x, y, spacing) {
+    // 字距：逐字畫，置中
+    var w = 0, i;
+    for (i = 0; i < text.length; i++) w += ctx.measureText(text[i]).width + (i < text.length - 1 ? spacing : 0);
+    var cx = x - w / 2, align = ctx.textAlign;
+    ctx.textAlign = 'left';
+    for (i = 0; i < text.length; i++) { ctx.fillText(text[i], cx, y); cx += ctx.measureText(text[i]).width + spacing; }
+    ctx.textAlign = align;
+  }
+  function line(ctx, x1, y1, x2, y2, col, w) {
+    ctx.strokeStyle = col; ctx.lineWidth = w || 2; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  }
+
+  function drawWhenFontsReady(r, name) {
+    if (!document.fonts || !document.fonts.load) { drawCard(r, name); return; }
+    Promise.all([
+      document.fonts.load('700 120px "Noto Serif TC"'),
+      document.fonts.load('500 40px "Noto Serif TC"'),
+      document.fonts.load('400 36px "Noto Sans TC"')
+    ]).then(function () { drawCard(r, name); }, function () { drawCard(r, name); });
+  }
+
+  function drawCard(r, name) {
+    var c = $('card'), ctx = c.getContext('2d'), W = 1080, H = 1920;
+    var type = T.types[r.energyType];
+    var ink = '#2B2622', ink2 = '#4A433D', muted = '#8A8076', gold = '#A88550', goldSoft = '#CDB78F', lineC = '#DED4C4';
+
+    ctx.fillStyle = '#F7F3EC'; ctx.fillRect(0, 0, W, H);
+    var glow = ctx.createRadialGradient(W / 2, 520, 0, W / 2, 520, 700);
+    glow.addColorStop(0, 'rgba(205,183,143,0.22)'); glow.addColorStop(1, 'rgba(205,183,143,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+    // 細框
+    ctx.strokeStyle = goldSoft; ctx.lineWidth = 2; ctx.strokeRect(60, 60, W - 120, H - 120);
+    ctx.strokeStyle = 'rgba(205,183,143,0.45)'; ctx.lineWidth = 1; ctx.strokeRect(76, 76, W - 152, H - 152);
+
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+
+    ctx.fillStyle = gold; ctx.font = '500 32px ' + SANS;
+    spaced(ctx, '生命靈數 × 脈輪能量', W / 2, 200, 10);
+
+    ctx.fillStyle = ink2; ctx.font = '500 44px ' + SERIF;
+    ctx.fillText((name ? name + ' 的' : '我的') + '能量類型', W / 2, 320);
+
+    ctx.fillStyle = ink; ctx.font = '700 132px ' + SERIF;
+    spaced(ctx, type.name, W / 2, 475, 14);
+
+    ctx.fillStyle = ink2; ctx.font = '500 46px ' + SERIF;
+    var qy = 585, qLines = wrapText(ctx, '「' + (T.quotes[r.energyType] || type.line) + '」', 820);
+    qLines.forEach(function (l, i) { ctx.fillText(l, W / 2, qy + i * 68); });
+    qy += (qLines.length - 1) * 68;
+
+    // 稀有度
+    var ry = qy + 90;
+    ctx.fillStyle = gold; ctx.font = '500 36px ' + SANS;
+    var rt = '同類型、同天賦的人只有 ' + rarityText(r.comboRate);
+    var rw = ctx.measureText(rt).width;
+    ctx.fillText(rt, W / 2, ry);
+    line(ctx, W / 2 - rw / 2 - 90, ry - 12, W / 2 - rw / 2 - 30, ry - 12, goldSoft, 2);
+    line(ctx, W / 2 + rw / 2 + 30, ry - 12, W / 2 + rw / 2 + 90, ry - 12, goldSoft, 2);
+
+    // 能量圖
+    var maxCount = Math.max.apply(null, r.chakras.map(function (x) { return x.count; }).concat([1]));
+    var by = ry + 120, rowH = 70, nameX = 190, trackX = 440, trackW = 440;
+    r.chakras.slice().reverse().forEach(function (ch, i) {
+      var yy = by + i * rowH;
+      ctx.textAlign = 'left'; ctx.fillStyle = ink; ctx.font = '500 38px ' + SERIF;
+      ctx.fillText(ch.name, nameX, yy + 13);
+      ctx.fillStyle = '#EAE2D4'; ctx.fillRect(trackX, yy - 3, trackW, 6);
+      if (ch.count > 0) { ctx.fillStyle = T.chakras[ch.id].color; ctx.fillRect(trackX, yy - 3, trackW * ch.count / maxCount, 6); }
+      else { ctx.fillStyle = muted; ctx.font = '400 26px ' + SANS; ctx.fillText('潛在', trackX + trackW + 20, yy + 9); }
+    });
+    ctx.textAlign = 'center';
+
+    // 三個重點
+    var cy = by + rowH * 6 + 70;
+    line(ctx, 140, cy, W - 140, cy, lineC, 2);
+    var cols = [['天賦', r.lifePathChakras[0]], ['最亮', r.brightest], ['潛在', r.potential || r.brightest]];
+    var colW = (W - 280) / 3;
+    cols.forEach(function (cd, i) {
+      var cx = 140 + colW * i + colW / 2;
+      if (i > 0) line(ctx, 140 + colW * i, cy + 36, 140 + colW * i, cy + 150, lineC, 2);
+      ctx.fillStyle = muted; ctx.font = '400 30px ' + SANS; spaced(ctx, cd[0], cx, cy + 72, 8);
+      ctx.fillStyle = T.chakras[cd[1]].color; ctx.font = '600 44px ' + SERIF; ctx.fillText(T.chakras[cd[1]].name, cx, cy + 134);
+    });
+    line(ctx, 140, cy + 186, W - 140, cy + 186, lineC, 2);
+
+    // 流年
+    var py = r.personalYear, pt = T.personalYear[py.number];
+    ctx.fillStyle = ink2; ctx.font = '500 40px ' + SERIF;
+    ctx.fillText(py.year + ' 流年　' + py.number + '・' + pt.theme, W / 2, cy + 272);
+
+    // 底部
+    ctx.fillStyle = muted; ctx.font = '400 32px ' + SANS;
+    spaced(ctx, T.shareFooter.invite, W / 2, H - 232, 6);
+    ctx.fillStyle = gold; ctx.font = '500 34px ' + SANS;
+    ctx.fillText(T.shareFooter.brand, W / 2, H - 176);
+  }
+
+  function shareText() {
+    var r = last.r, type = T.types[r.energyType];
+    return '我是「' + type.name + '」✨ 天賦脈輪是' + r.lifePathChakras.map(chakraName).join('＋') +
+      '，跟我同類型、同天賦的人只有 ' + rarityText(r.comboRate) + '。\n' +
+      T.shareFooter.invite + ' ' + T.shareFooter.brand;
+  }
+
+  $('download').addEventListener('click', function () {
+    $('card').toBlob(function (blob) {
+      var file = new File([blob], '脈輪能量卡.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], text: shareText() }).catch(function () {});
+        return;
+      }
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = '脈輪能量卡.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    }, 'image/png');
+  });
+
+  $('copy').addEventListener('click', function () {
+    var text = shareText();
+    var done = function () { $('copyMsg').textContent = '已複製，可以貼到限時動態或貼文裡。'; };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+    function fallback() {
+      var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t);
+      t.select(); document.execCommand('copy'); t.remove(); done();
+    }
+  });
+
+  $('go').addEventListener('click', render);
+  $('print').addEventListener('click', function () { window.print(); });
+  ['birth', 'year', 'name'].forEach(function (id) { $(id).addEventListener('change', render); });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一個生日，六種看見自己的方式</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F7F3EC; --paper-2: #EFE8DC; --ink: #2B2622; --ink-2: #4A433D;
+    --muted: #8A8076; --line: #DED4C4; --gold: #A88550; --gold-soft: #CDB78F; --red: #A85A4A;
+    --serif: "Noto Serif TC", "Songti TC", "STSong", serif;
+    --sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.85; letter-spacing: .02em; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 24px 80px; }
+  @media (max-width: 560px) { .wrap { padding: 24px 16px 64px; } }
+
+  /* 輸入 */
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px 20px; }
+  .controls label.f { display: block; font-size: 12px; letter-spacing: .12em; color: var(--muted); margin-bottom: 2px; }
+  .controls input[type=text], .controls input[type=date], .controls input[type=time], .controls select {
+    width: 100%; font: inherit; font-size: 15px; padding: 7px 0; border: none; border-bottom: 1px solid var(--line);
+    background: transparent; color: var(--ink); border-radius: 0; -webkit-appearance: none; appearance: none;
+  }
+  .controls input:focus, .controls select:focus { outline: none; border-bottom-color: var(--gold); }
+  .checks { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 14px; font-size: 14px; color: var(--ink-2); }
+  .late-zi { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
+  .late-zi b { color: var(--ink-2); }
+  .checks label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .btns { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0 0; }
+  .btn { font: inherit; font-size: 14px; letter-spacing: .1em; padding: 9px 20px; cursor: pointer; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); border-radius: 2px; text-decoration: none; display: inline-block; }
+  .btn.line { background: transparent; color: var(--ink); }
+  .btn { transition: transform .15s ease, box-shadow .2s ease, background .2s ease; }
+  .btn:active { transform: scale(.97); }
+  .btn[disabled] { opacity: .75; cursor: progress; }
+  .btn .spin { display: inline-block; width: 12px; height: 12px; margin-right: 8px; vertical-align: -1px; border: 2px solid rgba(247,243,236,.35); border-top-color: var(--paper); border-radius: 50%; animation: spin .8s linear infinite; }
+  .btn.pending { background: var(--gold); border-color: var(--gold); animation: pulse 1.6s ease-in-out infinite; }
+  .changed-hint { font-size: 12.5px; color: var(--gold); margin-left: 4px; align-self: center; opacity: 0; transition: opacity .3s; }
+  .changed-hint.show { opacity: 1; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(168,133,80,.45); } 50% { box-shadow: 0 0 0 8px rgba(168,133,80,0); } }
+  .loading { min-height: 70vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 22px; }
+  .loading .orbs { position: relative; width: 120px; height: 120px; animation: spin 6s linear infinite; }
+  .loading .orbs i { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px; border-radius: 50%; background: var(--c); box-shadow: 0 0 12px var(--c); transform: rotate(var(--a)) translateY(-50px); animation: glow 1.4s ease-in-out infinite; animation-delay: var(--d); }
+  @keyframes glow { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+  .loading .step { font-family: var(--serif); font-size: 18px; letter-spacing: .12em; color: var(--ink-2); min-height: 1.6em; }
+  .loading .sub { font-size: 12.5px; color: var(--muted); letter-spacing: .1em; }
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); background: var(--ink); color: var(--paper); font-size: 14px; letter-spacing: .08em; padding: 10px 20px; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,.18); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; z-index: 60; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .loading .orbs, .loading .orbs i, .btn.pending { animation: none; } }
+  @media print { .reveal { opacity: 1 !important; transform: none !important; } .toast { display: none; } }
+  .hint { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+  .input-area { padding-bottom: 26px; border-bottom: 1px solid var(--line); }
+  .app-head { text-align: center; padding: 26px 0 30px; }
+  .app-head .eyebrow { font-size: 12px; letter-spacing: .32em; color: var(--gold); }
+  .app-title { font-family: var(--serif); font-weight: 600; font-size: 38px; letter-spacing: .12em; margin: 10px 0 10px; }
+  .app-title::before, .app-title::after { content: '✦'; color: var(--gold); font-size: .45em; vertical-align: .45em; margin: 0 16px; }
+  .app-sub { font-size: 14.5px; color: var(--muted); max-width: 30em; margin: 0 auto; line-height: 1.85; }
+  @media (max-width: 560px) { .app-title { font-size: 30px; } .app-title::before, .app-title::after { margin: 0 8px; } }
+  .step-label { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 16px; font-weight: 600; letter-spacing: .08em; margin: 26px 0 14px; }
+  .step-label span { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: var(--paper); font-size: 12.5px; font-family: var(--sans); }
+  .step-label:first-of-type { margin-top: 0; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .presets button { font: inherit; font-size: 13px; padding: 4px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-2); cursor: pointer; transition: all .15s; }
+  .presets button:hover { border-color: var(--gold); color: var(--ink); }
+  .presets button.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .pick-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 640px) { .pick-grid { grid-template-columns: repeat(2, 1fr); } }
+  .pk { position: relative; display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid var(--line); background: #FFFDF8; cursor: pointer; transition: border-color .15s, box-shadow .15s, opacity .15s; }
+  .pk input { position: absolute; opacity: 0; pointer-events: none; }
+  .pk .pk-ic { width: 32px; height: 32px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; color: #fff; background: var(--pc); font-size: 14px; font-family: "Apple Symbols", "Segoe UI Symbol", var(--serif); }
+  .pk .pk-name { font-family: var(--serif); font-size: 15px; font-weight: 600; line-height: 1.3; }
+  .pk .pk-note { display: block; font-family: var(--sans); font-size: 11px; font-weight: 400; color: var(--muted); }
+  .pk .pk-check { margin-left: auto; width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--line); flex: none; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; }
+  .pk.on { border-color: var(--pc); box-shadow: inset 0 0 0 1px var(--pc); }
+  .pk.on .pk-check { background: var(--pc); border-color: var(--pc); }
+  .pk.on .pk-check::after { content: '✓'; }
+  .pk:not(.on) { opacity: .62; }
+  .pk:not(.on) .pk-ic { background: var(--line); }
+  .pk:focus-within { outline: 2px solid var(--gold-soft); outline-offset: 2px; }
+  .ai-pack { margin-top: 64px; padding: 30px 28px; border: 1px solid var(--gold-soft); background: #FBF8F2; }
+  .ai-pack h2 { font-family: var(--serif); font-size: 24px; margin: 4px 0 6px; letter-spacing: .06em; }
+  .ai-pack .eyebrow { font-size: 12px; letter-spacing: .28em; color: var(--gold); }
+  .ai-pack .lead { font-size: 14.5px; color: var(--muted); margin: 0 0 18px; }
+  .ai-free { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 14px; color: var(--ink-2); margin-bottom: 10px; }
+  .badge { display: inline-block; font-size: 12px; letter-spacing: .1em; padding: 2px 10px; border-radius: 999px; background: #E7EEE6; color: #4F6B55; }
+  .paid { margin-top: 36px; padding-top: 30px; border-top: 1px dashed var(--gold-soft); }
+  .paid-title { font-family: var(--serif); font-size: 22px; margin: 4px 0 6px; display: block; }
+  .paid-title::before { content: none; }
+  .paid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0 20px; }
+  @media (max-width: 760px) { .paid-grid { grid-template-columns: 1fr; } }
+  .paid-card { background: #FFFDF8; border: 1px solid var(--line); border-top: 3px solid var(--pc); padding: 16px 16px 14px; display: flex; flex-direction: column; }
+  .pc-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pc-head b { font-family: var(--serif); font-size: 16px; }
+  .pc-head i { font-style: normal; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--pc); color: #fff; }
+  .pc-ic { width: 28px; height: 28px; border-radius: 50%; background: var(--pc); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
+  .paid-card ul { margin: 12px 0 10px; padding-left: 18px; font-size: 13.5px; line-height: 1.85; color: var(--ink-2); flex: 1; }
+  .pc-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; border-top: 1px dashed var(--line); padding-top: 8px; }
+  .pc-price { font-family: var(--serif); font-size: 18px; font-weight: 600; color: var(--pc); white-space: nowrap; }
+  .pc-price small { font-family: var(--sans); font-size: 11px; font-weight: 400; margin-right: 4px; padding: 1px 6px; border-radius: 999px; background: var(--pc); color: #fff; vertical-align: 2px; }
+  .pc-price s { font-family: var(--sans); font-size: 12px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+  .pc-hook { margin: 8px 0 0; font-size: 13.5px; color: var(--pc); font-weight: 600; }
+  .early { margin: 16px 0 6px; padding: 14px 16px; border: 1px solid #E5CBC2; background: #FBF1EC; }
+  .early.off { font-size: 14px; color: var(--muted); background: var(--paper); border-color: var(--line); }
+  .early-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+  .early-top b { font-family: var(--serif); color: var(--red); letter-spacing: .06em; }
+  .early-top span { font-size: 13.5px; color: var(--ink-2); }
+  .early-top em { font-style: normal; font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--red); margin: 0 2px; }
+  .early-bar { height: 8px; border-radius: 4px; background: #F0DCD4; margin: 10px 0 4px; overflow: hidden; }
+  .early-bar i { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #D9826E, var(--red)); }
+  .early-sub { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+  .faq-pack { margin: 0 0 20px; padding: 16px 18px; background: #FFFDF8; border: 1px solid var(--line); border-top: 3px solid #7A5A9C; }
+  .faq-head { display: flex; align-items: center; gap: 10px; }
+  .faq-head b { flex: 1; min-width: 0; font-family: var(--serif); font-size: 16px; }
+  .faq-desc { margin: 10px 0 0; font-size: 13.5px; color: #7A5A9C; font-weight: 600; }
+  .faq-head .pc-price { --pc: #7A5A9C; }
+  .faq-head .pc-ic { font-family: var(--serif); font-weight: 600; }
+  .faq-list { margin: 12px 0 8px; padding-left: 22px; columns: 2; column-gap: 28px; font-size: 13.5px; line-height: 1.9; color: var(--ink-2); }
+  .faq-list li { break-inside: avoid; }
+  @media (max-width: 640px) { .faq-list { columns: 1; } }
+  .faq-note { font-size: 12.5px; color: var(--muted); margin: 0; }
+  .mid-cta { display: flex; align-items: center; gap: 18px; margin: 34px 0 10px; padding: 20px 22px; border: 1px solid var(--gold-soft); background: linear-gradient(135deg, #FBF5EA, #F4EDF6); }
+  .mid-cta .mc-text { flex: 1; min-width: 0; }
+  .mid-cta .mc-eyebrow { font-size: 12px; letter-spacing: .24em; color: var(--gold); }
+  .mid-cta b { display: block; font-family: var(--serif); font-size: 19px; margin: 4px 0 4px; }
+  .mid-cta span { font-size: 13.5px; color: var(--ink-2); }
+  .mid-cta .btn { flex: none; }
+  @media (max-width: 600px) { .mid-cta { flex-direction: column; align-items: stretch; text-align: center; } }
+  .fab { position: fixed; right: 18px; bottom: 22px; z-index: 40; padding: 11px 18px; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 14px; letter-spacing: .08em; text-decoration: none; box-shadow: 0 8px 24px rgba(43,38,34,.25); opacity: 0; transform: translateY(16px); pointer-events: none; transition: opacity .3s, transform .3s; }
+  .fab.show { opacity: 1; transform: none; pointer-events: auto; }
+  .fab:hover { background: var(--gold); }
+  .sample { margin: 18px 0 8px; border: 1px solid var(--line); background: #FFFDF8; }
+  .sm-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: #FBF8F2; }
+  .sm-badge { font-size: 11.5px; letter-spacing: .1em; padding: 1px 9px; border-radius: 999px; background: var(--gold); color: #fff; }
+  .sm-head b { font-family: var(--serif); font-size: 15.5px; }
+  .sm-who { font-size: 12px; color: var(--muted); }
+  .sm-body { position: relative; max-height: 430px; overflow: hidden; padding: 6px 20px 0; font-size: 14.5px; line-height: 1.9; color: var(--ink-2); }
+  .sm-body h4 { font-family: var(--serif); font-size: 16px; color: var(--ink); margin: 16px 0 6px; }
+  .sm-body p { margin: 0 0 10px; }
+  .sm-one { font-family: var(--serif); font-size: 17px; color: #8A6A3A; }
+  .sm-kw span { display: inline-block; font-size: 13px; color: #8A6A3A; margin-right: 12px; }
+  .sm-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 170px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 16px; background: linear-gradient(rgba(255,253,248,0), #FFFDF8 70%); }
+  .sm-fade span { font-size: 13px; color: var(--ink-2); background: #FFFDF8; padding: 4px 12px; border: 1px dashed var(--gold-soft); border-radius: 999px; }
+  .about { margin: 30px 0 10px; padding: 22px 24px; border: 1px solid var(--line); background: #FFFDF8; }
+  .ab-head { display: flex; align-items: center; gap: 16px; padding-bottom: 14px; margin-bottom: 4px; border-bottom: 1px dashed var(--line); }
+  .ab-head b { display: block; font-family: var(--serif); font-size: 22px; line-height: 1.3; margin: 2px 0; }
+  .ab-photo { flex: none; width: 84px; height: 84px; border-radius: 50%; overflow: hidden; border: 3px solid #fff; box-shadow: 0 2px 10px rgba(43,38,34,.12); background: linear-gradient(135deg, var(--gold-soft), #C9B6D4); display: flex; align-items: center; justify-content: center; }
+  .ab-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .ab-photo span { font-family: var(--serif); font-size: 36px; color: #fff; }
+  .ab-body { flex: 1; min-width: 0; }
+  .ab-eyebrow { font-size: 12px; letter-spacing: .24em; color: var(--gold); }
+  .ab-title { display: block; font-size: 13px; color: var(--muted); }
+  .ab-body p { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 0; line-height: 1.85; }
+  .ab-ig { display: inline-block; margin-top: 12px; font-size: 13.5px; color: #8A6A3A; }
+  @media (max-width: 560px) { .about { padding: 18px; } .ab-photo { width: 72px; height: 72px; } }
+  .bfaq { margin-top: 30px; }
+  .bfaq .paid-title { margin-bottom: 8px; }
+  .bfaq-a { margin: 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.85; }
+  .compare { margin: 16px 0 6px; border: 1px solid var(--line); background: #FFFDF8; font-size: 13.5px; }
+  .cmp-row { display: grid; grid-template-columns: 92px 1fr 1.4fr; }
+  .cmp-row > span { padding: 9px 12px; border-top: 1px solid var(--line); line-height: 1.6; }
+  .cmp-head > span { border-top: none; font-family: var(--serif); font-weight: 600; font-size: 14.5px; }
+  .cmp-head > span:nth-child(2) { color: #4F6B55; }
+  .cmp-head > span:nth-child(3) { color: #8A6A3A; background: #FBF5EA; }
+  .cmp-k { color: var(--muted); font-size: 12.5px; }
+  .cmp-free { color: var(--ink-2); }
+  .cmp-paid { background: #FBF5EA; color: var(--ink); font-weight: 600; }
+  .cmp-paid::before { content: '✦ '; color: var(--gold); }
+  @media (max-width: 560px) { .cmp-row { grid-template-columns: 70px 1fr 1.2fr; } .cmp-row > span { padding: 8px 8px; font-size: 12.5px; } }
+  .bd-gift { font-size: 12.5px; color: #7A5A9C; margin-top: 4px; font-weight: 600; }
+  .bd-after { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+  .paid-card .lock { font-size: 11.5px; color: var(--muted); }
+  .bundles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 0 0 20px; }
+  @media (max-width: 560px) { .bundles { grid-template-columns: 1fr; } }
+  .bundle { position: relative; text-align: center; padding: 18px 14px 14px; border: 1px solid var(--gold-soft); background: #FFFDF8; }
+  .bundle.best { border: 2px solid var(--gold); background: #FBF5EA; }
+  .bd-tag { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); font-style: normal; font-size: 11.5px; letter-spacing: .1em; padding: 2px 12px; border-radius: 999px; background: var(--gold); color: #fff; white-space: nowrap; }
+  .bd-name { font-family: var(--serif); font-size: 17px; font-weight: 600; letter-spacing: .06em; }
+  .bd-price { margin: 4px 0 2px; }
+  .bd-price s { font-size: 13px; color: var(--muted); margin-right: 8px; }
+  .bd-price b { font-family: var(--serif); font-size: 26px; color: #8A6A3A; }
+  .bd-save { font-size: 12.5px; color: #4F6B55; }
+  .flow { background: #FFFDF8; border: 1px solid var(--line); padding: 18px 20px; }
+  .flow-title { font-family: var(--serif); font-weight: 600; font-size: 16px; margin-bottom: 6px; }
+  .flow ol { margin: 0; padding-left: 20px; font-size: 14px; line-height: 2; color: var(--ink-2); }
+  .unlock { margin: 14px 0 4px; padding: 12px 14px; border: 1px dashed var(--gold-soft); background: var(--paper); }
+  .unlock.ok { border-style: solid; border-color: #B9D0BD; background: #F1F6F1; }
+  .unlock.ok .unlock-row { display: none; }
+  .unlock-row { display: flex; gap: 8px; }
+  .unlock-row input { flex: 1; min-width: 0; font: inherit; font-size: 15px; letter-spacing: .12em; text-transform: uppercase; padding: 7px 10px; border: 1px solid var(--line); background: #FFFDF8; }
+  .unlock-msg { font-size: 12.5px; color: var(--muted); margin: 8px 0 0; }
+  .unlock-msg.bad { color: var(--red); }
+  .unlock-msg.good { color: #4F6B55; margin: 0; }
+  .btn[disabled]:not(.pending) { background: var(--line); border-color: var(--line); color: var(--muted); cursor: not-allowed; }
+  .line-link { color: #06A84A; text-decoration: underline; text-underline-offset: 3px; }
+  .line-link:hover { color: #05B34C; }
+  .line-link b { color: inherit; }
+  .line-btn { background: #06C755; border-color: #06C755; color: #fff; }
+  .line-btn:hover { background: #05B34C; }
+  .line-btn.disabled { background: var(--line); border-color: var(--line); color: var(--muted); cursor: default; }
+  .ai-tpls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .ai-tpls button { font: inherit; font-size: 13.5px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); cursor: pointer; }
+  .ai-tpls button.on { background: var(--gold); border-color: var(--gold); color: #fff; }
+  .ai-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 12px; font-size: 14px; color: var(--ink-2); }
+  .ai-row input { width: 84px; font: inherit; padding: 4px 8px; border: 1px solid var(--line); background: var(--paper); }
+  .ai-text { width: 100%; box-sizing: border-box; height: 260px; font: 13px/1.7 ui-monospace, "SF Mono", Menlo, monospace; padding: 14px; border: 1px solid var(--line); background: #FFFDF8; color: var(--ink-2); resize: vertical; }
+  .ai-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 12px; }
+  .ai-actions .meta { font-size: 12.5px; color: var(--muted); }
+  .ai-steps { margin: 16px 0 0; padding-left: 20px; font-size: 13.5px; color: var(--ink-2); line-height: 1.9; }
+  @media (max-width: 560px) { .ai-pack { padding: 24px 18px; } }
+
+  /* 封面與總覽 */
+  .cover { text-align: center; padding: 60px 0 40px; }
+  .cover + section.system { margin-top: 0; padding-top: 8px; }
+  .cover + section.system::before { margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .32em; color: var(--gold); }
+  .cover h1 { font-family: var(--serif); font-weight: 700; font-size: 40px; line-height: 1.35; margin: 14px 0 8px; letter-spacing: .08em; }
+  .cover .meta { font-size: 14px; color: var(--muted); letter-spacing: .08em; }
+  @media (max-width: 560px) { .cover h1 { font-size: 30px; } }
+  .overview { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); margin-bottom: 18px; }
+  .overview a { display: block; padding: 20px 18px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); color: inherit; text-decoration: none; }
+  .overview a:hover { background: #F2ECE2; }
+  .overview .sys { font-size: 12px; letter-spacing: .2em; color: var(--gold); }
+  .overview .main { font-family: var(--serif); font-size: 19px; font-weight: 600; margin: 4px 0 2px; line-height: 1.45; }
+  .overview .sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  @media (max-width: 680px) { .overview { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 420px) { .overview { grid-template-columns: 1fr; } }
+
+  /* 章節 */
+  section.system { padding: 40px 0 12px; margin-top: 56px; position: relative; }
+  section.system::before { content: '✦'; display: block; text-align: center; color: var(--gold-soft); font-size: 14px; letter-spacing: 1.2em; padding-left: 1.2em; margin-bottom: 36px; content: '·  ✦  ·'; }
+  .sys-head .no { font-family: var(--serif); font-size: 13px; letter-spacing: .24em; color: var(--gold); }
+  .sys-head h2 { font-family: var(--serif); font-weight: 600; font-size: 30px; line-height: 1.35; margin: 4px 0 6px; letter-spacing: .06em; }
+  .sys-head .lead { font-size: 15px; color: var(--muted); margin: 0 0 28px; max-width: 36em; }
+  h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; margin: 36px 0 12px; letter-spacing: .05em; display: flex; align-items: center; gap: 10px; }
+  h3::before { content: ''; flex: none; width: 4px; height: 1.05em; border-radius: 2px; background: var(--gold); }
+  .sys-head h2::before { content: '✦'; color: var(--gold); font-size: .62em; margin-right: 12px; vertical-align: .22em; }
+  p { margin: 0 0 12px; }
+  .prose { max-width: 36em; color: var(--ink-2); }
+  .big-line { font-family: var(--serif); font-size: 26px; font-weight: 600; letter-spacing: .06em; margin: 0 0 6px; }
+  .tagline { font-size: 13px; letter-spacing: .14em; color: var(--muted); margin-bottom: 12px; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 18px; line-height: 1.7; }
+  .notice { font-size: 14px; color: var(--ink-2); border-left: 2px solid var(--gold); padding: 4px 0 4px 14px; margin: 8px 0 0; }
+  .swatch { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: 2px; }
+
+  /* 表格 */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap tbody tr:last-child td { border-bottom: none; }
+  .list-plain:has(+ details.fold) > li:last-child, .list-plain:has(+ .note + details.fold) > li:last-child { border-bottom: none; }
+  .table-wrap + details.fold, .table-wrap + .note + details.fold { margin-top: 18px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; white-space: nowrap; }
+  th { font-weight: 500; font-size: 12px; letter-spacing: .14em; color: var(--muted); }
+  tr.now td { background: #F1E9DB; }
+  td.serif, .serif { font-family: var(--serif); }
+
+  /* 八字四柱 */
+  .pillars { display: grid; grid-template-columns: 112px repeat(4, 1fr); border-top: 1px solid var(--line); }
+  .pillars > div { padding: 10px 6px; border-bottom: 1px solid var(--line); text-align: center; font-size: 14px; }
+  .pillars .rowh { text-align: left; font-size: 12px; letter-spacing: .1em; color: var(--muted); padding-left: 0; }
+  .pillars .colh { font-size: 12px; letter-spacing: .14em; color: var(--muted); }
+  .pillars .gz { font-family: var(--serif); font-size: 34px; font-weight: 600; line-height: 1.2; padding-top: 14px !important; padding-bottom: 12px !important; }
+  .pillars .day { color: var(--gold); }
+  .pillars .small { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; }
+
+  /* 長條 */
+  .chakra-col { position: relative; display: grid; gap: 16px; max-width: 600px; padding: 6px 0; }
+  .chakra-col::before { content: ''; position: absolute; left: 15px; top: 18px; bottom: 18px; width: 2px; background: var(--line); }
+  .ck-row { position: relative; display: grid; grid-template-columns: 32px 100px 1fr 108px; gap: 12px; align-items: center; }
+  .ck-orb { justify-self: center; border-radius: 50%; background: var(--c); border: 2px solid var(--c); box-shadow: 0 0 var(--g) var(--c); }
+  .ck-orb.off { background: var(--paper); border-style: dashed; box-shadow: none; opacity: .75; }
+  .ck-name { font-family: var(--serif); font-size: 15px; line-height: 1.3; }
+  .ck-name small { display: block; font-family: inherit; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
+  .ck-track { height: 10px; border-radius: 5px; background: var(--paper-2); overflow: hidden; }
+  .ck-fill { height: 100%; border-radius: 5px; }
+  .ck-note { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+  @media (max-width: 560px) { .ck-row { grid-template-columns: 28px 84px 1fr 80px; gap: 8px; } .ck-note { font-size: 11px; } }
+  .bars { display: grid; gap: 12px; max-width: 520px; }
+  .bar-row { display: grid; grid-template-columns: 70px 1fr 70px; gap: 12px; align-items: center; font-size: 14px; }
+  .bar-track { height: 4px; background: var(--paper-2); position: relative; }
+  .bar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--gold); }
+  .bar-note { font-size: 12px; color: var(--muted); text-align: right; }
+
+  /* 紫微命盤 */
+  .zw { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, minmax(110px, auto)); border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+  .zw .cell { border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); padding: 8px; font-size: 12.5px; line-height: 1.55; position: relative; }
+  .zw .cell.ming { background: #F1E9DB; }
+  .zw .pname { font-family: var(--serif); font-weight: 600; font-size: 14px; }
+  .zw .gz { position: absolute; right: 8px; bottom: 6px; font-size: 11px; color: var(--muted); }
+  .zw .mainstar { font-family: var(--serif); font-weight: 600; font-size: 15px; color: var(--ink); }
+  .zw .aux { color: var(--muted); }
+  .zw .bad { color: var(--red); }
+  .zw .hua { font-size: 11px; color: #fff; background: var(--gold); padding: 0 4px; margin-left: 2px; border-radius: 2px; }
+  .zw .hua.ji { background: var(--red); }
+  .zw .shen { font-size: 11px; color: var(--gold); border: 1px solid var(--gold); padding: 0 4px; margin-left: 4px; }
+  .zw .center { grid-column: 2 / 4; grid-row: 2 / 4; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); padding: 18px; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+  .zw .center .t { font-family: var(--serif); font-size: 20px; font-weight: 600; }
+  .zw .center .s { font-size: 13px; color: var(--ink-2); }
+  @media (max-width: 560px) { .zw { grid-template-rows: repeat(4, minmax(96px, auto)); } .zw .cell { padding: 5px; font-size: 11px; } .zw .mainstar { font-size: 13px; } .zw .center { padding: 8px; } .zw .center .t { font-size: 16px; } }
+
+  /* 卡片式三格 */
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .trio .item { border-top: 2px solid var(--gold-soft); padding-top: 14px; }
+  .trio .label { font-size: 12px; letter-spacing: .16em; color: var(--muted); }
+  .trio .name { font-family: var(--serif); font-size: 22px; font-weight: 600; margin: 2px 0 8px; }
+  .trio p { font-size: 14.5px; color: var(--ink-2); }
+  @media (max-width: 640px) { .trio { grid-template-columns: 1fr; gap: 20px; } }
+
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px 24px; margin-bottom: 8px; }
+  .facts .k { font-size: 12px; letter-spacing: .16em; color: var(--muted); }
+  .facts .v { font-family: var(--serif); font-size: 20px; font-weight: 600; line-height: 1.4; }
+
+  .bodygraph { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .bodygraph svg { width: 100%; max-width: 460px; height: auto; display: block; margin: 0 auto; }
+
+  .list-plain { margin: 0; padding: 0; list-style: none; }
+  .list-plain li { padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--ink-2); }
+  .list-plain li b { font-family: var(--serif); color: var(--ink); font-weight: 600; margin-right: 8px; }
+
+
+  /* 說明 */
+  .howto { background: var(--paper-2); border-left: 2px solid var(--gold); padding: 14px 18px; font-size: 14.5px; line-height: 1.85; color: var(--ink-2); margin: 0 0 22px; max-width: 42em; }
+  .howto b { color: var(--ink); font-weight: 500; }
+  .pillars .role { display: block; font-size: 11px; letter-spacing: .02em; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+  .pillars .rowtip { display: block; font-size: 10.5px; letter-spacing: 0; color: var(--muted); line-height: 1.5; margin-top: 2px; padding-right: 6px; }
+  .pillars .god { display: block; font-family: var(--serif); font-size: 15px; font-weight: 600; color: var(--ink); }
+  .pillars .god.day { color: var(--gold); }
+  .pillars .gm { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-top: 2px; }
+  .pillars .gz .el { display: block; font-family: var(--sans); font-size: 11.5px; font-weight: 400; color: var(--muted); letter-spacing: .1em; margin-top: 2px; }
+  .list-plain li .sub { margin: 4px 0 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.8; }
+  .list-plain li .tagline { display: inline; margin: 0 0 0 4px; font-size: 12.5px; }
+  .list-plain li .tag { font-size: 11px; border: 1px solid var(--line); color: var(--muted); padding: 0 6px; margin-right: 8px; letter-spacing: .1em; }
+  .list-plain li .tag.on { border-color: var(--gold); color: var(--gold); }
+  @media (max-width: 560px) { .pillars { grid-template-columns: 74px repeat(4, 1fr); } .pillars .rowtip, .pillars .gm { font-size: 10.5px; } .pillars .gz { font-size: 28px; } }
+
+
+
+  /* 總整理 */
+  .themes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .theme { border-top: 2px solid var(--gold); padding-top: 14px; }
+  .theme .label, .tension .label { font-size: 12px; letter-spacing: .16em; color: var(--gold); }
+  .theme .name { font-family: var(--serif); font-size: 22px; font-weight: 600; margin: 2px 0 8px; }
+  .theme p { font-size: 14.5px; color: var(--ink-2); }
+  .ev span { display: inline-block; font-size: 12px; line-height: 1.6; color: var(--ink-2); background: var(--paper-2); padding: 1px 8px; margin: 0 6px 6px 0; border-radius: 2px; }
+  .tension { border-top: 1px solid var(--line); padding: 16px 0 4px; }
+  .tension .name { font-family: var(--serif); font-size: 19px; font-weight: 600; margin-bottom: 8px; }
+  .tension .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 8px; }
+  .tension p { font-size: 14.5px; color: var(--ink-2); max-width: 40em; }
+  @media (max-width: 640px) { .themes { grid-template-columns: 1fr; gap: 20px; } .tension .sides { grid-template-columns: 1fr; gap: 8px; } }
+
+  /* 收合 */
+  .portrait { border: 1px solid var(--gold-soft); background: #FBF8F2; padding: 34px 32px 26px; margin: 8px 0 26px; position: relative; }
+  .portrait .eyebrow { font-size: 12px; letter-spacing: .3em; color: var(--gold); }
+  .portrait .ptitle { font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 1.45; margin: 8px 0 14px; letter-spacing: .04em; }
+  .portrait .kw { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 20px; }
+  .portrait .kw span { font-size: 14px; padding: 5px 12px; border: 1px solid var(--gold-soft); border-radius: 999px; color: var(--ink-2); background: var(--paper); }
+  .portrait .kw span::before { content: '✦'; color: var(--gold); margin-right: 6px; }
+  .portrait .pp p { font-size: 16px; line-height: 1.95; color: var(--ink-2); max-width: 36em; }
+  .portrait .plines { list-style: none; margin: 22px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 12px; }
+  .portrait .plines li { display: grid; grid-template-columns: 112px 1fr; gap: 12px; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
+  .portrait .plines b { font-family: var(--serif); color: var(--ink); white-space: nowrap; }
+  .portrait .plines b::before { content: '✦'; color: var(--gold); margin-right: 8px; font-size: .85em; }
+  @media (max-width: 600px) { .portrait { padding: 26px 20px 20px; } .portrait .ptitle { font-size: 23px; } .portrait .plines li { grid-template-columns: 1fr; gap: 0; } }
+  .qm { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; margin: 0 2px 0 6px; padding: 0; border-radius: 50%; border: 1px solid var(--gold-soft); background: var(--paper); color: var(--gold); font: 600 11px/1 var(--sans, inherit); cursor: pointer; vertical-align: 2px; flex: none; letter-spacing: 0; }
+  .qm:hover, .qm.on { background: var(--gold); color: #fff; border-color: var(--gold); }
+  #tip { position: absolute; z-index: 50; max-width: 300px; background: var(--ink); color: #F7F3EC; font-size: 13.5px; line-height: 1.75; padding: 12px 14px; border-radius: 6px; box-shadow: 0 6px 24px rgba(0,0,0,.18); display: none; }
+  #tip b { display: block; color: var(--gold-soft); font-family: var(--serif); margin-bottom: 2px; letter-spacing: .05em; }
+  #tip.show { display: block; }
+  .strength { display: grid; grid-template-columns: 210px 1fr; gap: 26px; align-items: start; margin: 6px 0 18px; }
+  .strength .verdict { border: 1px solid var(--gold-soft); background: #FBF8F2; padding: 18px 18px 14px; text-align: center; }
+  .strength .verdict .label { font-size: 12px; letter-spacing: .2em; color: var(--muted); }
+  .strength .verdict .big { font-family: var(--serif); font-size: 30px; font-weight: 600; margin: 4px 0 14px; }
+  .strength .meter { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #C9D6CC, #EFE8DC 50%, #E2C99B); }
+  .strength .meter span { position: absolute; top: -5px; width: 4px; height: 18px; margin-left: -2px; border-radius: 2px; background: var(--ink); }
+  .strength .scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .strength .scale i { font-style: normal; }
+  .strength .factors { list-style: none; margin: 0; padding: 0; }
+  .strength .factors li { padding: 9px 0; border-bottom: 1px solid var(--line); }
+  .strength .factors li:first-child { padding-top: 0; }
+  .strength .factors b { font-family: var(--serif); font-size: 16px; }
+  .strength .factors span { font-size: 12px; margin-left: 10px; padding: 1px 8px; border-radius: 999px; }
+  .strength .factors span.ok { background: #E7EEE6; color: #4F6B55; }
+  .strength .factors span.no { background: #F3E6E1; color: var(--red); }
+  .strength .factors p { margin: 4px 0 0; font-size: 14.5px; color: var(--ink-2); }
+  @media (max-width: 640px) { .strength { grid-template-columns: 1fr; } }
+  .hd-one { font-size: 17px; line-height: 1.9; padding: 14px 18px; border-left: 3px solid var(--gold); background: #FBF8F2; margin: 0 0 22px; }
+  .hd-one b { font-family: var(--serif); }
+  .hd-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 8px; }
+  .hd-card { border: 1px solid var(--line); background: #FFFDF8; padding: 16px 18px; }
+  .hd-card .k { font-size: 12px; letter-spacing: .16em; color: var(--muted); display: flex; align-items: center; }
+  .hd-card .v { font-family: var(--serif); font-size: 22px; font-weight: 600; margin: 4px 0 8px; }
+  .hd-card .v small { color: var(--muted); font-weight: 400; }
+  .hd-card .t { font-size: 14.5px; line-height: 1.8; color: var(--ink-2); }
+  .hd-card .ln { display: inline-block; font-size: 12px; color: var(--gold); border: 1px solid var(--gold-soft); border-radius: 999px; padding: 0 7px; margin-right: 6px; }
+  @media (max-width: 640px) { .hd-cards { grid-template-columns: 1fr; } }
+  .hd-centers { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 28px; }
+  @media (max-width: 640px) { .hd-centers { grid-template-columns: 1fr; } }
+  @media print { .qm { display: none; } }
+  .list-plain li.pl { display: grid; grid-template-columns: 40px 1fr; gap: 14px; padding: 14px 0; align-items: start; }
+  .pl-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; line-height: 1; color: #fff; background: var(--pc); box-shadow: 0 2px 8px color-mix(in srgb, var(--pc) 35%, transparent); font-family: "Apple Symbols", "Segoe UI Symbol", "Noto Sans Symbols", serif; }
+  .pl-head { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; margin-bottom: 4px; }
+  .pl-head b { margin-right: 4px; }
+  .pl-head .pl-kw { margin-left: 2px; }
+  .pl-head b { font-family: var(--serif); font-size: 17px; color: var(--pc); }
+  .pl-kw { font-size: 12.5px; color: var(--muted); letter-spacing: .08em; }
+  .pl-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 6px; }
+  .chip { font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-2); white-space: nowrap; }
+  .chip.sign { border-color: color-mix(in srgb, var(--pc) 45%, var(--line)); color: var(--ink); }
+  .chip.retro { background: #F3E6E1; border-color: #E5CBC2; color: var(--red); }
+  .pl .sub { margin: 0; }
+  .pl-icon.outline { background: var(--paper); color: var(--pc); border: 1.5px dashed var(--pc); box-shadow: none; }
+  .chip.on { background: #F1E6D2; border-color: var(--gold-soft); color: #7A5C30; }
+  .chip.off { border-style: dashed; color: var(--muted); }
+  .hd-centers li.pl { grid-template-columns: 34px 1fr; gap: 12px; }
+  .hd-centers .pl-icon { width: 32px; height: 32px; font-size: 14px; }
+  .portrait .plines b { display: inline-flex; align-items: center; }
+  .portrait .plines b::before { content: none; }
+  .li-ic { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin-right: 8px; border-radius: 50%; background: var(--pc); color: #fff; font-size: 13px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; flex: none; }
+  .ev span .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--pc); margin-right: 6px; vertical-align: 1px; }
+  .ev span[style] { background: color-mix(in srgb, var(--pc) 10%, var(--paper)); }
+  .nav-ic { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; margin-right: 7px; border-radius: 50%; background: var(--pc); color: #fff; font-size: 11px; letter-spacing: 0; vertical-align: 1px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
+  .overview a { border-top: 3px solid transparent; transition: border-color .2s, background .2s; }
+  .overview a:hover { border-top-color: var(--pc); }
+  .overview .sys { color: var(--pc); }
+  .pl-retro { margin: 6px 0 0; font-size: 13.5px; color: var(--red); padding-left: 10px; border-left: 2px solid #E5CBC2; }
+  details.fold { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 30px 0 0; }
+  details.fold + details.fold { margin-top: 0; border-top: none; }
+  .el-wrap { display: grid; grid-template-columns: 320px 1fr; gap: 28px; align-items: center; }
+  .el-wheel svg { width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto; }
+  .el-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+  .el-legend i { display: inline-block; vertical-align: middle; margin-right: 5px; }
+  .el-legend .ln { width: 18px; border-top: 1.6px solid #B9AE9E; }
+  .el-legend .ln.dash { border-top: 1.4px dashed #C9BDAA; }
+  .el-legend .ring { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #A88550; }
+  .el-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .el-row { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: center; }
+  .el-ic { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--pc); color: #fff; font-family: var(--serif); font-size: 17px; font-weight: 600; }
+  .el-ic.none { background: var(--paper); color: var(--pc); border: 1.5px dashed var(--pc); }
+  .el-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 13px; color: var(--muted); margin-bottom: 5px; }
+  .el-head b { font-family: var(--serif); font-size: 15px; color: var(--pc); }
+  .el-head i { font-style: normal; }
+  .el-track { height: 8px; border-radius: 4px; background: var(--paper-2); overflow: hidden; }
+  .el-fill { height: 100%; border-radius: 4px; background: var(--pc); }
+  @media (max-width: 680px) { .el-wrap { grid-template-columns: 1fr; } }
+  details.fold summary { cursor: pointer; list-style: none; padding: 14px 0; display: flex; align-items: center; gap: 12px; }
+  details.fold .fmain { flex: 1; min-width: 0; display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+  details.fold summary::after { flex: none; align-self: center; }
+  .f-ic { flex: none; min-width: 30px; font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--pc); letter-spacing: .02em; font-variant-numeric: lining-nums; }
+  details.fold[style] .ft { color: var(--ink); }
+  details.fold[style][open] { border-bottom-color: var(--pc); }
+  details.fold[style] summary:hover .ft { color: var(--pc); }
+  .f-tags { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-left: 4px; vertical-align: 1px; }
+  .f-tags span { font-size: 12px; color: var(--pc); white-space: nowrap; }
+  details.fold summary::-webkit-details-marker { display: none; }
+  details.fold summary::after { content: '展開 ＋'; font-size: 12px; letter-spacing: .14em; color: var(--gold); white-space: nowrap; }
+  details.fold[open] summary::after { content: '收合 －'; }
+  details.fold .ft { font-family: var(--serif); font-size: 18px; font-weight: 600; letter-spacing: .05em; }
+  details.fold .fh { font-size: 12.5px; color: var(--muted); }
+  details.fold .fold-body { padding: 0 0 18px; }
+  details.fold .fold-body > .list-plain:last-child > li:last-child { border-bottom: none; }
+  .list-plain li .retro { color: var(--muted); font-size: 13.5px; }
+
+  .disclaimer { font-size: 12px; color: var(--muted); text-align: center; margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line); line-height: 1.8; }
+
+  @media print { .no-print { display: none !important; } body { background: #fff; } section.system { break-before: page; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="input-area no-print">
+    <header class="app-head">
+      <div class="eyebrow">一個生日・六種看見自己的方式</div>
+      <h1 class="app-title">綜合命盤分析</h1>
+      <p class="app-sub">輸入生日，勾選想看的系統，就能得到你的命盤、跨系統總覽，以及可以直接貼給 AI 的分析懶人包。</p>
+    </header>
+    <div class="step-label"><span>1</span>出生資料</div>
+    <div class="controls">
+      <div><label class="f" for="name">稱呼（選填）</label><input type="text" id="name" placeholder="想怎麼稱呼都可以"></div>
+      <div><label class="f" for="birth">生日</label><input type="date" id="birth" value="1997-05-03"></div>
+      <div><label class="f" for="time">出生時間</label><input type="time" id="time" value="14:00"></div>
+      <div><label class="f" for="place">出生地</label><select id="place"></select></div>
+      <div><label class="f" for="gender">性別</label>
+        <select id="gender"><option value="F">女</option><option value="M">男</option></select></div>
+    </div>
+    <div class="checks">
+      <label><input type="checkbox" id="unknown"> 不知道出生時間</label>
+      <label><input type="checkbox" id="dst"> 出生時是日光節約時間</label>
+      <label><input type="checkbox" id="trueSolar"> 八字、紫微用真太陽時</label>
+    </div>
+    <p class="late-zi">23:00 以後出生（晚子時），八字和紫微斗數都以<b>隔天</b>計算。</p>
+    <div class="step-label"><span>2</span>想分析的系統</div>
+    <div class="presets" id="presets">
+      <button type="button" data-preset="all">全選</button>
+      <button type="button" data-preset="east">東方命理</button>
+      <button type="button" data-preset="west">西方占星</button>
+      <button type="button" data-preset="energy">能量與人類圖</button>
+      <button type="button" data-preset="notime">不需出生時間</button>
+      <button type="button" data-preset="none">清除</button>
+    </div>
+    <div class="pick-grid" id="pickGrid"></div>
+    <div class="btns">
+      <button class="btn" id="go">開始分析</button>
+      <button class="btn line" id="print">列印／存成 PDF</button>
+      <span class="changed-hint" id="changedHint">資料改了，按「更新分析」看新結果</span>
+    </div>
+    <p class="hint">所有計算都在你的裝置上完成，生日不會傳到任何地方。</p>
+  </div>
+
+  <main id="out"></main>
+</div>
+
+<script src="lib/astro.js"></script>
+<script src="lib/chinese-calendar.js"></script>
+<script src="lib/birth.js"></script>
+<script src="engine.js"></script>
+<script src="systems/bazi.js"></script>
+<script src="systems/ziwei.js"></script>
+<script src="systems/astrology.js"></script>
+<script src="systems/humandesign.js"></script>
+<script src="texts.js"></script>
+<script src="texts-systems.js"></script>
+<script src="texts-explain.js"></script>
+<script src="synthesis.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var T = TEXTS, X = SYS_TEXTS;
+  var NUMS = ['一', '二', '三', '四', '五', '六'];
+
+  Birth.PLACES.forEach(function (p) {
+    var o = document.createElement('option'); o.value = p.id; o.textContent = p.name; $('place').appendChild(o);
+  });
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function sys(no, id, title, lead, body) {
+    no = chapterNo++;
+    return '<section class="system" id="' + id + '"><div class="sys-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
+      '<p class="lead">' + lead + '</p></div>' + body + '</section>';
+  }
+  function table(head, rows, nowFlags) {
+    var h = '<div class="table-wrap"><table><thead><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>';
+    rows.forEach(function (r, i) { h += '<tr' + (nowFlags && nowFlags[i] ? ' class="now"' : '') + '>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; });
+    return h + '</tbody></table></div>';
+  }
+  function bars(items, max) {
+    return '<div class="bars">' + items.map(function (it) {
+      var w = max ? Math.round(it.value / max * 100) : 0;
+      return '<div class="bar-row"><div class="serif">' + it.label + '</div><div class="bar-track"><div class="bar-fill" style="width:' + w + '%;' + (it.color ? 'background:' + it.color : '') + '"></div></div><div class="bar-note">' + it.note + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function chakraColumn(chakras, max, colorOf, noteOf) {
+    return '<div class="chakra-col">' + chakras.slice().reverse().map(function (c) {
+      var col = colorOf(c.id), w = c.count ? Math.round(c.count / max * 100) : 0, size = c.count ? Math.min(30, 18 + c.count * 4) : 18;
+      return '<div class="ck-row"><span class="ck-orb' + (c.count ? '' : ' off') + '" style="--c:' + col + ';--g:' + (c.count ? 4 + c.count * 5 : 0) + 'px;width:' + size + 'px;height:' + size + 'px"></span>' +
+        '<div class="ck-name">' + c.name + '<small>' + (c.count ? '出現 ' + c.count + ' 次' : '還沒出現') + '</small></div>' +
+        '<div class="ck-track"><div class="ck-fill" style="width:' + w + '%;background:' + col + '"></div></div>' +
+        '<div class="ck-note">' + noteOf(c) + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  // ===== 選擇要分析的系統 =====
+  var SYSTEMS = [
+    { id: 'numerology', name: '生命靈數 × 脈輪', key: '生命靈數', note: '只要生日' },
+    { id: 'bazi', name: '八字', key: '八字', note: '時辰可不填' },
+    { id: 'ziwei', name: '紫微斗數', key: '紫微斗數', note: '需要出生時間' },
+    { id: 'western', name: '西洋占星', key: '西洋占星', note: '上升需要時間' },
+    { id: 'vedic', name: '印度占星', key: '印度占星', note: 'Lagna 需要時間' },
+    { id: 'hd', name: '人類圖', key: '人類圖', note: '需要出生時間' }
+  ];
+  var PRESETS = { all: ['numerology', 'bazi', 'ziwei', 'western', 'vedic', 'hd'], east: ['bazi', 'ziwei'], west: ['western', 'vedic'],
+    energy: ['numerology', 'hd'], notime: ['numerology', 'bazi', 'western', 'vedic'], none: [] };
+  function getPicked() { return SYSTEMS.filter(function (x) { var el = $('pk-' + x.id); return el && el.checked; }).map(function (x) { return x.id; }); }
+  function syncPick() {
+    var picked = getPicked();
+    SYSTEMS.forEach(function (x) { $('pk-' + x.id).parentNode.classList.toggle('on', picked.indexOf(x.id) !== -1); });
+    Object.keys(PRESETS).forEach(function (k) {
+      var b = document.querySelector('#presets [data-preset="' + k + '"]');
+      b.classList.toggle('on', k !== 'none' && PRESETS[k].length === picked.length && PRESETS[k].every(function (i) { return picked.indexOf(i) !== -1; }));
+    });
+    try { localStorage.setItem('picked-systems', JSON.stringify(picked)); } catch (e) {}
+  }
+  function buildPicker() {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem('picked-systems')); } catch (e) {}
+    if (!Array.isArray(saved) || !saved.length) saved = PRESETS.all;
+    $('pickGrid').innerHTML = SYSTEMS.map(function (x) {
+      var st = SYS_STYLE[x.key];
+      return '<label class="pk" style="--pc:' + st[1] + '"><input type="checkbox" id="pk-' + x.id + '"' + (saved.indexOf(x.id) !== -1 ? ' checked' : '') + '>' +
+        '<span class="pk-ic">' + st[0] + '︎</span><span class="pk-name">' + x.name + '<span class="pk-note">' + x.note + '</span></span><span class="pk-check"></span></label>';
+    }).join('');
+    $('pickGrid').addEventListener('change', function () { syncPick(); markChanged(); });
+    $('presets').addEventListener('click', function (e) {
+      var k = e.target.getAttribute && e.target.getAttribute('data-preset'); if (!k) return;
+      SYSTEMS.forEach(function (x) { $('pk-' + x.id).checked = PRESETS[k].indexOf(x.id) !== -1; });
+      syncPick(); markChanged();
+    });
+    syncPick();
+  }
+
+  var chapterNo = 0, LAST = null;
+  function run() {
+    var parts = ($('birth').value || '').split('-').map(Number);
+    if (parts.length !== 3 || !parts[0]) { $('out').innerHTML = ''; return; }
+    var tm = ($('time').value || '12:00').split(':').map(Number);
+    var unknown = $('unknown').checked;
+    var birth = Birth.create({
+      y: parts[0], m: parts[1], d: parts[2], hour: tm[0], minute: tm[1] || 0, timeKnown: !unknown,
+      placeId: $('place').value, dst: $('dst').checked, gender: $('gender').value, trueSolar: $('trueSolar').checked
+    });
+    var now = new Date(), nowYear = now.getFullYear();
+    var nowJd = Astro.julianDay(nowYear, now.getMonth() + 1, now.getDate(), 12);
+    var name = $('name').value.trim();
+
+    var nu = NumerologyEngine.calculate(birth.y, birth.m, birth.d, { method: 'A', year: nowYear });
+    var bz = Bazi.calculate(birth, { year: nowYear });
+    var zw = Ziwei.calculate(birth);
+    var we = Astrology.western(birth);
+    var ve = Astrology.vedic(birth, nowJd);
+    var hd = HumanDesign.calculate(birth);
+
+    var picked = getPicked();
+    if (!picked.length) { $('out').innerHTML = '<p class="notice" style="margin-top:40px">請至少勾選一個想分析的系統。</p>'; return; }
+    var has = function (id) { return picked.indexOf(id) !== -1; };
+    chapterNo = 0;
+    LAST = { birth: birth, name: name, nowYear: nowYear, picked: picked };
+
+    var html = '';
+    // 封面
+    html += '<header class="cover"><div class="eyebrow">一個生日，六種看見自己的方式</div>' +
+      '<h1>' + (name ? esc(name) + ' 的' : '') + (picked.length === 6 ? '綜合命盤' : SYSTEMS.filter(function (x) { return has(x.id); }).map(function (x) { return x.key; }).join('・')) + '</h1>' +
+      '<div class="meta">' + birth.y + '.' + pad(birth.m) + '.' + pad(birth.d) + (birth.timeKnown ? '　' + pad(birth.hour) + ':' + pad(birth.minute) : '　時間不確定') +
+      '　' + birth.place.name + '<br>農曆 ' + (bz.lunar ? bz.lunar.text : '') + '　生肖' + bz.zodiac + '</div></header>';
+
+    var only = SYSTEMS.filter(function (x) { return has(x.id); }).map(function (x) { return x.key; });
+    if (picked.length >= 2) {
+      var syn = Synthesis.build({ nu: nu, bz: bz, zw: zw, we: we, ve: ve, hd: hd },
+        { T: T, X: X, E: EXPLAIN, nowYear: nowYear, birthYear: birth.y, only: only, centerName: function (c) { return HumanDesign.CENTERS[c].name; } });
+      html += synthesisSection(syn, name ? esc(name) : '', picked.length);
+    }
+    html += midCta();
+
+    // 各系統一眼看
+    html += '<h3 style="margin-top:48px">' + (picked.length === 6 ? '六個系統' : '各系統') + '一眼看</h3>';
+    var weTop = we.planets[0].sign.replace('座', '') + '太陽・' + we.planets[1].sign.replace('座', '') + '月亮';
+    html += '<nav class="overview">' +
+      cell('numerology', '生命靈數 × 脈輪', T.types[nu.energyType].name, '天賦脈輪：' + nu.lifePathChakras.map(function (id) { return T.chakras[id].name; }).join('＋') + '・生命靈數 ' + nu.lifePath) +
+      cell('bazi', '八字', bz.dayMaster.stem + bz.dayMaster.element + '日主', bz.pillars.map(function (p) { return p.unknown ? '??' : p.ganzhi; }).join(' ')) +
+      cell('ziwei', '紫微斗數', zw.unknownTime ? '需要出生時間' : zw.mingMainStars.join('、') + (zw.mingBorrowed ? '（借對宮）' : ''), zw.unknownTime ? '' : '命宮在' + zw.mingBranch + '・' + zw.juName) +
+      cell('western', '西洋占星', weTop, we.asc ? '上升' + we.asc.sign : '上升需要出生時間') +
+      cell('vedic', '印度占星', ve.moonNakshatra.name, '月亮星宿・' + ve.moonNakshatra.zh + (ve.lagna ? '・Lagna ' + ve.lagna.rashi.split(' ')[1] : '')) +
+      cell('hd', '人類圖', hd.unknownTime ? '需要出生時間' : X.hd.types[hd.type].name, hd.unknownTime ? '' : hd.profile + ' 人生角色・' + X.hd.authorities[hd.authority].name) +
+      '</nav>';
+    if (!birth.timeKnown) html += '<p class="notice">沒有出生時間時：八字少了時柱，紫微斗數、上升星座、宮位和人類圖無法計算，月亮的位置也可能有誤差。</p>';
+
+    if (has('numerology')) html += numerologySection(nu);
+    if (has('bazi')) html += baziSection(bz, nowYear);
+    if (has('ziwei')) html += ziweiSection(zw, birth, nowYear);
+    if (has('western')) html += westernSection(we, birth);
+    if (has('vedic')) html += vedicSection(ve, we);
+    if (has('hd')) html += hdSection(hd);
+    html += aiPackSection();
+
+    html += '<p class="disclaimer">這份分析以多種命理與占星系統為工具，提供自我覺察的參考，不是醫療、心理治療或任何形式的保證。<br>' +
+      '所有排盤都由這個工具自行計算（天文公式與傳統排盤規則），已用實際命盤與已知天象驗證；重要的決定，建議再用專業軟體對照。</p>';
+    $('out').innerHTML = html;
+    updateAiText();
+    renderUnlock();
+  }
+
+  function cell(id, sysName, main, sub) {
+    if (LAST && LAST.picked.indexOf(id) === -1) return '';
+    var st = SYS_STYLE[sysName.replace(' × 脈輪', '')] || ['•', '#A88550'];
+    return '<a href="#' + id + '" style="--pc:' + st[1] + '"><div class="sys"><span class="nav-ic">' + st[0] + '\uFE0E</span>' + sysName + '</div><div class="main">' + main + '</div><div class="sub">' + sub + '</div></a>';
+  }
+
+  // ===== AI 分析懶人包 =====
+  // ===== 商店設定：改這裡就好 =====
+  var SHOP = {
+    lineUrl: 'https://lin.ee/sV4Xtix', // 官方 LINE 加好友連結
+    lineId: '@793hhvkh',  // 官方 LINE ID
+    // 早鳥限量：以「人」計算。名額賣完時把 open 改成 false（或跟 Claude 說「早鳥結束」），全站自動換成原價
+    earlyBird: { limit: 30, open: true },
+    price: { early: 399, regular: 599 },           // 單份價格（早鳥只影響單份）
+    bundles: [                                     // 組合價（改這裡就好）
+      { name: '任選三份', count: 3, early: 999, regular: 999 },
+      { name: '全套六份', count: 6, early: 1599, regular: 1599, best: true, gift: '加贈「常見問題懶人包」' }
+    ],
+    // 解鎖碼：只放 SHA-256 雜湊，不放原本的碼。用「付費版懶人包/產生解鎖碼.html」產生新的，貼一行到這裡
+    codeHashes: [
+      '8e01507f14c50eecf81aca631cf11111ec6c76066d536e6fd21dc2449d3efaaa'
+    ]
+  };
+  // ===== 關於我（請改成你自己的介紹）=====
+  var ABOUT = {
+    name: 'Jasmine',
+    title: '身心靈事業陪伴・生命靈數 × 脈輪',
+    photo: 'jasmine.jpg',                        // 照片檔名，空白就顯示名字縮寫
+    bio: [
+      '我一直很喜歡認識自己。生命靈數、八字、紫微、星盤、人類圖……每個系統都像一面鏡子，照出我不同的樣子。',
+      '看久了，我開始想把它們放在一起：哪些地方大家都這樣說？哪些地方說法不一樣？於是有了這個網站。希望它也能陪你多方比較、更了解自己，在需要做決定的時候，多一份參考的依據。'
+    ],
+    link: 'https://jasmine.jas-soul.com/',
+    linkName: '認識我'
+  };
+  // ===== 購買常見問題（請確認付款方式、交付時間、退款規則）=====
+  var BUYER_FAQ = [
+    ['我不太會用 AI，買了會不會不會用？', '不會的。你只要「複製、貼上、送出」三個步驟。過程中有任何卡住的地方，直接在官方 LINE 問我就好。'],
+    ['要用哪一個 AI？一定要付費嗎？', 'ChatGPT、Claude、Gemini 都可以，免費版也能用。付費版的 AI 模型回答會更完整、更細膩。'],
+    ['付款方式有哪些？多久會收到？', '加官方 LINE 後，我會提供付款方式。確認付款後，會在 24 小時內用 LINE 傳給你完整指令和解鎖碼。'],
+    ['AI 算出來的準嗎？', '命盤是網站用天文公式和傳統排盤規則精準計算的，AI 負責把六個系統整合成好懂的分析。建議把它當作認識自己的參考，有共鳴的地方留下，沒有的就放下。'],
+    ['可以幫家人朋友一起看嗎？', '指令可以重複使用：換成家人的生日、在網站複製他的命盤資料，就能幫他分析。請不要把指令轉售或公開分享。'],
+    ['買了之後可以退款嗎？', '因為指令是數位內容，傳送後就無法收回，所以恕不退款。購買前有任何問題，都歡迎先在 LINE 問我。']
+  ];
+  // ===== 範例報告（之後可以換成你用 AI 實際跑出來的內容）=====
+  var SAMPLE = {
+    product: '個人性格深度解析',
+    who: '範例：戊土日主、行動實踐型、人類圖投射者的女生（虛構生日）',
+    html: '<h4>一、你是怎樣的人</h4>' +
+      '<p class="sm-one">「一個像大地一樣穩穩托住別人，心裡卻住著一片海的人。」</p>' +
+      '<p class="sm-kw"><span>✦ 溫暖照顧</span><span>✦ 直覺細膩</span><span>✦ 說到做到</span></p>' +
+      '<p>第一次見到你的人，常覺得你溫柔、好親近，很容易對你敞開心房（雙魚座上升）；你的八字是戊土，像一座山、一片大地，讓身邊的人覺得安心可靠。但你的內心其實很需要交流和新鮮感（雙子座月亮），一直悶著不說、沒有新的刺激，你會悄悄失去活力。</p>' +
+      '<h4>二、六個系統都提到的你</h4>' +
+      '<p><b>1. 你是天生的照顧者。</b>八字的戊土日主、紫微命宮的太陽星、星盤的雙魚太陽，再加上人類圖投射者「看見別人、引導別人」的天賦，五個系統都指向同一件事：你很自然地會去照顧人、成全人，關係是你最重要的能量來源。</p>' +
+      '<p><b>2. 你的表達會讓你發光。</b>生命靈數裡你最亮的是臍輪，紫微命宮太陽星也是一顆「要被看見」的星。你需要把心裡的感受說出來、做出來，不管是寫字、分享還是創作，表達本身就是你的充電方式……</p>' +
+      '<h4>三、你身上的矛盾與拉扯</h4>' +
+      '<p>你一方面是生命靈數的行動實踐型，想到就想去做；但人類圖投射者和情緒權威又提醒你，要等被邀請、等情緒沉澱再決定。這兩股力量常常在你心裡拉扯……</p>'
+  };
+  var UNLOCK_KEY = 'chart-unlock';
+  function isUnlocked() { try { return SHOP.codeHashes.indexOf(localStorage.getItem(UNLOCK_KEY)) !== -1; } catch (e) { return false; } }
+  function sha256(text) {
+    if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error('no crypto'));
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    });
+  }
+  function tryUnlock() {
+    var code = ($('unlockCode').value || '').trim().toUpperCase();
+    if (!code) return;
+    sha256(code).then(function (h) {
+      if (SHOP.codeHashes.indexOf(h) !== -1) {
+        try { localStorage.setItem(UNLOCK_KEY, h); } catch (e) {}
+        renderUnlock(); toast('解鎖成功，可以複製完整命盤資料了');
+      } else { $('unlockMsg').textContent = '解鎖碼不正確，請確認拼字和符號（不分大小寫），或私訊官方 LINE。'; $('unlockMsg').className = 'unlock-msg bad'; }
+    }, function () { $('unlockMsg').textContent = '這個瀏覽器無法驗證，請改用 https 網址或其他瀏覽器。'; $('unlockMsg').className = 'unlock-msg bad'; });
+  }
+  function renderUnlock() {
+    var box = $('unlockBox'); if (!box) return;
+    var ok = isUnlocked();
+    box.classList.toggle('ok', ok);
+    $('aiCopyData').disabled = !ok;
+    $('unlockMsg').className = 'unlock-msg' + (ok ? ' good' : '');
+    $('unlockMsg').textContent = ok ? '已解鎖 ✓ 這台裝置之後都可以直接複製完整資料。' : '付款後會收到解鎖碼，輸入後就能複製完整命盤資料（含大運、流年、大限）。';
+  }
+  // 付費版只放「介紹」，真正的指令不放在網頁裡（任何人都能看原始碼）
+  var PAID = [
+    { icon: '◎', color: '#A88550', name: '個人性格深度解析', hook: '為什麼我總是這樣？一次看懂真正的自己', points: ['一句話＋三個關鍵字，精準形容你', '你給人的感覺 vs. 內在真正的樣子', '六個系統都提到的共同特質', '你身上的矛盾與拉扯，以及怎麼讓它們合作', '你的天賦、盲點與內在真正的需求', '三個每天可以做的成長練習'] },
+    { icon: '◷', color: '#6C8F74', name: '{Y} 流年完整分析', hook: '提前知道這一年的節奏，做對的事', points: ['這一年的主題、三個關鍵字與整體能量', '各系統怎麼看這一年：共同點與不同的聲音', '四季逐季提醒：重點、適合做的事、要留意的事', '工作、金錢、感情、身心各自的節奏', '三個具體的行動建議', '一句陪你走過這一年的提醒'] },
+    { icon: '✦', color: '#C3824F', name: '事業與天賦', hook: '找到做起來不累、又能發光的工作', points: ['一句話形容你的工作天賦＋三個關鍵字', '各系統都提到的才華與能力', '適合的工作環境、節奏與合作方式', '創業、接案、團隊、教學、創作：哪條路最順', '容易消耗你、要避開的工作狀態', '這幾年適合衝刺、累積或轉換的時機'] },
+    { icon: '◈', color: '#BF9A45', name: '金錢與財運', hook: '錢從哪裡來、為什麼總是留不住', points: ['一句話形容你和錢的關係＋三個關鍵字', '各系統怎麼看你的財運', '最適合你的賺錢方式與收入來源', '錢為什麼留不住：破財原因與金錢信念', '這幾年適合累積、擴張還是保守', '三個金錢練習＋一句金錢肯定語'] },
+    { icon: '♡', color: '#C27D8E', name: '感情與關係', hook: '看懂自己在愛裡的樣子，不再重複受傷', points: ['一句話形容你在愛裡的樣子＋三個關鍵字', '你的需求、愛的表達方式與被愛的感覺', '容易卡住的模式，以及溫柔的練習方向', '適合的伴侶特質與相處節奏', '家人、朋友、工作夥伴關係的提醒', '這幾年的關係功課＋三個小練習'] },
+    { icon: '❋', color: '#5D88A6', name: '專屬能量充電處方', hook: '總是莫名很累、想太多、睡不好？', points: ['找出你最容易耗能的情境與環境', '身心發出「需要休息」訊號時的樣子', '你的脈輪能量地圖：哪裡亮、哪裡需要照顧', '整合五行、星盤、人類圖的能量特質', '最適合你的充電方式與療癒方法', '一套每天 10 分鐘的專屬能量練習'] }
+  ];
+  // 常見問題懶人包：只放題目，真正的指令在付費版資料夾
+  var FAQ = ['我適合創業，還是適合上班？', '什麼時候適合換工作或轉職？', '我為什麼總是存不了錢？', '我的正緣是什麼樣子？什麼時候比較容易遇到？', '為什麼我在感情裡總是重複一樣的模式？',
+    '我的人生使命、天命是什麼？', '我適合做身心靈或助人的工作嗎？', '今年適合搬家、結婚或做重大決定嗎？', '我為什麼容易焦慮、想太多？', '為什麼我和家人的關係總是卡卡的？'];
+  function earlyOn() { return !!(SHOP.earlyBird && SHOP.earlyBird.open); }
+  var FREE_PROMPT = '請根據下面的命盤資料，幫我做一份「免費體驗版」的自我認識：\n' +
+    '1. 用一句話形容我是怎樣的人，再給三個關鍵字。\n' +
+    '2. 用 3–5 句話說明我的核心性格，指出哪些地方是好幾個系統都提到的。\n' +
+    '3. 給我一個這陣子可以留意的小提醒。\n' +
+    '整份回答控制在 400 字以內。';
+  function priceTag(pr) {
+    return earlyOn() ? '<span class="pc-price"><small>早鳥</small>NT$' + pr.early + '<s>NT$' + pr.regular + '</s></span>' : '<span class="pc-price">NT$' + pr.regular + '</span>';
+  }
+  function earlyBanner() {
+    var eb = SHOP.earlyBird; if (!eb) return '';
+    if (!earlyOn()) return '<div class="early off">早鳥名額已額滿，目前為正式價格。</div>';
+    return '<div class="early"><div class="early-top"><b>✦ 早鳥限量 ' + eb.limit + ' 名</b><span>額滿後恢復原價 NT$' + SHOP.price.regular + '</span></div>' +
+      '<div class="early-sub">買單份或組合都算 1 名，名額以官方 LINE 完成付款的順序為準。</div></div>';
+  }
+  function midCta() {
+    return '<div class="mid-cta no-print"><div class="mc-text"><div class="mc-eyebrow">✦ AI 分析懶人包</div><b>想讓 AI 依你的命盤，寫一份完整分析嗎？</b>' +
+      '<span>先免費試試看，覺得準再看完整版。性格、' + ((LAST ? LAST.nowYear : new Date().getFullYear()) + 1) + ' 流年、事業、財運、感情都有。</span></div>' +
+      '<a class="btn" href="#aipack">免費試試看 ↓</a></div>';
+  }
+  function sampleBlock() {
+    return '<div class="sample"><div class="sm-head"><span class="sm-badge">範例報告</span><b>' + SAMPLE.product + '</b><span class="sm-who">' + SAMPLE.who + '</span></div>' +
+      '<div class="sm-body">' + SAMPLE.html + '<div class="sm-fade"><span>🔒 完整報告還有天賦與盲點、內在需求、三個成長練習……</span></div></div></div>';
+  }
+  function aboutBlock() {
+    var ph = ABOUT.photo ? '<img src="' + ABOUT.photo + '" alt="' + ABOUT.name + '">' : '<span>' + ABOUT.name.charAt(0) + '</span>';
+    return '<div class="about"><div class="ab-head"><div class="ab-photo">' + ph + '</div><div><div class="ab-eyebrow">關於我</div><b>' + ABOUT.name + '</b><span class="ab-title">' + ABOUT.title + '</span></div></div><div class="ab-body">' +
+      ABOUT.bio.map(function (t) { return '<p>' + t + '</p>'; }).join('') +
+      (ABOUT.link ? '<a class="ab-ig" href="' + ABOUT.link + '" target="_blank" rel="noopener">' + ABOUT.linkName + ' →</a>' : '') + '</div></div>';
+  }
+  function buyerFaq() {
+    return '<div class="bfaq"><h3 class="paid-title">購買前常見問題</h3>' + BUYER_FAQ.map(function (f) {
+      return '<details class="fold"><summary><span class="fmain"><span class="ft" style="font-size:16px">' + f[0] + '</span></span></summary><div class="fold-body"><p class="bfaq-a">' + f[1] + '</p></div></details>';
+    }).join('') + '</div>';
+  }
+  function compareTable() {
+    var rows = [
+      ['指令', '一段簡短的體驗指令', '每個主題專門設計的深度指令'],
+      ['命盤資料', '性格相關的資料', '完整資料，含大運、流年、大限、印度大運'],
+      ['回答內容', '約 400 字的重點', '分段的完整報告，依主題逐項分析'],
+      ['各系統整合', '簡單點出共同點', '逐一整理共同點，以及說法不同的地方'],
+      ['生活面向', '—', '依主題深入工作、金錢、感情、身心'],
+      ['時間節奏', '—', '流年、四季、這幾年的轉換時機'],
+      ['練習與建議', '一個小提醒', '三個以上可以馬上做的練習和行動'],
+      ['價格', '免費', (earlyOn() ? '單份早鳥 NT$' + SHOP.price.early : '單份 NT$' + SHOP.price.regular) + '，組合更划算']
+    ];
+    return '<div class="compare"><div class="cmp-row cmp-head"><span></span><span>免費體驗版</span><span>完整版</span></div>' + rows.map(function (r) {
+      return '<div class="cmp-row"><span class="cmp-k">' + r[0] + '</span><span class="cmp-free">' + r[1] + '</span><span class="cmp-paid">' + r[2] + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function aiPackSection() {
+    var Y = (LAST ? LAST.nowYear : new Date().getFullYear()) + 1;
+    var line = SHOP.lineUrl ? '<a class="btn line-btn" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">加官方 LINE 了解完整版</a>' : '<span class="btn line-btn disabled">官方 LINE 連結尚未設定</span>';
+    return '<section class="ai-pack no-print" id="aipack"><div class="eyebrow">AI 分析懶人包</div><h2>先免費試試看，AI 怎麼讀你的命盤</h2>' +
+      '<p class="lead">下面已經幫你準備好「免費體驗版指令＋你的命盤資料」。按複製，貼到 ChatGPT、Claude 或 Gemini，就能看到 AI 的分析。</p>' +
+      '<div class="ai-free"><span class="badge">免費體驗版</span><span>一句話形容你・三個關鍵字・核心性格・一個小提醒</span></div>' +
+      '<textarea class="ai-text" id="aiText" readonly></textarea>' +
+      '<div class="ai-actions"><button type="button" class="btn" id="aiCopy">複製免費版指令與資料</button><span class="meta" id="aiMeta"></span></div>' +
+      '<ol class="ai-steps"><li>按「複製免費版指令與資料」。</li><li>打開你常用的 AI，開一個新對話，貼上送出。</li><li>看看準不準，覺得有共鳴的話，往下看完整版。</li></ol>' +
+
+      '<div class="paid"><div class="eyebrow">覺得準嗎？</div><h3 class="paid-title">完整版懶人包</h3>' +
+      '<p class="lead">完整版是更深入的專屬指令，AI 會整合你勾選的系統，寫出一份完整的分析。</p>' + compareTable() + sampleBlock() +
+      earlyBanner() +
+      '<div class="paid-grid">' + PAID.map(function (x) {
+        return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
+          '<p class="pc-hook">' + x.hook + '</p>' +
+          '<ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') + '</ul><div class="pc-foot">' + priceTag(SHOP.price) + '<span class="lock">🔒 購買後提供</span></div></div>';
+      }).join('') + '</div>' +
+      '<div class="faq-pack"><div class="faq-head"><span class="pc-ic" style="--pc:#7A5A9C">問</span><b>常見問題懶人包</b>' + priceTag(SHOP.price) + '</div>' +
+        '<p class="faq-desc">10 個大家最常問的問題，每一題都根據你的命盤來回答：</p>' +
+        '<ol class="faq-list">' + FAQ.map(function (qq) { return '<li>' + qq + '</li>'; }).join('') + '</ol>' +
+        '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。全套方案免費加贈。</p></div>' +
+      '<div class="bundles">' + SHOP.bundles.map(function (bd) {
+        var on = earlyOn(), unit = on ? SHOP.price.early : SHOP.price.regular, now = on ? bd.early : bd.regular, full = unit * bd.count;
+        return '<div class="bundle' + (bd.best ? ' best' : '') + '">' + (bd.best ? '<i class="bd-tag">最划算</i>' : '') +
+          '<div class="bd-name">' + bd.name + '</div><div class="bd-price"><s>NT$' + full + '</s><b>NT$' + now + '</b></div>' +
+          '<div class="bd-save">省 NT$' + (full - now) + '・平均每份 NT$' + Math.round(now / bd.count) + '</div>' +
+          (bd.gift ? '<div class="bd-gift">🎁 ' + bd.gift + '</div>' : '') +
+          (on && bd.regular !== bd.early ? '<div class="bd-after">早鳥結束後 NT$' + bd.regular + '</div>' : '') + '</div>';
+      }).join('') + '</div>' +
+      '<div class="flow"><div class="flow-title">購買流程</div><ol>' +
+        '<li>' + (SHOP.lineUrl ? '<a class="line-link" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">' : '') + '<b>加官方 LINE</b>' + (SHOP.lineId ? '（' + SHOP.lineId + '）' : '') + (SHOP.lineUrl ? '</a>' : '') + '，告訴我你想要哪一份</li>' +
+        '<li><b>完成付款</b>，' + (earlyOn() ? '早鳥價單份 NT$' + SHOP.price.early + '，也有組合優惠' : '單份 NT$' + SHOP.price.regular + '，也有組合優惠') + '</li>' +
+        '<li><b>收到完整版指令</b>，我會透過 LINE 傳給你</li>' +
+        '<li><b>輸入解鎖碼</b>，選好年份，按「複製完整命盤資料」，和完整版指令一起貼給 AI</li></ol>' +
+        '<div class="unlock" id="unlockBox"><div class="unlock-row"><input type="text" id="unlockCode" placeholder="輸入解鎖碼" autocomplete="off" spellcheck="false"><button type="button" class="btn line" id="unlockBtn">解鎖</button></div><p class="unlock-msg" id="unlockMsg"></p></div>' +
+        '<div class="ai-row" style="margin-top:12px"><label>分析年份 <input type="number" id="aiYear" min="1900" max="2100" value="' + Y + '"></label><span>流年版會用到這個年份的資料</span></div>' +
+        '<div class="ai-actions">' + line + '<button type="button" class="btn" id="aiCopyData" disabled>複製完整命盤資料</button></div></div></div>' +
+      aboutBlock() + buyerFaq() +
+      '<p class="note">命盤資料是在你的電腦上產生的，只有你按複製、自己貼上時才會給 AI。AI 的分析僅供自我覺察參考。</p></section>';
+  }
+  var AI_RULES = '請注意：\n- 用繁體中文、白話、溫暖的語氣，像在跟朋友聊天，少用艱深術語；用到術語時順便解釋。\n- 以自我覺察和成長為方向，不要宿命論、不要嚇人。\n- 不提供醫療、法律或投資建議。\n- 命盤資料已經算好，請直接使用，不要自己重新排盤；資料沒有的就說明無法判斷。\n';
+  function buildAiData(Y, full) {
+    var L = LAST, b = L.birth, has = function (id) { return L.picked.indexOf(id) !== -1; }, out = [];
+    var bzY = Bazi.calculate(b, { year: Y });
+    out.push('【基本資料】');
+    if (L.name) out.push('稱呼：' + L.name);
+    out.push('生日：' + b.y + '-' + pad(b.m) + '-' + pad(b.d) + (b.timeKnown ? ' ' + pad(b.hour) + ':' + pad(b.minute) : '（出生時間不確定）') + '，出生地：' + b.place.name + '，性別：' + (b.gender === 'M' ? '男' : '女'));
+    if (bzY.lunar) out.push('農曆：' + bzY.lunar.text + '，生肖' + bzY.zodiac);
+    if (has('numerology')) {
+      var n = NumerologyEngine.calculate(b.y, b.m, b.d, { method: 'A', year: Y });
+      out.push('', '【生命靈數 × 脈輪】');
+      out.push('能量類型：' + T.types[n.energyType].name + '；生命靈數：' + n.lifePath + '；天賦脈輪：' + n.lifePathChakras.map(function (id) { return T.chakras[id].name; }).join('＋'));
+      out.push('最亮的脈輪：' + T.chakras[n.brightest].name + (n.potential ? '；潛在（未出現）：' + T.chakras[n.potential].name : ''));
+      out.push('七脈輪出現次數：' + n.chakras.slice().reverse().map(function (c) { return c.name + ' ' + c.count; }).join('、'));
+      if (full) out.push(Y + ' 年個人流年：' + n.personalYear.number + '（' + T.personalYear[n.personalYear.number].theme + '）');
+    }
+    if (has('bazi')) {
+      var bz = bzY, st = bz.strength;
+      out.push('', '【八字】');
+      out.push('四柱：' + bz.pillars.map(function (p) { return p.label + ' ' + (p.unknown ? '未知' : p.ganzhi + '（' + (p.label === '日柱' ? '日主' : p.tenGod) + '）'); }).join('、'));
+      out.push('藏干：' + bz.pillars.filter(function (p) { return !p.unknown; }).map(function (p) { return p.branch + '藏' + p.hidden.map(function (h) { return h.stem + h.tenGod; }).join('/'); }).join('；'));
+      out.push('日主：' + bz.dayMaster.stem + bz.dayMaster.element + '（' + bz.dayMaster.yinYang + bz.dayMaster.element + '）' + (st ? '；身強身弱（簡化判斷）：' + st.label + '，得令' + (st.month.deLing ? '有' : '無') + '（' + st.month.branch + '月' + st.month.state + '）' : ''));
+      out.push('五行加權：' + bz.elements.map(function (e) { return e.name + ' ' + e.weight; }).join('、'));
+      if (full) out.push('大運：' + bz.luck.map(function (l) { return l.ganzhi + '（' + l.startYear + '–' + l.endYear + '，' + l.stemGod + '/' + l.branchGod + '）'; }).join('、'));
+      var lk = bz.luck.filter(function (l) { return Y >= l.startYear && Y <= l.endYear; })[0];
+      if (full) out.push(Y + ' 年流年：' + bz.flow[0].ganzhi + '（天干' + bz.flow[0].stemGod + '、地支' + bz.flow[0].branchGod + '）' + (lk ? '，當時大運 ' + lk.ganzhi : ''));
+    }
+    if (has('ziwei')) {
+      var zw = Ziwei.calculate(b);
+      out.push('', '【紫微斗數】');
+      if (zw.unknownTime) out.push('沒有出生時間，無法排盤。');
+      else {
+        out.push('五行局：' + zw.juName + '；命宮在' + zw.mingBranch + '，主星：' + zw.mingMainStars.join('、') + (zw.mingBorrowed ? '（借對宮）' : '') + '；身宮：' + zw.shenPalace);
+        out.push('十二宮：' + zw.palaces.map(function (p) { return p.name + '（' + p.stem + p.branch + '）' + (p.stars.length ? p.stars.map(function (x) { return x.name + (x.hua ? x.hua : ''); }).join('、') : '無星'); }).join('；'));
+        out.push('生年四化：' + zw.sihua.map(function (h) { return h.star + h.type + '在' + (h.palace || '—'); }).join('、'));
+        var age = Y - b.y + 1, dec = zw.decades.filter(function (d) { return age >= d.from && age <= d.to; })[0];
+        if (full) out.push('大限：' + zw.decades.slice(0, 9).map(function (d) { return d.palace + '（' + d.from + '–' + d.to + ' 歲）'; }).join('、'));
+        if (full && dec) out.push(Y + ' 年（虛歲 ' + age + '）大限：' + dec.palace + '（' + dec.from + '–' + dec.to + ' 歲）');
+      }
+    }
+    if (has('western')) {
+      var we = Astrology.western(b);
+      out.push('', '【西洋占星（回歸黃道、整宮制）】');
+      out.push(we.planets.map(function (p) { return p.name + ' ' + p.sign + ' ' + p.deg + (p.house ? ' 第' + p.house + '宮' : '') + (p.retro && p.id !== 'node' ? ' 逆行' : ''); }).join('；'));
+      if (we.asc) out.push('上升：' + we.asc.sign + ' ' + we.asc.deg + '；天頂：' + we.mc.sign + ' ' + we.mc.deg);
+      out.push('主要相位：' + we.aspects.slice(0, 10).map(function (a) { return a.a + a.type + a.b + '（' + a.orb + '°）'; }).join('、'));
+    }
+    if (has('vedic')) {
+      var ve = Astrology.vedic(b, Astro.julianDay(Y, 7, 1, 12));
+      out.push('', '【印度占星（Lahiri 恆星黃道、整宮制）】');
+      out.push((ve.lagna ? 'Lagna：' + ve.lagna.rashi + '；' : '') + '月亮：' + ve.grahas[1].rashi + '，星宿 ' + ve.moonNakshatra.name + '（' + ve.moonNakshatra.zh + '）第 ' + ve.moonNakshatra.pada + ' 足');
+      out.push('九曜：' + ve.grahas.map(function (g) { return g.name + ' ' + g.rashi + (g.house ? ' 第' + g.house + '宮' : '') + (g.retro ? ' 逆行' : ''); }).join('；'));
+      if (full) out.push('Vimshottari 大運：' + ve.dashas.map(function (d) { return d.lord + '（' + d.from + '–' + d.to + '）'; }).join('、'));
+      var dy = ve.dashas.filter(function (d) { return d.from.slice(0, 4) <= String(Y) && d.to.slice(0, 4) >= String(Y); }).map(function (d) { return d.lord; });
+      if (full && dy.length) out.push(Y + ' 年所在大運：' + dy.join(' → '));
+    }
+    if (has('hd')) {
+      var hd = HumanDesign.calculate(b);
+      out.push('', '【人類圖】');
+      if (hd.unknownTime) out.push('沒有出生時間，無法計算。');
+      else {
+        var t = X.hd.types[hd.type];
+        out.push('類型：' + t.name + '；策略：' + t.strategy + '；內在權威：' + X.hd.authorities[hd.authority].name + '；人生角色：' + hd.profile + '；定義：' + hd.definition);
+        out.push('有定義的中心：' + hd.definedCenters.map(function (c) { return HumanDesign.CENTERS[c].name; }).join('、') + '；開放：' + Object.keys(HumanDesign.CENTERS).filter(function (c) { return hd.definedCenters.indexOf(c) === -1; }).map(function (c) { return HumanDesign.CENTERS[c].name; }).join('、'));
+        out.push('通道：' + (hd.channels.length ? hd.channels.map(function (c) { return c.gates.join('-'); }).join('、') : '無'));
+        out.push('個性閘門：' + hd.personality.map(function (p) { return p.name + ' ' + p.gate + '.' + p.line; }).join('、'));
+        out.push('設計閘門：' + hd.design.map(function (p) { return p.name + ' ' + p.gate + '.' + p.line; }).join('、'));
+      }
+    }
+    return out.join('\n');
+  }
+  function aiYear() { var el = $('aiYear'); return (el && parseInt(el.value, 10)) || LAST.nowYear + 1; }
+  function updateAiText() {
+    var ta = $('aiText'); if (!ta || !LAST) return;
+    ta.value = '你是一位溫柔、專業的命理與占星老師，熟悉生命靈數、脈輪、八字、紫微斗數、西洋占星、印度占星和人類圖。\n' +
+      FREE_PROMPT + '\n\n' + AI_RULES + '\n===== 我的命盤資料（體驗版）=====\n' + buildAiData(LAST.nowYear, false);
+    $('aiMeta').textContent = '約 ' + ta.value.length + ' 字';
+  }
+  function copyText(text, btn, label, msg) {
+    var done = function () { btn.textContent = '已複製 ✓'; toast(msg); setTimeout(function () { btn.textContent = label; }, 2000); };
+    var fallback = function () { var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); done(); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  }
+  document.addEventListener('keydown', function (e) { if (e.target.id === 'unlockCode' && e.key === 'Enter') tryUnlock(); });
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.id === 'aiCopy') copyText($('aiText').value, t, '複製免費版指令與資料', '已複製，可以貼到 AI 了');
+    else if (t.id === 'aiCopyData') { if (!isUnlocked()) return; copyText('===== 我的命盤資料（完整版）=====\n' + buildAiData(aiYear(), true), t, '複製完整命盤資料', '已複製完整資料，和完整版指令一起貼給 AI'); }
+    else if (t.id === 'unlockBtn') tryUnlock();
+  });
+
+  // ===== 總整理 =====
+  function evChip(e) {
+    var sysName = e.split('：')[0], st = SYS_STYLE[sysName];
+    return '<span' + (st ? ' style="--pc:' + st[1] + '"' : '') + '>' + (st ? '<i class="dot"></i>' : '') + e + '</span>';
+  }
+  function synthesisSection(s, name, n) {
+    var nTxt = n === 6 ? '六' : String(n);
+    var b = '', P = s.portrait;
+    if (P) {
+      b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' +
+        '<div class="kw">' + P.keywords.map(function (k) { return '<span>' + k + '</span>'; }).join('') + '</div>' +
+        '<div class="pp">' + P.paragraphs.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>' +
+        '<ul class="plines">' + P.lines.map(function (l) { var st = LIFE_STYLE[l.id] || LIFE_STYLE.core; return '<li style="--pc:' + st[1] + '"><b><span class="li-ic">' + st[0] + '\uFE0E</span>' + l.name + '</b><span>' + l.text + '</span></li>'; }).join('') + '</ul></div>';
+    }
+    b += '<p class="note" style="margin-top:0">上面這段話是把你選的 ' + nTxt + ' 個系統放在一起整理出來的。想知道每一句是哪些系統說的，點開下面看。</p>';
+
+    var common = '<div class="themes">' + s.common.map(function (c) {
+      return '<div class="theme"><div class="label">' + c.systems.length + ' 個系統都提到</div><div class="name">' + c.name + '</div><p>' + c.text + '</p>' +
+        '<div class="ev">' + c.evidence.map(evChip).join('') + '</div></div>';
+    }).join('') + '</div>';
+    b += fold('資料來源：共同點', '好幾個系統都這樣說', common, false);
+    if (s.tensions.length) {
+      b += fold('資料來源：不同的聲音', '說法不一樣的地方', s.tensions.map(function (t) {
+        var side = function (x) { return '<div><div class="label">' + x.name + '</div><div class="ev">' + x.evidence.map(evChip).join('') + '</div></div>'; };
+        return '<div class="tension"><div class="name">' + t.title + '</div><div class="sides">' + side(t.a) + side(t.b) + '</div><p>' + t.text + '</p></div>';
+      }).join(''), false);
+    }
+    b += '<h3>各個面向，各系統怎麼說</h3>';
+    var num = 0;
+    b += s.aspects.map(function (a) {
+      if (!a.items.length) return '';
+      var hint = a.lead + (a.shared.length ? '<span class="f-tags">' + a.shared.map(function (x) { return '<span>✦ ' + x.name + '</span>'; }).join('') + '</span>' : '');
+      var body = (a.shared.length ? '<p class="notice" style="margin-bottom:8px">' + a.shared.map(function (x) {
+        return x.systems.join('、') + '都提到「' + x.name + '」';
+      }).join('；') + '。</p>' : '') +
+        '<ul class="list-plain sys-list">' + a.items.map(function (it) {
+          return irow(SYS_STYLE[it.sys], it.sys, '', [[it.label, 'sign']], it.text);
+        }).join('') + '</ul>';
+      num++;
+      return fold(a.name, hint, body, false, [(num < 10 ? '0' : '') + num, LIFE_STYLE[a.id][1]]);
+    }).join('');
+    b += '<p class="note">整理方式：把每個系統在性格、工作、金錢、感情的結果，對應到十個主題，再看哪些主題被最多系統提到。這是幫你找線索的整理，不是新的命理系統。</p>';
+    return '<section class="system" id="summary"><div class="sys-head"><div class="no">總覽</div><h2>你是一個怎樣的人</h2>' +
+      '<p class="lead">先看一段話，再看各個面向；依據放在下面，想看再點開。</p></div>' + b + '</section>';
+  }
+
+  // ===== 一、生命靈數 =====
+  function numerologySection(r) {
+    var type = T.types[r.energyType];
+    var maxC = Math.max.apply(null, r.chakras.map(function (c) { return c.count; }).concat([1]));
+    var b = '<p class="big-line">' + type.name + '</p><p class="tagline">「' + (T.quotes[r.energyType] || type.line) + '」・同類型、同天賦的人只有 ' + (r.comboRate * 100).toFixed(1) + '%</p>' +
+      '<div class="prose"><p>' + type.desc + '</p></div>';
+    b += '<h3>七脈輪能量</h3>' + chakraColumn(r.chakras, maxC, function (id) { return T.chakras[id].color; }, function (c) {
+      return c.count ? '比 ' + Math.round(c.brighterThan * 100) + '% 的人亮' : '潛在能量';
+    }) + '<p class="note">光點越大越亮，代表這個脈輪在生日數字裡出現越多次；虛線圈是還沒出現、可以培養的潛在能量。</p>';
+    b += '<h3>三個重點</h3><div class="trio">' +
+      trio('最亮', T.chakras[r.brightest].name, T.chakras[r.brightest].bright) +
+      trio('天賦（生命靈數 ' + r.lifePath + '）' + q('天賦脈輪'), r.lifePathChakras.map(function (id) { return T.chakras[id].name; }).join('＋'), T.lifePath[r.lifePath]) +
+      (r.potential ? trio('潛在' + q('潛在能量'), T.chakras[r.potential].name, T.chakras[r.potential].potential) : '') + '</div>';
+    b += '<h3>流年' + q('個人流年') + '</h3><div class="trio">' + [r.personalYear, r.personalYearNext].map(function (py) {
+      var t = T.personalYear[py.number];
+      return trio(py.year + ' 年', py.number + '・' + t.theme, t.line);
+    }).join('') + '</div>';
+    b += '<div class="btns no-print"><a class="btn line" href="numerology-report.html">看完整報告與分享卡 →</a></div>';
+    return sys(0, 'numerology', '生命靈數 × 脈輪', X.intro.numerology, b);
+  }
+  // ===== 圖示列：彩色圓形圖示＋標題＋關鍵字＋小標籤＋說明 =====
+  var PLANET_STYLE = {
+    sun: ['☉', '#C9963A'], moon: ['☽', '#7F92AA'], mercury: ['☿', '#5E9A8A'], venus: ['♀', '#C27D8E'], mars: ['♂', '#B0594C'],
+    jupiter: ['♃', '#A0763D'], saturn: ['♄', '#6D6658'], uranus: ['♅', '#4F8FA8'], neptune: ['♆', '#5B6FA8'], pluto: ['♇', '#7A5A78'], node: ['☊', '#8A8076'], ketu: ['☋', '#8A8076']
+  };
+  var ZH_PLANET = { '太陽': 'sun', '月亮': 'moon', '水星': 'mercury', '金星': 'venus', '火星': 'mars', '木星': 'jupiter', '土星': 'saturn', '天王星': 'uranus', '海王星': 'neptune', '冥王星': 'pluto', '北交點': 'node', '羅睺': 'node', '計都': 'ketu' };
+  var SYS_STYLE = { '生命靈數': ['數', '#90719C'], '八字': ['八', '#A0763D'], '紫微斗數': ['紫', '#7A5A9C'], '西洋占星': ['☉', '#C9963A'], '印度占星': ['ॐ', '#C3824F'], '人類圖': ['◇', '#5B6FA8'] };
+  var GOD_STYLE = { '比肩': ['比', '#6C8F74'], '劫財': ['劫', '#6C8F74'], '食神': ['食', '#C3824F'], '傷官': ['傷', '#C3824F'], '正財': ['財', '#BF9A45'], '偏財': ['才', '#BF9A45'],
+    '正官': ['官', '#5D7FA6'], '七殺': ['殺', '#5D7FA6'], '正印': ['印', '#90719C'], '偏印': ['梟', '#90719C'] };
+  var HUA_STYLE = { '化祿': ['祿', '#5E9A6A'], '化權': ['權', '#B0594C'], '化科': ['科', '#5B7FA8'], '化忌': ['忌', '#6D6658'] };
+  var ASPECT_STYLE = { '合相': ['☌', '#BF9A45'], '六分相': ['⚹', '#5E9A8A'], '三分相': ['△', '#5E9A6A'], '四分相': ['□', '#B0594C'], '對分相': ['☍', '#A85A4A'] };
+  var LIFE_STYLE = { core: ['◎', '#A88550'], work: ['✦', '#C3824F'], money: ['◈', '#BF9A45'], love: ['♡', '#C27D8E'], lesson: ['✧', '#5D7FA6'], now: ['◷', '#6C8F74'] };
+  function irow(style, title, kw, chips, text, extra, outline) {
+    style = style || ['•', '#8A8076'];
+    return '<li class="pl" style="--pc:' + style[1] + '"><span class="pl-icon' + (outline ? ' outline' : '') + '">' + style[0] + '\uFE0E</span><div class="pl-body">' +
+      '<div class="pl-head"><b>' + title + '</b>' +
+      (chips && chips.length ? chips.map(function (c) { return '<span class="chip ' + (c[1] || '') + '">' + c[0] + '</span>'; }).join('') : '') +
+      (kw ? '<span class="pl-kw">' + kw + '</span>' : '') + '</div>' +
+      (text ? '<p class="sub">' + text + '</p>' : '') + (extra || '') + '</div></li>';
+  }
+  function q(term) {
+    if (!EXPLAIN.glossary[term]) return '';
+    return '<button type="button" class="qm" data-term="' + term + '" aria-label="' + term + '是什麼">?</button>';
+  }
+  // ===== 五行圖：相生圈＋相剋星＋圓圈大小代表力量 =====
+  var EL_COLOR = { '木': '#6C8F74', '火': '#B0594C', '土': '#BF9A45', '金': '#8E8A82', '水': '#4F7FA8' };
+  function elementWheel(r, dmEl, maxW) {
+    var order = ['火', '土', '金', '水', '木'], cx = 160, cy = 150, R = 104, pos = {};
+    order.forEach(function (e, i) { var a = (-90 + i * 72) * Math.PI / 180; pos[e] = [cx + R * Math.cos(a), cy + R * Math.sin(a)]; });
+    var W = {}; r.elements.forEach(function (e) { W[e.name] = e; });
+    var favor = (r.strength ? r.strength.favor : []).map(function (f) { return f.charAt(0); });
+    var rad = function (e) { return 17 + (maxW ? W[e].weight / maxW : 0) * 21; };
+    var svg = '<svg viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg" font-family="inherit"><defs>' +
+      '<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B9AE9E"/></marker>' +
+      '<marker id="ahk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#D8CDBD"/></marker></defs>';
+    // 相剋（虛線星形）
+    var gen = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' }, ke = { '木': '土', '土': '水', '水': '火', '火': '金', '金': '木' };
+    function edge(a, b, ra, rb) {
+      var dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy), ux = dx / l, uy = dy / l;
+      return [a[0] + ux * (ra + 4), a[1] + uy * (ra + 4), b[0] - ux * (rb + 6), b[1] - uy * (rb + 6)];
+    }
+    Object.keys(ke).forEach(function (e) {
+      var p = edge(pos[e], pos[ke[e]], rad(e), rad(ke[e]));
+      svg += '<line x1="' + p[0].toFixed(1) + '" y1="' + p[1].toFixed(1) + '" x2="' + p[2].toFixed(1) + '" y2="' + p[3].toFixed(1) + '" stroke="#D8CDBD" stroke-width="1.2" stroke-dasharray="4 4" marker-end="url(#ahk)"/>';
+    });
+    // 相生（外圈弧線）
+    Object.keys(gen).forEach(function (e) {
+      var a = pos[e], b2 = pos[gen[e]], p = edge(a, b2, rad(e), rad(gen[e]));
+      var mx = (p[0] + p[2]) / 2, my = (p[1] + p[3]) / 2, ox = mx - cx, oy = my - cy, ol = Math.hypot(ox, oy);
+      var qx = mx + ox / ol * 22, qy = my + oy / ol * 22;
+      svg += '<path d="M' + p[0].toFixed(1) + ',' + p[1].toFixed(1) + ' Q' + qx.toFixed(1) + ',' + qy.toFixed(1) + ' ' + p[2].toFixed(1) + ',' + p[3].toFixed(1) + '" fill="none" stroke="#B9AE9E" stroke-width="1.6" marker-end="url(#ah)"/>';
+    });
+    order.forEach(function (e) {
+      var p = pos[e], rr = rad(e), col = EL_COLOR[e], none = W[e].count === 0;
+      if (e === dmEl) svg += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (rr + 6) + '" fill="none" stroke="#A88550" stroke-width="2"/>';
+      svg += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + rr + '" fill="' + col + '" fill-opacity="' + (none ? .28 : .92) + '"' + (none ? ' stroke="' + col + '" stroke-dasharray="3 3"' : '') + '/>' +
+        '<text x="' + p[0] + '" y="' + (p[1] + 7) + '" text-anchor="middle" font-size="' + Math.round(14 + rr / 4) + '" font-weight="600" fill="#fff" style="font-family:var(--serif)">' + e + '</text>';
+      var ly = p[1] + rr + 15 + (e === dmEl ? 5 : 0);
+      svg += '<text x="' + p[0] + '" y="' + ly + '" text-anchor="middle" font-size="11" fill="#8A8076">' + W[e].weight + (e === dmEl ? '・日主' : '') + (favor.indexOf(e) !== -1 ? '・喜' : '') + '</text>';
+    });
+    svg += '</svg>';
+    var rows = r.elements.map(function (e) {
+      var col = EL_COLOR[e.name], w = maxW ? Math.round(e.weight / maxW * 100) : 0;
+      return '<li class="el-row" style="--pc:' + col + '"><span class="el-ic' + (e.count ? '' : ' none') + '">' + e.name + '</span>' +
+        '<div class="el-body"><div class="el-head"><b>' + X.bazi.elements[e.name].split('、')[0] + '</b><span>' + e.count + ' 個字・力量 ' + e.weight + '</span>' +
+        (e.name === dmEl ? '<i class="chip on">日主</i>' : '') + (favor.indexOf(e.name) !== -1 ? '<i class="chip">喜用</i>' : '') + (e.count === 0 ? '<i class="chip off">沒出現</i>' : '') + '</div>' +
+        '<div class="el-track"><div class="el-fill" style="width:' + w + '%"></div></div></div></li>';
+    }).join('');
+    return '<div class="el-wrap"><div class="el-wheel">' + svg + '<div class="el-legend"><span><i class="ln"></i>相生（順著箭頭生下一個）</span><span><i class="ln dash"></i>相剋</span><span><i class="ring"></i>日主</span></div></div><ul class="el-list">' + rows + '</ul></div>';
+  }
+  function fold(title, hint, inner, open, icon) {
+    return '<details class="fold"' + (open ? ' open' : '') + (icon ? ' style="--pc:' + icon[1] + '"' : '') + '><summary>' +
+      (icon ? '<span class="f-ic">' + icon[0] + '</span>' : '') +
+      '<span class="fmain"><span class="ft">' + title + '</span><span class="fh">' + hint + '</span></span></summary><div class="fold-body">' + inner + '</div></details>';
+  }
+  function trio(label, name, text) {
+    return '<div class="item"><div class="label">' + label + '</div><div class="name">' + name + '</div><p>' + text + '</p></div>';
+  }
+
+  // ===== 二、八字 =====
+  var STEM_EL = { '甲': '陽木', '乙': '陰木', '丙': '陽火', '丁': '陰火', '戊': '陽土', '己': '陰土', '庚': '陽金', '辛': '陰金', '壬': '陽水', '癸': '陰水' };
+  var BRANCH_EL = { '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土', '巳': '火', '午': '火', '未': '土', '申': '金', '酉': '金', '戌': '土', '亥': '水' };
+  function lateZiNotice(sysName) {
+    var b = LAST && LAST.birth;
+    if (!b || !b.timeKnown || b.hour !== 23) return '';
+    return '<p class="notice">你出生在 23:00 以後（晚子時）。' + sysName + '以<b>隔天</b>計算，這是比較常見的算法；有些老師或軟體會算成當天，結果可能不同。</p>';
+  }
+  function baziSection(r, nowYear) {
+    var P = r.pillars, E = EXPLAIN.bazi, dm = r.dayMaster, day = P[2];
+    var b = lateZiNotice('八字') + '<div class="howto">' + E.howTo + '</div>';
+    function rowh(k) { return '<div class="rowh">' + k + q(k) + '<span class="rowtip">' + E.rows[k] + '</span></div>'; }
+    b += '<div class="pillars"><div class="rowh"></div>' + P.map(function (p) {
+      return '<div class="colh">' + p.label + '<span class="role">' + E.pillarRole[p.label] + '</span></div>';
+    }).join('');
+    b += rowh('十神') + P.map(function (p) {
+      if (p.unknown) return '<div class="small">—</div>';
+      if (p.label === '日柱') return '<div class="small"><b class="god day">日主</b><span class="gm">就是你自己</span></div>';
+      return '<div class="small"><b class="god">' + p.tenGod + '</b><span class="gm">' + X.bazi.tenGods[p.tenGod] + '</span></div>';
+    }).join('');
+    b += rowh('天干') + P.map(function (p) {
+      return '<div class="gz' + (p.label === '日柱' ? ' day' : '') + '">' + (p.unknown ? '?' : p.stem + '<span class="el">' + STEM_EL[p.stem] + '</span>') + '</div>';
+    }).join('');
+    b += rowh('地支') + P.map(function (p) {
+      return '<div class="gz">' + (p.unknown ? '?' : p.branch + '<span class="el">' + BRANCH_EL[p.branch] + '</span>') + '</div>';
+    }).join('');
+    b += rowh('藏干') + P.map(function (p) {
+      return '<div class="small">' + (p.unknown ? '—' : p.hidden.map(function (h, i) {
+        return (i === 0 ? '<b>' : '') + h.stem + ' ' + (p.label === '日柱' && h.stem === dm.stem ? '比肩' : h.tenGod) + (i === 0 ? '</b>' : '');
+      }).join('<br>')) + '</div>';
+    }).join('');
+    b += rowh('納音') + P.map(function (p) {
+      return '<div class="small">' + (p.unknown ? '—' : '<b class="god">' + p.nayin + '</b><span class="gm">' + (E.nayin[p.nayin] || '') + '</span>') + '</div>';
+    }).join('');
+    b += rowh('長生') + P.map(function (p) {
+      return '<div class="small">' + (p.unknown ? '—' : '<b class="god">' + p.stage + '</b><span class="gm">' + (E.stages[p.stage] || '') + '</span>') + '</div>';
+    }).join('');
+    b += '</div>';
+
+    // 日主
+    b += '<h3>日主：' + dm.stem + dm.element + '（' + dm.yinYang + dm.element + '）' + q('日主') + '</h3><div class="prose">' +
+      '<p>你的日柱是「<b class="serif">' + day.ganzhi + '</b>」。上面的天干「' + dm.stem + '」就是你自己，所以叫「' + dm.stem + dm.element + '日主」；下面的地支「' + day.branch + '」是你坐的位置。' +
+      E.dayBranch + '「' + day.ganzhi + '」和「' + dm.stem + dm.element + '」說的是同一柱，只是一個講整柱、一個只講你自己。</p>' +
+      '<p>' + X.bazi.dayMaster[dm.stem] + '</p>' +
+      '<p>你的日主坐在「' + day.branch + '」，十二長生是「' + day.stage + '」：' + E.stages[day.stage] + '。</p></div>';
+
+    // 身強身弱
+    var st = r.strength, SE = EXPLAIN.strength;
+    if (st) {
+      b += '<h3>身強還是身弱' + q('身強身弱') + '</h3><div class="howto">' + SE.how + '</div>' +
+        '<div class="strength"><div class="verdict"><div class="label">你的日主</div><div class="big">' + st.label + '</div>' +
+        '<div class="meter"><span style="left:' + Math.max(3, Math.min(97, Math.round((st.ratio - 0.15) / 0.55 * 100))) + '%"></span></div>' +
+        '<div class="scale"><i>身弱</i><i>中和</i><i>身強</i></div></div>' +
+        '<ul class="factors">' +
+        '<li><b>得令' + q('得令') + '</b><span class="' + (st.month.deLing ? 'ok' : 'no') + '">' + (st.month.deLing ? '有' : '沒有') + '</span>' +
+          '<p>生在' + st.month.branch + '月（' + st.month.season + '的季節），' + dm.element + '在這個月是「' + st.month.state + '」：' + SE.states[st.month.state] + '。</p></li>' +
+        '<li><b>得地' + q('得地') + '</b><span class="' + (st.roots.length ? 'ok' : 'no') + '">' + (st.roots.length ? '有根' : '沒有根') + '</span>' +
+          '<p>' + (st.roots.length ? st.roots.join('、') + ' 裡藏著' + dm.element + '，是你的根。' : '地支裡沒有和你同五行的字。') +
+          (st.sealRoots.length ? st.sealRoots.join('、') + ' 藏著生你的五行，也在默默支持你。' : '') + '</p></li>' +
+        '<li><b>得勢' + q('得勢') + '</b><span class="' + (st.helpers.length ? 'ok' : 'no') + '">' + (st.helpers.length ? st.helpers.length + ' 個幫手' : '沒有') + '</span>' +
+          '<p>' + (st.helpers.length ? '天干裡的 ' + st.helpers.join('、') + ' 在幫你。' : '其他天干裡沒有比劫或印星。') + '</p></li></ul></div>' +
+        '<div class="prose"><p>' + SE.labels[st.label] + '</p><p>對你比較有幫助的五行：<b>' + st.favor.join('、') + '</b>。' + SE.favorHow + '</p></div>' +
+        '<p class="note">判斷方式：月支藏干算兩倍、日主自己不算，看幫你的力量（比劫＋印）佔多少，約 ' + Math.round(st.ratio * 100) + '%。這是簡化算法，沒有考慮特殊格局（例如從格）；如果你原本的命盤師傅有不同判斷，以那邊為準。</p>';
+    }
+
+    // 重點
+    var score = {};
+    P.forEach(function (p) {
+      if (p.unknown) return;
+      if (p.label !== '日柱') score[p.tenGod] = (score[p.tenGod] || 0) + 1;
+      p.hidden.forEach(function (h, i) {
+        var g = p.label === '日柱' && h.stem === dm.stem ? '比肩' : h.tenGod;
+        score[g] = (score[g] || 0) + (i === 0 ? 1 : 0.5);
+      });
+    });
+    var order = Object.keys(X.bazi.tenGods);
+    var top = Object.keys(score).sort(function (a, c) { return score[c] - score[a] || order.indexOf(a) - order.indexOf(c); }).slice(0, 3);
+    b += '<h3>你的八字重點</h3><p class="note" style="margin-top:0">把天干和藏干裡的十神加起來，最明顯的三個：</p><ul class="list-plain">' +
+      top.map(function (g, i) { return irow(GOD_STYLE[g], g, X.bazi.tenGods[g], [['第 ' + (i + 1) + ' 明顯', 'sign']], E.tenGodsLong[g]); }).join('') + '</ul>';
+
+    var maxW = Math.max.apply(null, r.elements.map(function (e) { return e.weight; }));
+    b += '<h3>五行分布' + q('五行') + '</h3>' + elementWheel(r, dm.element, maxW);
+    var most = r.elements.slice().sort(function (a, c) { return c.weight - a.weight; })[0];
+    var lack = r.elements.filter(function (e) { return e.count === 0; });
+    if (!lack.length) lack = [r.elements.slice().sort(function (a, c) { return a.weight - c.weight; })[0]];
+    b += '<div class="prose" style="margin-top:16px"><p>' + E.elementMany[most.name] + '</p>' +
+      lack.map(function (e) { return '<p>' + E.elementLack[e.name] + '</p>'; }).join('') + '</div>';
+    b += '<p class="note">左邊數字是八個字裡出現幾次；長條含地支藏干的加權分數。幫日主的力量（比劫＋印）約佔 ' + Math.round(r.supportRatio * 100) + '%。' + X.bazi.note + ' 23:00 以後出生（晚子時）以隔天的日柱計算。</p>';
+
+    // 大運、流年
+    var luckNow = r.luck.map(function (l) { return nowYear >= l.startYear && nowYear <= l.endYear; });
+    var cur = r.luck.filter(function (l, i) { return luckNow[i]; })[0];
+    var flowNow = r.flow[0];
+    b += '<h3>大運' + q('大運') + '與流年' + q('流年') + '</h3><div class="howto">大運是每十年換一次的人生季節，流年是每一年的天氣。都是用「跟你（日主）的關係」來看：天干是那段時間外在比較明顯的事，地支是內在、比較深層的狀態。</div>';
+    if (cur) b += '<div class="prose"><p>你現在走「<b class="serif">' + cur.ganzhi + '</b>」大運（' + cur.startYear + '–' + cur.endYear + '）：天干是<b>' + cur.stemGod + '</b>，' + X.bazi.tenGods[cur.stemGod] +
+      '；地支是<b>' + cur.branchGod + '</b>，' + X.bazi.tenGods[cur.branchGod] + '。</p>' +
+      '<p>' + flowNow.year + ' 年是「<b class="serif">' + flowNow.ganzhi + '</b>」年：天干' + flowNow.stemGod + '（' + X.bazi.tenGods[flowNow.stemGod] + '），地支' + flowNow.branchGod + '（' + X.bazi.tenGods[flowNow.branchGod] + '）。</p></div>';
+    b += fold('九步大運', '每十年一步，從起運到 90 多歲', '<p class="note" style="margin-top:0">' + (r.forward ? '順行' : '逆行') + q('順行逆行') + '，出生後 ' + r.luckStart.years + ' 年 ' + r.luckStart.months + ' 個月 ' + r.luckStart.days + ' 天起運' + q('起運') + '（約 ' + r.luckStart.date.y + '.' + pad(r.luckStart.date.m) + '.' + pad(r.luckStart.date.d) + '）。底色是現在這一步。</p>' +
+      table(['大運', '虛歲', '年份', '天干（外在）', '地支（內在）'], r.luck.map(function (l) {
+        return ['<span class="serif" style="font-size:17px">' + l.ganzhi + '</span>', l.age + ' 歲', l.startYear + '–' + l.endYear,
+          '<b>' + l.stemGod + '</b>　' + X.bazi.tenGods[l.stemGod], '<b>' + l.branchGod + '</b>　' + X.bazi.tenGods[l.branchGod]];
+      }), luckNow));
+    b += '<h3>流年' + q('流年') + '</h3>' + table(['年份', '干支', '天干（外在）', '地支（內在）'], r.flow.map(function (f) {
+      return [f.year, '<span class="serif" style="font-size:17px">' + f.ganzhi + '</span>', '<b>' + f.stemGod + '</b>　' + X.bazi.tenGods[f.stemGod], '<b>' + f.branchGod + '</b>　' + X.bazi.tenGods[f.branchGod]];
+    }));
+    b += fold('十神是什麼', '十種關係的白話解釋', '<ul class="list-plain">' + order.map(function (k) { return irow(GOD_STYLE[k], k, X.bazi.tenGods[k], null, E.tenGodsLong[k]); }).join('') + '</ul>');
+    return sys(1, 'bazi', '八字', X.intro.bazi, b);
+  }
+
+  // ===== 三、紫微 =====
+  function ziweiSection(r, birth, nowYear) {
+    if (r.unknownTime) return sys(2, 'ziwei', '紫微斗數', X.intro.ziwei, '<p class="notice">紫微斗數需要出生時辰，請填入出生時間。</p>');
+    // 傳統排盤位置：上排 巳午未申，右 酉戌，下排 亥子丑寅（右到左），左 辰卯
+    var layout = { 5: [1, 1], 6: [1, 2], 7: [1, 3], 8: [1, 4], 9: [2, 4], 10: [3, 4], 11: [4, 4], 0: [4, 3], 1: [4, 2], 2: [4, 1], 3: [3, 1], 4: [2, 1] };
+    var b = lateZiNotice('紫微斗數') + '<div class="facts">' +
+      fact('農曆', r.lunar.text.replace(/^..年/, '') + ' ' + r.hourBranch + '時') + fact('五行局', r.juName) +
+      fact('命宮', r.mingBranch + '宮') + fact('身宮', r.shenPalace) + '</div>';
+    b += '<div class="zw">';
+    r.palaces.forEach(function (p) {
+      var pos = layout[p.branchIndex];
+      var mains = p.stars.filter(function (s) { return s.kind === 'main'; });
+      var others = p.stars.filter(function (s) { return s.kind !== 'main'; });
+      b += '<div class="cell' + (p.name === '命宮' ? ' ming' : '') + '" style="grid-row:' + pos[0] + ';grid-column:' + pos[1] + '">' +
+        '<div class="pname">' + p.name + (p.isShen ? '<span class="shen">身</span>' : '') + '</div>' +
+        mains.map(function (s) { return '<div class="mainstar">' + s.name + hua(s) + '</div>'; }).join('') +
+        '<div>' + others.map(function (s) { return '<span class="' + s.kind + '">' + s.name + hua(s) + '</span>'; }).join(' ') + '</div>' +
+        '<div class="gz">' + p.stem + p.branch + '</div></div>';
+    });
+    b += '<div class="center"><div class="t">' + r.lunar.yearGanzhi + '年生・' + r.juName + '</div><div class="s">命宮主星：' + r.mingMainStars.join('、') +
+      (r.mingBorrowed ? '（借對宮）' : '') + '<br>身宮在' + r.shenPalace + '</div></div></div>';
+
+    b += '<h3>命宮主星' + (r.mingBorrowed ? q('借對宮') : q('命宮')) + '</h3><div class="prose">' + (r.mingBorrowed ? '<p>' + X.ziwei.borrowed + '</p>' : '') +
+      '<ul class="list-plain">' + r.mingMainStars.map(function (s) { return irow(['★', '#7A5A9C'], s, '命宮主星', null, X.ziwei.stars[s]); }).join('') + '</ul>' +
+      '<p>身宮落在<b class="serif">' + r.shenPalace + '</b>（' + X.ziwei.palaces[r.shenPalace] + '），代表後天越來越重視的領域。</p></div>';
+    b += '<h3>生年四化' + q('四化') + '</h3><ul class="list-plain">' + r.sihua.map(function (h) {
+      return irow(HUA_STYLE[h.type], h.star + h.type, X.ziwei.sihua[h.type], h.palace ? [[h.palace, 'sign']] : null, h.palace ? '落在「' + X.ziwei.palaces[h.palace] + '」。' : '');
+    }).join('') + '</ul>';
+    var age = nowYear - birth.y + 1;
+    b += fold('大限' + q('大限'), '每十年走到哪一宮', table(['虛歲', '宮位', '主題'], r.decades.slice(0, 9).map(function (d) {
+      return [d.from + '–' + d.to, d.palace, X.ziwei.palaces[d.palace]];
+    }), r.decades.slice(0, 9).map(function (d) { return age >= d.from && age <= d.to; })));
+    b += '<p class="note">' + X.ziwei.note + (birth.trueSolar ? '' : '時辰以時鐘時間計算。') + '23:00 以後出生（晚子時）以隔天的農曆日期排盤。</p>';
+    return sys(2, 'ziwei', '紫微斗數', X.intro.ziwei, b);
+  }
+  function hua(s) { return s.hua ? '<span class="hua' + (s.hua === '化忌' ? ' ji' : '') + '">' + s.hua.charAt(1) + '</span>' : ''; }
+  function fact(k, v, term) { return '<div><div class="k">' + k + q(term || k) + '</div><div class="v">' + v + '</div></div>'; }
+
+  // ===== 四、西洋占星 =====
+  function westernSection(r, birth) {
+    var W = EXPLAIN.western, sun = r.planets[0], moon = r.planets[1];
+    var b = '<div class="howto">' + W.howTo + '</div><div class="trio">' +
+      trio(X.western.roles.sun.split('：')[0], sun.sign, X.western.roles.sun.split('：')[1] + '。' + X.western.signs[sun.sign]) +
+      trio(X.western.roles.moon.split('：')[0], moon.sign, X.western.roles.moon.split('：')[1] + '。' + X.western.signs[moon.sign]) +
+      (r.asc ? trio(X.western.roles.asc.split('：')[0] + q('上升'), r.asc.sign, X.western.roles.asc.split('：')[1] + '。' + X.western.signs[r.asc.sign]) : trio('上升' + q('上升'), '—', '需要出生時間。')) +
+      '</div>';
+    var anyRetro = false;
+    function planetItem(p) {
+      var retro = p.retro && p.id !== 'node';
+      if (retro) anyRetro = true;
+      var tpl = W.planetLine[p.id], st = W.signStyle[p.sign];
+      var line = tpl[0].replace('{s}', st) + (p.house ? tpl[1].replace('{h}', W.houses[p.house]) : '') + '。';
+      var rl = retro ? (W.retroLine[p.id] || W.retroLine.outer) : '';
+      var kw = { sun: '核心自我', moon: '情緒需求' }[p.id] || X.western.planets[p.name] || '';
+      var chips = [[p.sign + ' ' + p.deg, 'sign']];
+      if (p.house) chips.push(['第 ' + p.house + ' 宮']);
+      if (retro) chips.push(['逆行', 'retro']);
+      return irow(PLANET_STYLE[p.id], p.name, kw, chips, line, rl ? '<p class="pl-retro">' + rl + '。</p>' : '');
+    }
+    // 星群：同一星座三顆以上（太陽到冥王星）
+    var bySign = {};
+    r.planets.slice(0, 10).forEach(function (p) { (bySign[p.sign] = bySign[p.sign] || []).push(p); });
+    var stell = Object.keys(bySign).filter(function (k) { return bySign[k].length >= 3; });
+    b += '<h3>每顆行星在說什麼' + q('宮位') + '</h3>';
+    stell.forEach(function (k) {
+      var ps = bySign[k], h = ps[0].house;
+      b += '<div class="howto"><b>星群' + q('星群') + '：' + k + '有 ' + ps.length + ' 顆行星（' + ps.map(function (p) { return p.name; }).join('、') + '）</b><br>' +
+        W.stellium.replace('{s}', W.signStyle[k]).replace('{h}', h ? '，第 ' + h + ' 宮「' + W.houses[h] + '」也是你人生的重心' : '') + '</div>';
+    });
+    b += '<ul class="list-plain">' + r.planets.slice(0, 5).map(planetItem).join('') + '</ul>';
+    b += fold('木星到北交點', '社會行星與世代行星，比較是背景', '<ul class="list-plain">' + r.planets.slice(5).map(planetItem).join('') + '</ul>');
+    if (anyRetro) b += '<p class="note">' + W.retro + '</p>';
+    if (r.asc) b += '<p class="note">上升 ' + r.asc.sign + ' ' + r.asc.deg + '。天頂（MC）' + q('天頂') + r.mc.sign + ' ' + r.mc.deg + '：天頂是你在社會上、事業上想被看見的樣子。宮位採整宮制，從上升星座算第 1 宮。</p>';
+
+    var maxE = Math.max.apply(null, Object.values(r.elements));
+    b += '<h3>元素平衡' + q('元素') + '</h3>' + bars(Object.keys(r.elements).map(function (k) {
+      return { label: k + '象', value: r.elements[k], note: X.western.elements[k] + ' ' + r.elements[k] };
+    }), maxE);
+    var ek = Object.keys(r.elements);
+    var many = ek.filter(function (k) { return r.elements[k] === maxE; });
+    var few = ek.filter(function (k) { return r.elements[k] <= 1 && r.elements[k] !== maxE; });
+    b += '<div class="prose" style="margin-top:16px">' + many.map(function (k) { return '<p>' + W.elementMany[k] + '</p>'; }).join('') +
+      few.map(function (k) { return '<p>' + W.elementFew[k] + '</p>'; }).join('') + '</div>';
+    b += '<p class="note">' + W.elementsHow + '</p>';
+
+    var short = function (n) { return n === '太陽' ? '核心自我' : n === '月亮' ? '情緒需求' : X.western.planets[n]; };
+    b += fold('主要相位' + q('相位'), '兩顆行星之間的角度，' + Math.min(8, r.aspects.length) + ' 組', '<div class="howto">相位是兩顆行星之間的角度，代表這兩股能量怎麼互動。' + W.orb + '</div><ul class="list-plain">' + r.aspects.slice(0, 8).map(function (a) {
+      var t = W.aspects[a.type];
+      return irow(ASPECT_STYLE[a.type], a.a + ' ' + a.type + ' ' + a.b, short(a.a) + ' × ' + short(a.b), [[t.angle, 'sign'], ['容許度 ' + a.orb + '°']],
+        a.type + '是' + t.text + '。');
+    }).join('') + '</ul>');
+    b += '<p class="note">' + X.western.note + '</p>';
+    return sys(3, 'western', '西洋占星', X.intro.western, b);
+  }
+
+  // ===== 五、印度占星 =====
+  function vedicSection(r, we) {
+    var V = EXPLAIN.vedic, n = r.moonNakshatra, moon = r.grahas[1];
+    var ws = we.planets[0].sign.replace('座', ''), vs = r.grahas[0].rashi.split(' ')[1];
+    var example = ws === vs ? '你的太陽剛好兩邊都是' + ws + '。' : '例如你的太陽在西洋是' + ws + '座，在印度是' + vs + '。';
+    var b = '<div class="howto">' + V.howTo.replace('{example}', example) + q('恆星黃道') + '</div>';
+    b += '<div class="facts">' +
+      fact('月亮星座（Rashi）', moon.rashi, 'Rashi') +
+      fact('月亮星宿', n.name + '<br><span style="font-size:15px">' + n.zh + '・第 ' + n.pada + ' 足</span>', 'Nakshatra') +
+      fact('上升（Lagna）', r.lagna ? r.lagna.rashi : '需要出生時間', 'Lagna') +
+      fact('星宿主星', n.lord) + '</div>';
+    b += fold('這些名詞是什麼意思', '月亮星座、上升、星宿', '<ul class="list-plain"><li>' + V.rashi + '</li><li>' + V.lagna + '</li><li>' + V.nakshatra + '</li></ul>');
+    b += '<div class="prose" style="margin-top:16px"><p>你的月亮落在 <b class="serif">' + n.name + '（' + n.zh + '）</b>：' + X.vedic.nakshatra[n.index] + '。這個星宿的主星是 ' + n.lord + '，所以你出生時走的第一個大運就是 ' + n.lord + '。</p></div>';
+    b += fold('九曜位置' + q('九曜'), '九顆星落在哪個星座、哪一宮', '<ul class="list-plain">' + r.grahas.map(function (g) {
+      var chips = [[g.rashi + ' ' + g.deg, 'sign']];
+      if (g.house) chips.push(['第 ' + g.house + ' 宮']);
+      if (g.retro) chips.push(['逆行', 'retro']);
+      return irow(PLANET_STYLE[ZH_PLANET[g.name.split(' ')[1]]], g.name, '', chips, '代表' + V.grahas[g.name] + (g.house ? '；落在第 ' + g.house + ' 宮：' + V.houses[g.house] : '') + '。');
+    }).join('') + '</ul>');
+    var cur = r.dashas.filter(function (d) { return d.current; })[0];
+    b += '<h3>大運（Vimshottari Dasha）' + q('Dasha') + '</h3><div class="howto">' + V.dasha + '</div>';
+    if (cur) b += '<div class="prose"><p>你現在走 <b class="serif">' + cur.lord + '</b> 大運（' + cur.from + ' – ' + cur.to + '）：' + X.vedic.dasha[cur.lord] + '。這顆星代表' + grahaMeaning(V, cur.lord) + '。</p></div>';
+    b += fold('全部九個大運', '一生的順序', table(['大運主星', '期間', '年數', '主題'], r.dashas.map(function (d) {
+      return ['<span class="serif">' + d.lord + '</span>', d.from + ' – ' + d.to, d.years, X.vedic.dasha[d.lord]];
+    }), r.dashas.map(function (d) { return d.current; })));
+    b += '<p class="note">' + X.vedic.note + ' 歲差 ' + r.ayanamsa.toFixed(2) + '°。' + (r.moonUncertain ? '沒有出生時間，月亮位置以中午估算，星宿可能有誤差。' : '') + '</p>';
+    return sys(4, 'vedic', '印度占星', X.intro.vedic, b);
+  }
+
+  function grahaMeaning(V, lord) {
+    var zh = lord.split(' ')[1], k = Object.keys(V.grahas).filter(function (x) { return x.split(' ')[1] === zh; })[0];
+    return k ? V.grahas[k] : '';
+  }
+
+  // ===== 六、人類圖 =====
+  function hdSection(r) {
+    if (r.unknownTime) return sys(5, 'hd', '人類圖', X.intro.hd, '<p class="notice">人類圖需要精確的出生時間，請填入出生時間。</p>');
+    var H = EXPLAIN.hd, t = X.hd.types[r.type], au = X.hd.authorities[r.authority];
+    var lines = r.profile.split('/');
+    var tips = H.strategyTips || {};
+    function card(label, term, value, text, wide) {
+      return '<div class="hd-card' + (wide ? ' wide' : '') + '"><div class="k">' + label + q(term) + '</div><div class="v">' + value + '</div><div class="t">' + text + '</div></div>';
+    }
+    var b = '<p class="hd-one">你是<b>' + t.name + '</b>，策略是<b>' + t.strategy + '</b>，做決定時靠<b>' + au.name + '</b>，人生角色是 <b>' + r.profile + '</b>。</p>';
+    b += '<div class="hd-cards">' +
+      card('類型', '類型', t.name, t.desc) +
+      card('策略', '策略', t.strategy, tips[r.type] || '') +
+      card('內在權威', '內在權威', au.name, au.desc) +
+      card('人生角色', '人生角色', r.profile, '<span class="ln">' + lines[0] + ' 爻</span>' + X.hd.lines[lines[0]] + '<br><span class="ln">' + lines[1] + ' 爻</span>' + X.hd.lines[lines[1]]) +
+      card('定義', '定義', r.definition, H.definition[r.definition] || '') +
+      card('簽名／非自己', '簽名與非自己', t.signature + ' <small>／</small> ' + t.notSelf, '活出自己時會感到「' + t.signature + '」；常常覺得「' + t.notSelf + '」，就是提醒你回到自己的策略。') +
+      '</div>';
+
+    var C = HumanDesign.CENTERS, keys = Object.keys(C);
+    var openNames = keys.filter(function (c) { return r.definedCenters.indexOf(c) === -1; }).map(function (c) { return C[c].name; });
+    b += '<h3>能量中心' + q('能量中心') + '：有定義和開放差在哪</h3><div class="howto">' + H.centersHow + '</div>' +
+      '<p class="prose">你有 ' + r.definedCenters.length + ' 個中心有定義、' + openNames.length + ' 個開放' + (openNames.length ? '（' + openNames.join('、') + '）' : '') + '。</p>' +
+      '<div class="bodygraph">' + bodygraph(r) + '<div><ul class="list-plain hd-centers">' +
+      keys.map(function (c) {
+        var on = r.definedCenters.indexOf(c) !== -1;
+        var shape = { head: '▲', ajna: '▼', throat: '■', g: '◆', heart: '▲', sacral: '■', spleen: '▶', solar: '◀', root: '■' }[c];
+        return irow([shape, on ? '#A88550' : '#B9AE9E'], C[c].name, X.hd.centers[c].split('：')[1], [[on ? '有定義' : '開放', on ? 'on' : 'off']], H.centers[c][on ? 'on' : 'off'], '', !on);
+      }).join('') + '</ul></div></div>';
+
+    b += '<h3>通道' + q('通道') + '</h3><div class="howto">' + H.channelsHow + '</div>' + (r.channels.length ? '<ul class="list-plain">' + r.channels.map(function (c) {
+      var info = H.channels[c.gates.slice().sort(function (x, y) { return x - y; }).join('-')] || ['', ''];
+      return irow(['⟷', '#2B2622'], info[0] + '的通道', c.gates.join('–'), [[c.centers.join(' ↔ '), 'sign']], info[1] + '。');
+    }).join('') + '</ul>' : '<p class="prose">沒有完整接通的通道。</p>');
+
+    b += fold('閘門啟動' + q('閘門'), '26 個閘門的詳細位置', '<div class="howto">' + H.gatesHow + '</div>' + table(['天體', '個性（黑）', '設計（紅）'], r.personality.map(function (p, i) {
+      return ['<span class="serif">' + p.name + '</span>', p.gate + '.' + p.line, '<span style="color:var(--red)">' + r.design[i].gate + '.' + r.design[i].line + '</span>'];
+    })));
+    b += '<p class="note">設計時間約為 ' + r.designDate + '（太陽往回 88°）。' + X.hd.note + '</p>';
+    return sys(5, 'hd', '人類圖', X.intro.hd, b);
+  }
+
+  function bodygraph(r) {
+    var C = {
+      head:   { pts: [[210, 12], [256, 80], [164, 80]], label: [150, 52, 'end'], name: '頭頂' },
+      ajna:   { pts: [[164, 102], [256, 102], [210, 170]], label: [150, 128, 'end'], name: '邏輯' },
+      throat: { pts: [[172, 194], [248, 194], [248, 270], [172, 270]], name: '喉嚨' },
+      g:      { pts: [[210, 288], [258, 336], [210, 384], [162, 336]], name: 'G' },
+      heart:  { pts: [[262, 400], [328, 400], [306, 342]], label: [342, 372, 'start'], name: '意志力' },
+      sacral: { pts: [[170, 418], [250, 418], [250, 498], [170, 498]], name: '薦骨' },
+      spleen: { pts: [[28, 398], [28, 484], [106, 441]], label: [44, 506, 'middle'], name: '直覺' },
+      solar:  { pts: [[392, 398], [392, 484], [314, 441]], label: [376, 506, 'middle'], name: '情緒' },
+      root:   { pts: [[172, 530], [248, 530], [248, 602], [172, 602]], name: '根部' }
+    };
+    var G = { // 每個閘門固定一個位置
+      64: [190, 72], 61: [210, 72], 63: [230, 72],
+      47: [190, 110], 24: [210, 110], 4: [230, 110], 17: [194, 130], 11: [226, 130], 43: [210, 152],
+      62: [192, 202], 23: [210, 202], 56: [228, 202], 16: [180, 222], 20: [180, 252], 35: [240, 212], 12: [240, 232], 45: [240, 252],
+      31: [194, 262], 8: [210, 262], 33: [226, 262],
+      7: [198, 306], 1: [210, 298], 13: [222, 306], 10: [172, 336], 25: [248, 336], 15: [198, 366], 2: [210, 374], 46: [222, 366],
+      21: [304, 358], 51: [276, 392], 26: [294, 392], 40: [314, 392],
+      5: [192, 426], 14: [210, 426], 29: [228, 426], 34: [178, 440], 27: [178, 474], 59: [242, 458], 42: [192, 490], 3: [210, 490], 9: [228, 490],
+      48: [42, 414], 57: [60, 423], 44: [78, 432], 50: [92, 441], 32: [74, 452], 28: [56, 462], 18: [40, 472],
+      36: [378, 414], 22: [360, 423], 37: [342, 432], 6: [328, 441], 49: [346, 452], 55: [364, 462], 30: [380, 472],
+      53: [192, 538], 60: [210, 538], 52: [228, 538], 54: [180, 556], 38: [180, 574], 58: [180, 592], 19: [240, 556], 39: [240, 574], 41: [240, 592]
+    };
+    var ROUTE = { '20-34': [146, 346] }; // 繞過 G 中心
+    var INK = '#2B2622', RED = '#A85A4A', PIPE = '#E6DDCF';
+    var defined = {}; r.definedCenters.forEach(function (c) { defined[c] = true; });
+    function color(g) { var v = r.gates[g]; return !v ? null : v.indexOf('P') !== -1 ? INK : RED; }
+    function path(a, b, q) { return 'M' + a[0] + ',' + a[1] + (q ? ' Q' + q[0] + ',' + q[1] + ' ' : ' L') + b[0] + ',' + b[1]; }
+    var base = '', active = '';
+    HumanDesign.CHANNELS.forEach(function (ch) {
+      var a = G[ch[0]], b = G[ch[1]], q = ROUTE[ch[0] + '-' + ch[1]];
+      base += '<path d="' + path(a, b, q) + '" fill="none" stroke="' + PIPE + '" stroke-width="7" stroke-linecap="round"/>';
+      var mid = q ? [(a[0] + 2 * q[0] + b[0]) / 4, (a[1] + 2 * q[1] + b[1]) / 4] : [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      var qa = q ? [(a[0] + q[0]) / 2, (a[1] + q[1]) / 2] : null, qb = q ? [(b[0] + q[0]) / 2, (b[1] + q[1]) / 2] : null;
+      var ca = color(ch[0]), cb = color(ch[1]), both = ca && cb;
+      var w = both ? 5 : 3.5, op = both ? '' : ' stroke-opacity=".5"';
+      if (ca) active += '<path d="' + path(a, mid, qa) + '" fill="none" stroke="' + ca + '" stroke-width="' + w + '"' + op + '/>';
+      if (cb) active += '<path d="' + path(b, mid, qb) + '" fill="none" stroke="' + cb + '" stroke-width="' + w + '"' + op + '/>';
+    });
+    var shapes = '', labels = '', dots = '';
+    Object.keys(C).forEach(function (c) {
+      var on = defined[c], pts = C[c].pts, x = 0, y = 0;
+      pts.forEach(function (p) { x += p[0]; y += p[1]; }); x /= pts.length; y /= pts.length;
+      shapes += '<polygon points="' + pts.map(function (p) { return p.join(','); }).join(' ') + '" fill="' + (on ? '#CDB78F' : '#FFFDF8') + '" stroke="' + (on ? '#8A6A3A' : '#B9AE9E') + '" stroke-width="' + (on ? 2 : 1.5) + '"' + (on ? '' : ' stroke-dasharray="4 3"') + '/>';
+      var L = C[c].label, fill = on ? INK : '#8A8076';
+      labels += L ? '<text x="' + L[0] + '" y="' + L[1] + '" text-anchor="' + L[2] + '" font-size="13" font-weight="600" fill="' + fill + '">' + C[c].name + '</text>'
+        : '<text x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" font-size="14" font-weight="600" fill="' + fill + '">' + C[c].name + '</text>';
+    });
+    Object.keys(G).forEach(function (g) {
+      var p = G[g], v = r.gates[g], col = color(g);
+      dots += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="7.5" fill="' + (col || '#FFFDF8') + '" stroke="' + (v && v.length > 1 ? RED : col || '#B9AE9E') + '" stroke-width="' + (v && v.length > 1 ? 2.2 : 1) + '"/>' +
+        '<text x="' + p[0] + '" y="' + (p[1] + 3) + '" text-anchor="middle" font-size="8" font-weight="600" fill="' + (col ? '#fff' : '#8A8076') + '">' + g + '</text>';
+    });
+    var legend = '<g font-size="10.5" fill="#4A433D">' +
+      '<rect x="14" y="624" width="14" height="10" fill="#CDB78F" stroke="#8A6A3A"/><text x="33" y="633">有定義</text>' +
+      '<rect x="80" y="624" width="14" height="10" fill="#FFFDF8" stroke="#B9AE9E" stroke-dasharray="3 2"/><text x="99" y="633">開放</text>' +
+      '<line x1="140" y1="629" x2="162" y2="629" stroke="' + INK + '" stroke-width="5"/><text x="167" y="633">接通的通道</text>' +
+      '<circle cx="246" cy="629" r="6" fill="' + INK + '"/><text x="256" y="633">個性（黑）</text>' +
+      '<circle cx="324" cy="629" r="6" fill="' + RED + '"/><text x="334" y="633">設計（紅）</text></g>';
+    return '<svg viewBox="0 0 420 644" xmlns="http://www.w3.org/2000/svg" font-family="inherit">' + base + shapes + active + dots + labels + legend + '</svg>';
+  }
+
+  // 小問號：點一下看名詞解釋
+  var tip = document.createElement('div'); tip.id = 'tip'; document.body.appendChild(tip);
+  var tipFor = null;
+  function hideTip() { tip.classList.remove('show'); if (tipFor) tipFor.classList.remove('on'); tipFor = null; }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('.qm');
+    if (!btn) { if (!tip.contains(e.target)) hideTip(); return; }
+    e.preventDefault(); e.stopPropagation();
+    if (tipFor === btn) { hideTip(); return; }
+    hideTip();
+    var term = btn.getAttribute('data-term');
+    tip.innerHTML = '<b>' + term + '</b>' + EXPLAIN.glossary[term];
+    tip.classList.add('show'); btn.classList.add('on'); tipFor = btn;
+    var r = btn.getBoundingClientRect(), w = Math.min(300, document.documentElement.clientWidth - 24);
+    tip.style.maxWidth = w + 'px';
+    var left = Math.max(12, Math.min(r.left + window.scrollX - 20, window.scrollX + document.documentElement.clientWidth - tip.offsetWidth - 12));
+    tip.style.left = left + 'px'; tip.style.top = (r.bottom + window.scrollY + 8) + 'px';
+  }, true);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideTip(); });
+  window.addEventListener('resize', hideTip);
+
+  // 開始分析：載入動畫 → 算 → 捲到結果 → 逐段浮現
+  var CHAKRA_COLORS = ['#B0594C', '#C3824F', '#BF9A45', '#6C8F74', '#5D88A6', '#6B6AA0', '#90719C'];
+  var STEPS = ['計算生命靈數與脈輪', '排八字四柱', '安紫微斗數命盤', '計算西洋星盤', '換算印度恆星黃道', '畫人類圖', '整理六個系統的共同點'];
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var busy = false;
+  function toast(msg) {
+    var t = document.querySelector('.toast');
+    if (!t) { t = document.createElement('div'); t.className = 'toast'; document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast.timer); toast.timer = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  function revealAll() {
+    var els = document.querySelectorAll('#out .cover, #out .portrait, #out section.system, #out nav.overview');
+    if (reduce || !('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    els.forEach(function (el) { el.classList.add('reveal'); io.observe(el); });
+  }
+  function analyze() {
+    if (busy) return;
+    busy = true;
+    var go = $('go');
+    go.disabled = true; go.classList.remove('pending'); go.innerHTML = '<span class="spin"></span>分析中';
+    $('changedHint').classList.remove('show');
+    var out = $('out');
+    out.innerHTML = '<div class="loading"><div class="orbs">' + CHAKRA_COLORS.map(function (c, i) {
+      return '<i style="--c:' + c + ';--a:' + (i * 360 / 7) + 'deg;--d:' + (i * 0.18) + 's"></i>';
+    }).join('') + '</div><div class="step">' + STEPS[0] + '</div><div class="sub">一個生日・六種系統</div></div>';
+    var top = out.getBoundingClientRect().top + window.scrollY - 10;
+    window.scrollTo({ top: top, behavior: reduce ? 'auto' : 'smooth' });
+    var i = 0, stepEl = out.querySelector('.step');
+    var timer = setInterval(function () { i++; if (i < STEPS.length) stepEl.textContent = STEPS[i]; }, 230);
+    setTimeout(function () {
+      clearInterval(timer);
+      run();
+      revealAll();
+      window.scrollTo({ top: out.getBoundingClientRect().top + window.scrollY - 10, behavior: 'auto' });
+      go.disabled = false; go.textContent = '重新分析'; busy = false;
+      toast('分析完成');
+    }, reduce ? 50 : 1700);
+  }
+  function markChanged() {
+    var go = $('go');
+    if (busy) return;
+    go.classList.add('pending'); go.textContent = '更新分析';
+    $('changedHint').classList.add('show');
+  }
+  // 浮動按鈕：看完總覽後出現，捲到懶人包時隱藏
+  var fab = document.createElement('a');
+  fab.className = 'fab no-print'; fab.href = '#aipack'; fab.textContent = '✦ AI 深入分析';
+  document.body.appendChild(fab);
+  window.addEventListener('scroll', function () {
+    var sum = $('summary'), pack = $('aipack');
+    if (!pack) { fab.classList.remove('show'); return; }
+    var start = sum ? sum.getBoundingClientRect().bottom : $('out').getBoundingClientRect().top + 600;
+    var packTop = pack.getBoundingClientRect().top;
+    fab.classList.toggle('show', start < 0 && packTop > window.innerHeight);
+  }, { passive: true });
+  $('go').addEventListener('click', analyze);
+  $('print').addEventListener('click', function () { window.print(); });
+  window.addEventListener('beforeprint', function () { document.querySelectorAll('details.fold').forEach(function (d) { d.open = true; }); });
+  ['birth', 'time', 'place', 'gender', 'unknown', 'dst', 'trueSolar', 'name'].forEach(function (id) { $(id).addEventListener('change', markChanged); $(id).addEventListener('input', markChanged); });
+  buildPicker();
+  run(); revealAll(); $('go').textContent = '重新分析';
+})();
+</script>
+</body>
+</html>
