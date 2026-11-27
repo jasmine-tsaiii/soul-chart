@@ -489,6 +489,7 @@
   .si-sys { padding: 12px 14px; border-radius: 10px; background: #FFFDF8; border: 1px solid var(--line); }
   .si-sys h3 { margin: 0 0 4px; font-family: var(--serif); font-size: 15.5px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
   .si-sys h3 small { font-family: var(--sans); font-size: 11.5px; font-weight: 400; color: var(--accent); }
+  .si-sys h3 a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--gold-soft); }
   .si-sys p { margin: 0; font-size: 13px; line-height: 1.75; color: var(--ink-2); }
   .si-faqs { counter-reset: faq; }
   .si-faq { border-bottom: 1px dashed var(--line); counter-increment: faq; }
@@ -983,7 +984,7 @@
     </header>
     <div class="edit-bar" id="editBar" hidden><span id="editSummary"></span><button type="button" class="btn line" id="editBtn">修改資料／重新分析</button></div>
     <div class="step-label"><span>1</span>出生資料</div>
-    <div class="form-card">
+    <div class="form-card" id="start">
       <div class="frow"><span class="rl">性別</span>
         <div class="seg" id="genderSeg" role="group" aria-label="性別"><button type="button" data-v="F" class="on">女</button><button type="button" data-v="M">男</button></div>
         <select id="gender" hidden><option value="F">女</option><option value="M">男</option></select></div>
@@ -1023,7 +1024,7 @@
   <section class="seo-info no-print" id="about-site">
     <h2>六種命盤，一次免費排好</h2>
     <p class="si-lead">不用註冊、不用下載，輸入生日就能同時看到東方命理和西方占星怎麼說你：生命靈數計算、八字免費排盤、紫微斗數免費排盤、星盤查詢、印度占星和人類圖免費查詢，最後幫你整理出好幾個系統都提到的地方。</p>
-    <div class="si-grid"><div class="si-sys"><h3>生命靈數 × 脈輪<small>生命靈數計算</small></h3><p>用國曆生日的數字加總出你的生命靈數，再對應到七個脈輪，看你的天賦、能量類型，以及最亮和還沒打開的脈輪。</p></div><div class="si-sys"><h3>八字<small>八字免費排盤</small></h3><p>用出生的年、月、日、時排出四柱天干地支，看你的日主、身強身弱、五行喜忌、十神，以及每十年一步的大運。</p></div><div class="si-sys"><h3>紫微斗數<small>紫微斗數免費排盤</small></h3><p>用農曆生日和時辰排出十二宮與十四主星，看命宮、身宮、四化落點，以及每個大限的人生重心。</p></div><div class="si-sys"><h3>西洋占星<small>星盤免費查詢</small></h3><p>太陽、月亮、上升星座和各行星落在哪一宮、彼此形成什麼相位，是最多人熟悉的「星座」完整版。</p></div><div class="si-sys"><h3>印度占星<small>印度占星（吠陀占星）免費排盤</small></h3><p>使用恆星黃道，重視月亮星宿和 Vimshottari 大運，常常和西洋的太陽星座不同，可以互相對照。</p></div><div class="si-sys"><h3>人類圖<small>人類圖免費查詢</small></h3><p>結合占星、易經與脈輪，看你的類型、策略、內在權威、人生角色，以及哪些能量中心是有定義、哪些是開放的。</p></div></div>
+    <div class="si-grid"><div class="si-sys"><h3><a href="numerology/">生命靈數 × 脈輪</a><small>生命靈數計算</small></h3><p>用國曆生日的數字加總出你的生命靈數，再對應到七個脈輪，看你的天賦、能量類型，以及最亮和還沒打開的脈輪。</p></div><div class="si-sys"><h3><a href="bazi/">八字</a><small>八字免費排盤</small></h3><p>用出生的年、月、日、時排出四柱天干地支，看你的日主、身強身弱、五行喜忌、十神，以及每十年一步的大運。</p></div><div class="si-sys"><h3><a href="ziwei/">紫微斗數</a><small>紫微斗數免費排盤</small></h3><p>用農曆生日和時辰排出十二宮與十四主星，看命宮、身宮、四化落點，以及每個大限的人生重心。</p></div><div class="si-sys"><h3><a href="astrology/">西洋占星</a><small>星盤免費查詢</small></h3><p>太陽、月亮、上升星座和各行星落在哪一宮、彼此形成什麼相位，是最多人熟悉的「星座」完整版。</p></div><div class="si-sys"><h3><a href="vedic/">印度占星</a><small>印度占星（吠陀占星）免費排盤</small></h3><p>使用恆星黃道，重視月亮星宿和 Vimshottari 大運，常常和西洋的太陽星座不同，可以互相對照。</p></div><div class="si-sys"><h3><a href="human-design/">人類圖</a><small>人類圖免費查詢</small></h3><p>結合占星、易經與脈輪，看你的類型、策略、內在權威、人生角色，以及哪些能量中心是有定義、哪些是開放的。</p></div></div>
     <h2>常見問題</h2>
     <div class="si-faqs"><details class="si-faq"><summary>真的免費嗎？</summary><p>排盤、六個系統的解讀和綜合整理全部免費，也不用註冊。想讓 AI 依你的命盤寫一份更完整的報告，可以另外購買 AI 懶人包。</p></details><details class="si-faq"><summary>不知道出生時間也可以排嗎？</summary><p>可以。生命靈數、八字（時柱以外）、西洋占星的行星星座都看得到；紫微斗數、人類圖和上升星座需要出生時間，沒有時間時會另外註明。</p></details><details class="si-faq"><summary>生日要填國曆還是農曆？</summary><p>預設是國曆，也可以切換成農曆（包含閏月），系統會自動換算成國曆再排盤。</p></details><details class="si-faq"><summary>排盤準不準？</summary><p>所有命盤都用天文公式與傳統排盤規則計算，並和網路排盤、瑞士星曆比對過。唯一的流派差異是晚子時（23:00 以後出生），網站統一以隔天計算。</p></details><details class="si-faq"><summary>我的生日會被存起來或傳到別的地方嗎？</summary><p>不會上傳。所有計算都在你的手機或電腦上完成，只會在這台裝置暫存 3 天，方便你離開後回來繼續看。</p></details><details class="si-faq"><summary>六個系統說法不一樣怎麼辦？</summary><p>這正是這個網站想做的事：把好幾個系統都提到的地方整理成「共同點」，說法不同的地方也會列出來，讓你自己對照真實的經驗。</p></details></div>
   </section>
@@ -1595,6 +1596,7 @@
     fbRestore();
     applyView(getView());
     setupTabs();
+    if (FIRST_SYS && TAB.on && TAB.order.indexOf(FIRST_SYS) !== -1) { showPane(FIRST_SYS, { replace: true, noScroll: true }); FIRST_SYS = null; }
     collapseInput(true);
     document.body.classList.add('has-result');   // 有結果之後，SEO 說明區不再出現
     updateAiText();
@@ -1918,6 +1920,7 @@
   // ===== 購買清單（像購物車：勾選 → 自動算最划算的價格 → 複製文字貼到 LINE）=====
   var CART = [];   // [{kind, name}]，依加入順序
   var RESTORED = false;
+  var FIRST_SYS = (location.search.match(/[?&]sys=([a-z]+)/) || [])[1] || null;
   function saveLast() {
     if (!LAST || !LAST.birth) return;
     var v = { birth: $('birth').value, time: $('time').value, place: $('place').value, name: $('name').value, gender: $('gender').value, unknown: $('unknown').checked, dst: $('dst').checked, trueSolar: $('trueSolar').checked };
@@ -3248,9 +3251,14 @@
     RESTORED = true;
   })();
   var h = location.hash.slice(1);   // 回到離開前的分頁（例如 AI 懶人包）；要在 run() 改網址之前先記下
+  var FROM_SYS = (location.search.match(/[?&]sys=([a-z]+)/) || [])[1];   // 從系統入口頁來的
+  if (FROM_SYS && !SYSTEMS.some(function (x) { return x.id === FROM_SYS; })) FROM_SYS = null;
   if ($('birth').value) {
     run(); revealAll(); $('go').textContent = '重新分析';
     if (RESTORED && h && TAB.on && TAB.order.indexOf(h) !== -1) showPane(h, { replace: true });
+    else if (FROM_SYS && TAB.on) showPane(FROM_SYS, { replace: true });
+  } else if (FROM_SYS) {
+    var fc = document.querySelector('.form-card'); if (fc) setTimeout(function () { fc.scrollIntoView({ block: 'start' }); }, 50);
   }
 })();
 </script>
