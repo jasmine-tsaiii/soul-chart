@@ -9,14 +9,14 @@
 <meta property="og:url" content="https://chart.jas-soul.com/">
 <meta property="og:title" content="東西方命盤大亂鬥｜免費命盤排盤">
 <meta property="og:description" content="輸入生日，免費排出生命靈數、八字、紫微斗數、西洋占星、印度占星和人類圖六種命盤，還會整理出它們重複提到的地方。看完想更深入，可以用 AI 分析懶人包。">
-<meta property="og:image" content="https://chart.jas-soul.com/og2.jpg">
+<meta property="og:image" content="https://chart.jas-soul.com/og3.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="zh_TW">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="東西方命盤大亂鬥｜免費命盤排盤">
 <meta name="twitter:description" content="輸入生日，免費排出生命靈數、八字、紫微斗數、西洋占星、印度占星和人類圖六種命盤，還會整理出它們重複提到的地方。看完想更深入，可以用 AI 分析懶人包。">
-<meta name="twitter:image" content="https://chart.jas-soul.com/og2.jpg">
+<meta name="twitter:image" content="https://chart.jas-soul.com/og3.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
@@ -387,6 +387,20 @@
   .portrait .kw span { font-size: 14px; padding: 5px 12px; border: 1px solid var(--gold-soft); border-radius: 999px; color: var(--ink-2); background: var(--paper); }
   .portrait .kw span::before { content: '✦'; color: var(--gold); margin-right: 6px; }
   .portrait .pp p { font-size: 16px; line-height: 1.95; color: var(--ink-2); }
+  .traits { display: grid; gap: 14px; margin: 4px 0 18px; }
+  .trait { background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--gold); padding: 12px 16px 10px; }
+  .tr-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+  .tr-head b { font-family: var(--serif); font-size: 17px; color: var(--ink); }
+  .tr-level { font-size: 12px; color: #8A6A3A; background: #F1E6D2; padding: 1px 9px; border-radius: 999px; }
+  .trait p { margin: 6px 0 8px; font-size: 15px; line-height: 1.85; color: var(--ink-2); }
+  .trait .ev span { font-size: 11.5px; }
+  .pcombo, .pnots { margin: 0 0 14px; padding: 12px 16px; background: var(--paper); border: 1px dashed var(--gold-soft); }
+  .pc-k { font-size: 12.5px; letter-spacing: .08em; color: #8A6A3A; font-weight: 600; margin-bottom: 4px; }
+  .pcombo p, .pnots p { margin: 0; font-size: 15px; line-height: 1.85; color: var(--ink-2); }
+  .pnots p + p { margin-top: 6px; }
+  .pnots b { font-family: var(--serif); margin-right: 8px; color: var(--ink); }
+  .pn-n { font-size: 12px; color: var(--muted); margin-left: 4px; }
+  .pl-ev { display: block; font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 2px; }
   .portrait .plines { list-style: none; margin: 22px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 12px; }
   .portrait .plines li { display: grid; grid-template-columns: 112px 1fr; gap: 12px; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
   .portrait .plines b { font-family: var(--serif); color: var(--ink); white-space: nowrap; }
@@ -1035,8 +1049,14 @@
     if (P) {
       b += '<div class="portrait"><div class="eyebrow">' + (name ? name + ' 的' : '') + '一句話</div><div class="ptitle">' + P.title + '</div>' +
         '<div class="kw">' + P.keywords.map(function (k) { return '<span>' + k + '</span>'; }).join('') + '</div>' +
-        '<div class="pp">' + P.paragraphs.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>' +
-        '<ul class="plines">' + P.lines.map(function (l) { var st = LIFE_STYLE[l.id] || LIFE_STYLE.core; return '<li style="--pc:' + st[1] + '"><b><span class="li-ic">' + st[0] + '\uFE0E</span>' + l.name + '</b><span>' + l.text + '</span></li>'; }).join('') + '</ul></div>';
+        '<div class="traits">' + (P.traits || []).map(function (t) {
+          return '<div class="trait"><div class="tr-head"><b>✦ ' + t.name + '</b><span class="tr-level">' + t.level + '・' + t.n + ' 個系統提到</span></div>' +
+            '<p>' + t.scene + '</p><div class="ev">' + t.evidence.map(evChip).join('') + '</div></div>';
+        }).join('') + '</div>' +
+        (P.combo && P.combo.text ? '<div class="pcombo"><div class="pc-k">組合解讀・' + P.combo.label + '</div><p>' + P.combo.text + '</p></div>' : '') +
+        (P.tension ? '<div class="pcombo"><div class="pc-k">你身上的拉扯・' + P.tension.title + '</div><p>' + P.tension.text + '</p></div>' : '') +
+        (P.nots && P.nots.length ? '<div class="pnots"><div class="pc-k">你比較不是</div>' + P.nots.map(function (x) { return '<p><b>' + x.name + '</b>' + x.text + '<span class="pn-n">（' + (x.n ? '只有 ' + x.n + ' 個系統' : '沒有系統') + '提到）</span></p>'; }).join('') + '</div>' : '') +
+        '<ul class="plines">' + P.lines.map(function (l) { var st = LIFE_STYLE[l.id] || LIFE_STYLE.core; return '<li style="--pc:' + st[1] + '"><b><span class="li-ic">' + st[0] + '\uFE0E</span>' + l.name + '</b><span>' + l.text + (l.evidence && l.evidence.length ? '<small class="pl-ev">依據：' + l.evidence.join('；') + '</small>' : '') + '</span></li>'; }).join('') + '</ul></div>';
     }
     b += '<p class="note" style="margin-top:0">上面這段話是把你選的 ' + nTxt + ' 個系統放在一起整理出來的。想知道每一句是哪些系統說的，點開下面看。</p>';
 

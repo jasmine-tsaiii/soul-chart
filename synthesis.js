@@ -66,6 +66,57 @@
       love: '在關係裡，你重視實際的付出和一起經營的感覺。' }
   };
 
+
+  // ---- 讓描述更精準：具體情境、你比較不是、太陽月亮組合（草稿）----
+  // 具體情境：用生活畫面取代形容詞
+  var SCENE = {
+    think:   '遇到一件事，你會先在腦中把來龍去脈想一遍，甚至查資料、列清單；別人還在憑感覺，你已經在找「為什麼」。',
+    express: '心裡有感覺時，你很想把它說出來、寫下來或做成作品；如果一直悶著不能表達，你會明顯沒精神。',
+    teach:   '朋友常來問你意見；你學到新東西時，第一個念頭常常是「這個可以整理起來分享給別人」。',
+    stable:  '你喜歡有計畫、有節奏的生活，臨時被打亂行程會讓你不太舒服；一件事你願意慢慢做、做很久。',
+    feel:    '走進一個空間，你常常第一秒就感覺到氣氛對不對；朋友還沒開口，你就知道他今天心情不太好。',
+    care:    '身邊的人不舒服時，你常常是第一個發現、也第一個伸出手的人；有時候忙著照顧別人，忘了自己也累了。',
+    act:     '想到一個點子，你會想馬上動手試試看，等太久反而會失去興趣；「先做再說」比「想清楚再做」更像你。',
+    free:    '同一份工作、同一種生活過太久，你會開始坐立難安；你需要時不時換個環境、學點新東西。',
+    lead:    '討論卡住時，你常常是那個說「那就這樣決定吧」的人；你不太喜歡被安排，比較想自己掌握方向。',
+    wealth:  '你對價格、價值和資源很有感，買東西會比較、做事會算成本；你相信資源要經營，才會越滾越多。'
+  };
+  // 你比較不是：六個系統幾乎沒提到的主題
+  var NOT_YOU = {
+    think:   '你比較不是會花很多時間分析、研究的人，憑感覺和經驗做判斷，對你來說更自然。',
+    express: '你比較不是需要站上台、被大家看見的人，在幕後默默把事情做好，反而比較自在。',
+    teach:   '你比較不是愛講道理、帶著別人學習的類型，比起教別人，你更喜歡自己去體驗。',
+    stable:  '你比較不是按表操課、一成不變的人，太固定的生活和規則，很容易讓你覺得悶。',
+    feel:    '你比較不是靠直覺和情緒做決定的人，你更相信看得到的事實和邏輯。',
+    care:    '你比較不是時時照顧別人情緒的類型，你會把界線畫得比較清楚，先顧好自己的事。',
+    act:     '你比較不是衝第一、想到就做的人，你習慣先觀察、等時機成熟再出手。',
+    free:    '你比較不是追求變化和冒險的人，穩定、熟悉的環境才會讓你安心發揮。',
+    lead:    '你比較不是喜歡當主導者的人，在團隊裡支援、協調，反而是你的舒適位置。',
+    wealth:  '你比較不是對錢很精打細算的人，你做事更看重意義和感覺，有時候會忘了算成本。'
+  };
+  // 強度：幾個系統提到，語氣就不同
+  function intensity(n) { return n >= 5 ? '非常明顯' : n >= 3 ? '很明顯' : '有一點'; }
+  // 西洋占星：太陽（你想成為的樣子）× 月亮（你內在的需求）的元素組合
+  var EL_NAME = ['火', '土', '風', '水'];
+  var SUN_MOON = {
+    '火火': '外在熱情、內在也急著燃燒，你的能量很直接，想要的東西會馬上去追；要小心一次衝太多、把自己燒乾。',
+    '火土': '外表熱情有衝勁，內心卻需要踏實和安全感；你會先衝出去，但真正讓你安心的，是看得到成果的那一刻。',
+    '火風': '外在熱情、內在需要新鮮和交流，你很會帶動氣氛、點燃大家；最怕無聊和一成不變。',
+    '火水': '外表看起來勇敢直接，內心其實很敏感，很在意別人的感受；常常表面沒事，回家才慢慢消化情緒。',
+    '土火': '外表穩重、做事踏實，內心卻有一團想衝的火；你不是不想冒險，只是習慣先把路鋪好再出發。',
+    '土土': '裡外都很踏實，你相信一步一腳印，給人可靠的感覺；要留意的是太在意穩定，錯過該轉彎的時機。',
+    '土風': '外表穩重務實，內心卻很需要聊天、交流和新想法；你會在可靠的生活裡，偷偷留一扇看世界的窗。',
+    '土水': '外表穩定可靠，內心柔軟細膩，你會默默用行動照顧身邊的人；你的溫柔常常藏在做的事裡，而不是說的話裡。',
+    '風火': '外在聰明、好溝通，內心卻有很強的熱情和行動力；你會先想清楚，一旦決定就很有爆發力。',
+    '風土': '外表輕鬆好聊、想法很多，內心卻需要踏實和秩序；你的點子很多，真正讓你安心的是把它們一件件落實。',
+    '風風': '裡外都很需要交流和新鮮感，你思考快、朋友多，對很多事都好奇；要小心想太多、做太少。',
+    '風水': '外表理性、好溝通，內心其實很感性，常常用頭腦整理自己的情緒；你很能理解別人，但不一定說出自己的感受。',
+    '水火': '外表溫柔敏感，內心卻有一股不服輸的火；看起來好說話，真的在乎的事，你會很堅持。',
+    '水土': '外表溫柔、好親近，內心需要安全感和穩定的關係；你很重感情，也很需要被好好對待。',
+    '水風': '外表感性、有同理心，內心卻需要空間和交流；你懂別人的情緒，但也需要有人能和你聊想法、不只聊心情。',
+    '水水': '裡外都很感性，你的直覺和同理心特別強，很容易接收到別人的情緒；記得常常回到自己，分清楚哪些感受是你的。'
+  };
+
   var PAIRS = [
     { a: 'stable', b: 'free', title: '穩定 vs 自由', text: '有的系統說你要穩、要扎根，有的說你需要變化和空間。這不是矛盾，比較像是你需要「一個穩定的基地，加上一塊可以探索的空間」，兩個都有的時候你最舒服。' },
     { a: 'think', b: 'act', title: '想透 vs 去做', text: '一邊是想清楚再走，一邊是想到就做。可以給自己一個界線：想到七成就先動，剩下的邊做邊修。' },
@@ -292,36 +343,61 @@
       return { id: a.id, name: a.name, lead: a.lead, items: its, shared: shared, top: top };
     });
 
-    // ---- 總覽：一句標題、三個關鍵字、一段描述、每個面向一句話 ----
+    // ---- 總覽：一句標題、三個特質（含強度、情境、依據）、你比較不是、組合解讀、各面向一句話 ----
     var ct = common.map(function (c) { return c.tag; });
     var portrait = null;
+    var evOf = function (tag, aspectIds) { // 某主題的命盤依據（每個系統取一個）
+      var seen = {}, out = [];
+      items.forEach(function (it) {
+        if (it.tags.indexOf(tag) === -1 || seen[it.sys]) return;
+        if (aspectIds && aspectIds.indexOf(it.aspect) === -1) return;
+        seen[it.sys] = 1; out.push(it.sys + '：' + it.label);
+      });
+      return out;
+    };
     if (ct.length) {
       var title = ct.length >= 2 ? COPY[ct[0]].adj + COPY[ct[1]].noun : COPY[ct[0]].adj + COPY[ct[0]].noun;
       if (ct[2]) title += '，透過' + COPY[ct[2]].key + '發光';
-      var para = [common[0].systems.length + ' 個系統不約而同提到你的「' + common[0].name + '」。' + common.map(function (c) { return c.text; }).join('')];
-      if (tensions.length) para.push('你身上也同時有「' + tensions[0].a.name + '」和「' + tensions[0].b.name + '」兩股力量。' + tensions[0].text);
+      var traits = common.map(function (c) {
+        return { tag: c.tag, name: c.name, n: c.systems.length, level: intensity(c.systems.length), scene: SCENE[c.tag], evidence: evOf(c.tag, ['core', 'work', 'money', 'love']) };
+      });
+      // 你比較不是：在性格、工作、金錢、感情裡，幾乎沒有系統提到的主題
+      var nots = Object.keys(THEMES).filter(function (k) { return ct.indexOf(k) === -1; })
+        .map(function (k) { return { tag: k, n: stat[k] ? stat[k].systems.length : 0 }; })
+        .sort(function (a, b) { return a.n - b.n; })
+        .filter(function (x, i) { return x.n <= 1 || (i === 0 && x.n <= 2); }).slice(0, 2)
+        .map(function (x) { return { name: THEMES[x.tag].name, text: (x.n >= 2 ? '相對來說，' : '') + NOT_YOU[x.tag], n: x.n }; });
+      // 太陽 × 月亮組合
+      var combo = null;
+      if (R.we && R.we.planets) {
+        var se = R.we.planets[0].signIndex % 4, me = R.we.planets[1].signIndex % 4;
+        combo = { label: R.we.planets[0].sign + '太陽 × ' + R.we.planets[1].sign + '月亮', text: SUN_MOON[EL_NAME[se] + EL_NAME[me]] };
+      }
+      var tension = tensions.length ? { title: tensions[0].a.name + ' × ' + tensions[0].b.name, text: tensions[0].text,
+        a: tensions[0].a.evidence, b: tensions[0].b.evidence } : null;
       var used = {}, lines = [];
-      var pick = function (asp) { // 優先用這個面向的共同主題，盡量不重複
+      var pick = function (asp) {
         var cands = asp.shared.map(function (x) { return x.tag; }).concat(asp.top).filter(function (k) { return COPY[k]; });
         return cands.filter(function (k) { return !used[k]; })[0] || cands[0];
       };
       aspects.forEach(function (asp) {
         if (asp.id === 'core') {
-          var ck = asp.shared.map(function (x) { return x.tag; }).concat(asp.top).filter(function (k) { return ct.indexOf(k) === -1; })[0];
-          lines.push({ id: 'core', name: asp.name, text: '你是' + title.split('，')[0] + '。' + (ck ? '另外，' + THEMES[ck].text : THEMES[ct[0]].text) });
+          var ck = asp.shared.map(function (x) { return x.tag; }).concat(asp.top).filter(function (k) { return ct.indexOf(k) === -1; })[0] || ct[0];
+          lines.push({ id: 'core', name: asp.name, text: '你是' + title.split('，')[0] + '。' + SCENE[ck], evidence: evOf(ck, ['core']) });
         } else if (asp.id === 'work' || asp.id === 'money' || asp.id === 'love') {
           var k = pick(asp); if (!k) return; used[k] = true;
-          lines.push({ id: asp.id, name: asp.name, text: COPY[k][asp.id] });
+          lines.push({ id: asp.id, name: asp.name, text: COPY[k][asp.id], evidence: evOf(k, [asp.id]) });
         } else if (asp.id === 'lesson') {
           var t = tensions[0];
           var lessonText = t ? '在「' + t.a.name + '」和「' + t.b.name + '」之間找到平衡，兩邊都照顧到時，你最有力量。' : (asp.items[0] ? asp.items[0].text : '');
-          if (lessonText) lines.push({ id: 'lesson', name: asp.name, text: lessonText });
+          if (lessonText) lines.push({ id: 'lesson', name: asp.name, text: lessonText, evidence: asp.items.slice(0, 3).map(function (it) { return it.sys + '：' + it.label; }) });
         } else if (asp.id === 'now') {
-          var br = asp.items.filter(function (it) { return it.brief; }).map(function (it) { return it.brief; });
-          if (br.length) lines.push({ id: 'now', name: asp.name, text: br.join('；') + '。' });
+          var nowItems = asp.items.filter(function (it) { return it.brief; });
+          if (nowItems.length) lines.push({ id: 'now', name: asp.name, text: nowItems.map(function (it) { return it.brief; }).join('；') + '。', evidence: nowItems.map(function (it) { return it.sys + '：' + it.label; }) });
         }
       });
-      portrait = { title: title, keywords: common.map(function (c) { return c.name; }), paragraphs: para, lines: lines };
+      var para = [common[0].systems.length + ' 個系統不約而同提到你的「' + common[0].name + '」。' + common.map(function (c) { return c.text; }).join('')];
+      portrait = { title: title, keywords: common.map(function (c) { return c.name; }), traits: traits, nots: nots, combo: combo, tension: tension, paragraphs: para, lines: lines };
     }
 
     return { portrait: portrait, themes: THEMES, common: common, tensions: tensions, aspects: aspects, systemsUsed: uniq(items.map(function (i) { return i.sys; })) };
