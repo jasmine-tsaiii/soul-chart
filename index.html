@@ -220,6 +220,17 @@
   .ld-p { font-size: 17px; font-weight: 700; color: var(--ink); margin: 2px 0; }
   .ld-avg { font-size: 11.5px; color: #6C8F74; }
   .ld-cell i { display: block; font-style: normal; font-size: 11px; color: var(--gold); margin-top: 3px; }
+  .ld-all { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; padding: 14px 16px; text-align: left; border: 1.5px solid var(--gold); background: color-mix(in srgb, var(--gold) 12%, #FFFDF8); }
+  .ld-all .ld-badge { position: absolute; top: -10px; left: 16px; font-style: normal; font-size: 11px; padding: 1px 10px; border-radius: 999px; background: var(--gold); color: #fff; margin: 0; }
+  .la-t { flex: 1 1 220px; display: flex; flex-direction: column; }
+  .la-t b { font-size: 16px; }
+  .la-t span { font-size: 12.5px; color: var(--muted); }
+  .la-p { display: flex; align-items: baseline; gap: 8px; }
+  .la-p s { font-size: 13px; color: var(--muted); }
+  .la-p b { font-size: 22px; color: var(--ink); }
+  .la-p small { font-size: 12px; color: #6C8F74; }
+  .la-btn { flex: none; }
+  @media (max-width: 560px) { .la-btn { width: 100%; } }
   .ld-more { margin: 12px 0 0; font-size: 13.5px; padding: 8px 12px; border: 1px dashed var(--gold-soft); border-radius: 6px; }
   .ld-more b { color: var(--ink); }
   .ld-cell.cur { border-color: var(--ink); box-shadow: 0 0 0 2px var(--ink) inset; }
@@ -1379,7 +1390,8 @@
       '\n\n共 ' + CART.length + ' 份\n' + pr.parts.join('＋') + '\n合計 NT$' + pr.total + (earlyOn() ? '（早鳥價）' : '') + (LAST && LAST.age < 18 ? '\n\n※ 我未滿 18 歲，會請家長陪同購買' : '') + '\n\n（從 chart.jas-soul.com 送出）';
   }
   function ladderMark(n) {
-    document.querySelectorAll('.ld-cell').forEach(function (el) { el.classList.toggle('cur', +el.getAttribute('data-n') === Math.min(n, 6)); });
+    var lb = document.querySelector('.la-btn'); if (lb) lb.textContent = n >= SHOP.allCount ? '✓ 已全選' : '一鍵全選';
+    document.querySelectorAll('.ld-cell').forEach(function (el) { var k = n >= SHOP.allCount ? SHOP.allCount : Math.min(n, 6); el.classList.toggle('cur', +el.getAttribute('data-n') === k && n > 0 && (n <= 6 || n >= SHOP.allCount)); });
   }
   // 推薦「再加哪幾份」可以湊滿 3 份或 6 份
   function cartSuggest(pr) {
@@ -1397,6 +1409,23 @@
     return '<div class="cs"><span>' + (freeOne ? '推薦加這份（不用多付錢）：' : (need > 1 ? '再加 ' + need + ' 份就到' : '再 1 份就到') + '「' + (target === SHOP.allCount ? '全選一口價' : target + ' 份') + ' NT$' + ladderTotal(target) + '」，推薦：') + '</span>' +
       pool.map(function (x) { return '<button type="button" class="cart-add cs-add" data-kind="' + x.kind + '" data-name="' + x.name + '">＋ ' + x.name + '</button>'; }).join('') + '</div>';
   }
+  function cartSelectAll() {
+    var items = PAID.map(function (x) { return { kind: 'main', name: x.name.replace('{Y}', LAST ? LAST.nowYear + 1 : '') }; })
+      .concat([{ kind: 'faq', name: '常見問題懶人包' }])
+      .concat(DEEP.map(function (x) { return { kind: 'deep', name: x.name }; }));
+    // 流年名稱以卡片上的為準
+    var y = document.querySelector('.paid-card .cart-add[data-name*="流年"]');
+    if (y) items.forEach(function (it) { if (it.kind === 'main' && it.name.indexOf('流年') >= 0) it.name = y.getAttribute('data-name'); });
+    items.forEach(function (it) { if (!CART.some(function (c) { return c.name === it.name; })) CART.push(it); });
+    document.querySelectorAll('.cart-add').forEach(function (b) {
+      if (CART.some(function (c) { return c.name === b.getAttribute('data-name'); })) { b.classList.add('on'); b.textContent = '✓ 已加入'; }
+    });
+    renderCart();
+    track('select_all', { value: cartPrice().total });
+    toast('已全選 12 份＋常見問題懶人包');
+    $('cart').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.la-btn')) cartSelectAll(); });
   function renderCart() {
     var box = document.querySelector('#cart .cart-body'); if (!box) return;
     ladderMark(CART.length ? cartPrice().n : 0);
@@ -1523,7 +1552,7 @@
       '<div class="paid"><div class="eyebrow">覺得準嗎？</div><h3 class="paid-title">完整版懶人包</h3>' +
       '<p class="lead">完整版是更深入的專屬指令，AI 會整合你勾選的系統，寫出一份完整的分析。</p>' + compareTable() + sampleBlock() +
       earlyBanner() +
-      '<div class="deal"><b>怎麼買最划算？</b><span><i>滿 3 份</i> NT$' + ladder()[3] + '（每份 ' + Math.round(ladder()[3] / 3) + '）</span><span><i>滿 6 份</i> NT$' + ladder()[6] + '（每份 ' + Math.round(ladder()[6] / 6) + '）＋送常見問題懶人包</span><small>所有懶人包都可以任意混搭，加入清單後會自動幫你算最優惠的價格。</small></div>' +
+      '<div class="deal"><b>怎麼買最划算？</b><span><i>滿 3 份</i> NT$' + ladder()[3] + '（每份 ' + Math.round(ladder()[3] / 3) + '）</span><span><i>滿 6 份</i> NT$' + ladder()[6] + '（每份 ' + Math.round(ladder()[6] / 6) + '）＋送常見問題懶人包</span><span><i>全選 12 份</i> NT$' + SHOP.allPrice + '（每份 ' + Math.round(SHOP.allPrice / SHOP.allCount) + '）＋送常見問題懶人包</span><small>所有懶人包都可以任意混搭，加入清單後會自動幫你算最優惠的價格。</small></div>' +
       (LAST.age < 18 ? '<div class="minor-note"><b>未滿 18 歲想購買？</b>請先跟爸爸媽媽或監護人討論，由他們陪你一起購買。如果想多了解自己，推薦「個人性格深度解析」「事業與天賦」（可以當選科系的參考）、「感情與關係」和「單一系統深度解讀」；「金錢與財運」比較適合成年以後再看。</div>' : '') +
       '<div class="paid-grid">' + PAID.map(function (x) {
         return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
@@ -1546,7 +1575,10 @@
           return '<div class="ld-cell' + (n === 3 || n === 6 ? ' hot' : '') + '" data-n="' + n + '"><div class="ld-n">' + n + ' 份</div><div class="ld-p">NT$' + t + '</div>' +
             '<div class="ld-avg">' + (n > 1 ? '每份 ' + Math.round(t / n) : '單份') + '</div>' + (n === 6 ? '<i>🎁 送常見問題</i>' : '') + '</div>';
         }).join('') + '</div>' +
-        '<p class="ld-more">想要更多？超過 6 份之後，每多 1 份只要 <b>NT$' + SHOP.extra + '</b>。<b>全選 12 份一口價 NT$' + SHOP.allPrice + '</b>（平均每份 ' + Math.round(SHOP.allPrice / SHOP.allCount) + '），常見問題懶人包一樣送。</p>' +
+        '<div class="ld-all ld-cell" data-n="12"><i class="ld-badge">最划算</i><div class="la-t"><b>全選 12 份一口價</b><span>6 份主題懶人包＋6 份深度解讀，再送常見問題懶人包</span></div>' +
+          '<div class="la-p"><s>NT$' + (ladder()[1] * 13) + '</s><b>NT$' + SHOP.allPrice + '</b><small>每份 ' + Math.round(SHOP.allPrice / SHOP.allCount) + '</small></div>' +
+          '<button type="button" class="btn la-btn">一鍵全選</button></div>' +
+        '<p class="ld-more">7～11 份：6 份價之後，每多 1 份只要 NT$' + SHOP.extra + '。</p>' +
         (earlyOn() ? '<p class="ld-note">早鳥價。早鳥結束後：單份 NT$' + SHOP.ladder.regular[1] + '、2 份 NT$' + SHOP.ladder.regular[2] + '，3 份以上不變。</p>' : '') + '</div>' +
       '<div class="cart" id="cart"><div class="cart-title">🛒 我的購買清單</div><div class="cart-body"></div></div>' +
       '<div class="flow"><div class="flow-title">購買流程</div><ol>' +
