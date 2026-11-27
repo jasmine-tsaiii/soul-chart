@@ -189,7 +189,7 @@
   @media (max-width: 560px) { .cmp-row { grid-template-columns: 70px 1fr 1.2fr; } .cmp-row > span { padding: 8px 8px; font-size: 12.5px; } }
   .bd-gift { font-size: 12.5px; color: #7A5A9C; margin-top: 4px; font-weight: 600; }
   .bd-after { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
-  .paid-card .lock { font-size: 11.5px; color: var(--muted); }
+  .paid-card .lock { font-size: 14px; color: var(--muted); white-space: nowrap; opacity: .8; }
   .bundles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 0 0 20px; }
   @media (max-width: 560px) { .bundles { grid-template-columns: 1fr; } }
   .bundle { position: relative; text-align: center; padding: 18px 14px 14px; border: 1px solid var(--gold-soft); background: #FFFDF8; }
@@ -1026,7 +1026,7 @@
       '<div class="paid-grid">' + PAID.map(function (x) {
         return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
           '<p class="pc-hook">' + x.hook + '</p>' +
-          '<ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') + '</ul><div class="pc-foot">' + priceTag(SHOP.price) + '<span class="lock">🔒 購買後提供</span></div></div>';
+          '<ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') + '</ul><div class="pc-foot">' + priceTag(SHOP.price) + '<span class="lock" title="購買後提供完整指令">🔒</span></div></div>';
       }).join('') + '</div>' +
       '<div class="faq-pack"><div class="faq-head"><span class="pc-ic" style="--pc:#7A5A9C">問</span><b>常見問題懶人包</b>' + priceTag(SHOP.price) + '</div>' +
         '<p class="faq-desc">10 個大家最常問的問題，每一題都根據你的命盤來回答：</p>' +
