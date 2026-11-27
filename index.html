@@ -495,8 +495,8 @@
     <div class="step-label"><span>1</span>出生資料</div>
     <div class="controls">
       <div><label class="f" for="name">稱呼（選填）</label><input type="text" id="name" placeholder="想怎麼稱呼都可以"></div>
-      <div><label class="f" for="birth">生日</label><input type="date" id="birth" value="1997-05-03"></div>
-      <div><label class="f" for="time">出生時間</label><input type="time" id="time" value="14:00"></div>
+      <div><label class="f" for="birth">生日</label><input type="date" id="birth"></div>
+      <div><label class="f" for="time">出生時間</label><input type="time" id="time"></div>
       <div><label class="f" for="place">出生地</label><select id="place"></select></div>
       <div><label class="f" for="gender">性別</label>
         <select id="gender"><option value="F">女</option><option value="M">男</option></select></div>
@@ -623,7 +623,7 @@
     var parts = ($('birth').value || '').split('-').map(Number);
     if (parts.length !== 3 || !parts[0]) { $('out').innerHTML = ''; return; }
     var tm = ($('time').value || '12:00').split(':').map(Number);
-    var unknown = $('unknown').checked;
+    var unknown = $('unknown').checked || !$('time').value; // 沒填時間就當作不知道
     var birth = Birth.create({
       y: parts[0], m: parts[1], d: parts[2], hour: tm[0], minute: tm[1] || 0, timeKnown: !unknown,
       placeId: $('place').value, dst: $('dst').checked, gender: $('gender').value, trueSolar: $('trueSolar').checked
@@ -1541,6 +1541,7 @@
   }
   function analyze() {
     if (busy) return;
+    if (!$('birth').value) { toast('請先填入生日'); $('birth').focus(); return; }
     busy = true;
     var go = $('go');
     go.disabled = true; go.classList.remove('pending'); go.innerHTML = '<span class="spin"></span>分析中';
@@ -1584,7 +1585,7 @@
   window.addEventListener('beforeprint', function () { document.querySelectorAll('details.fold').forEach(function (d) { d.open = true; }); });
   ['birth', 'time', 'place', 'gender', 'unknown', 'dst', 'trueSolar', 'name'].forEach(function (id) { $(id).addEventListener('change', markChanged); $(id).addEventListener('input', markChanged); });
   buildPicker();
-  run(); revealAll(); $('go').textContent = '重新分析';
+  if ($('birth').value) { run(); revealAll(); $('go').textContent = '重新分析'; }
 })();
 </script>
 </body>
