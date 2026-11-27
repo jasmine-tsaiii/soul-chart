@@ -413,7 +413,7 @@
   .ev-toggle { display: block; margin: 18px 0 0 auto; padding: 4px 12px; font: inherit; font-size: 12.5px; color: #8A6A3A; background: transparent; border: 1px solid var(--gold-soft); border-radius: 999px; cursor: pointer; }
   .ev-toggle:hover { background: #F1E6D2; }
   .portrait .plines { list-style: none; margin: 8px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 12px; }
-  .portrait .plines li { display: grid; grid-template-columns: 112px 1fr; gap: 12px; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
+  .portrait .plines li { display: grid; grid-template-columns: 150px 1fr; gap: 12px; align-items: start; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
   .portrait .plines b { font-family: var(--serif); color: var(--ink); white-space: nowrap; }
   .portrait .plines b::before { content: '✦'; color: var(--gold); margin-right: 8px; font-size: .85em; }
   @media (max-width: 600px) { .portrait { padding: 26px 20px 20px; } .portrait .ptitle { font-size: 23px; } .portrait .plines li { grid-template-columns: 1fr; gap: 0; } }
@@ -469,7 +469,7 @@
   .chip.off { border-style: dashed; color: var(--muted); }
   .hd-centers li.pl { grid-template-columns: 34px 1fr; gap: 12px; }
   .hd-centers .pl-icon { width: 32px; height: 32px; font-size: 14px; }
-  .portrait .plines b { display: inline-flex; align-items: center; }
+  .portrait .plines b { display: inline-flex; align-items: center; align-self: start; min-height: 27px; }
   .portrait .plines b::before { content: none; }
   .li-ic { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin-right: 8px; border-radius: 50%; background: var(--pc); color: #fff; font-size: 13px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; flex: none; }
   .ev span .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--pc); margin-right: 6px; vertical-align: 1px; }
