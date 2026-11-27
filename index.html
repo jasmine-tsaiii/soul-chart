@@ -479,6 +479,7 @@
   .share-mini .sm-card { background: #1E2148; border-color: #1E2148; color: #F3E6C8; }
   .sc-fold.sc-quiet:not([open]) { display: none !important; }
   .sc-fold.sc-quiet > summary { display: none; }
+  body.has-result .seo-info { display: none; }
   .seo-info { max-width: 680px; margin: 34px auto 0; padding: 0 0 10px; }
   .seo-info h2 { font-family: var(--serif); font-size: 20px; text-align: center; margin: 0 0 10px; }
   .seo-info h2 + .si-faqs { margin-top: 6px; }
@@ -1595,6 +1596,7 @@
     applyView(getView());
     setupTabs();
     collapseInput(true);
+    document.body.classList.add('has-result');   // 有結果之後，SEO 說明區不再出現
     updateAiText();
     renderUnlock();
   }
