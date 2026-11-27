@@ -96,11 +96,16 @@
   .hint { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
   .input-area { padding-bottom: 26px; border-bottom: 1px solid var(--line); max-width: 680px; margin-left: auto; margin-right: auto; }
   .form-card { background: #FFFDF8; border: 1px solid var(--line); border-radius: 12px; padding: 4px 22px 10px; box-shadow: 0 2px 14px rgba(140,106,47,.06); }
-  .frow { display: grid; grid-template-columns: 78px minmax(0, 1fr); align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .frow { display: grid; grid-template-columns: 78px minmax(0, 1fr); align-items: center; gap: 14px; padding: 8px 0; }
   .frow .rl { font-size: 14px; color: var(--ink-2); letter-spacing: .08em; display: flex; flex-direction: column; line-height: 1.3; }
   .frow .rl small { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
-  .frow input[type=text], .frow input[type=time], .frow select { width: 100%; font: inherit; font-size: 15px; padding: 7px 0; border: none; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 0; -webkit-appearance: none; appearance: none; }
-  .frow input:focus, .frow select:focus { outline: none; border-bottom-color: var(--gold); }
+  .form-card input[type=text], .form-card input[type=time], .form-card select { width: 100%; box-sizing: border-box; font: inherit; font-size: 15px; padding: 9px 12px; border: 1px solid transparent; background: #F5EEE2; color: var(--ink); border-radius: 8px; -webkit-appearance: none; appearance: none; min-height: 42px; }
+  .form-card .bp select { padding: 9px 24px 9px 12px; border: 1px solid transparent; background: #F5EEE2; border-radius: 8px; min-height: 42px; }
+  .form-card .bp select:focus { border-color: var(--gold-soft); background: #FFFDF8; }
+  .form-card .bp-sel::after { right: 10px; }
+  .form-card input:focus, .form-card select:focus { outline: none; border-color: var(--gold-soft); background: #FFFDF8; }
+  .form-card input::placeholder { color: #A99E8F; }
+  .form-card .adv { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 6px; }
   .f-time { display: flex; align-items: center; gap: 14px; }
   .f-time input[type=time] { flex: 1; min-width: 0; }
   .f-sub { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
@@ -865,14 +870,14 @@
   <main id="out"></main>
 </div>
 
-<script src="lib/astro.js"></script>
-<script src="lib/chinese-calendar.js"></script>
-<script src="lib/datepick.js"></script>
+<script src="lib/astro.js?v=20261127"></script>
+<script src="lib/chinese-calendar.js?v=20261127"></script>
+<script src="lib/datepick.js?v=20261127"></script>
 <script>BirthPicker.attach('birth');</script>
-<script src="lib/birth.js"></script>
+<script src="lib/birth.js?v=20261127"></script>
 <script src="engine.js"></script>
 <script src="systems/bazi.js"></script>
-<script src="systems/ziwei.js"></script>
+<script src="systems/ziwei.js?v=20261127"></script>
 <script src="systems/astrology.js"></script>
 <script src="systems/humandesign.js"></script>
 <script src="texts.js"></script>
