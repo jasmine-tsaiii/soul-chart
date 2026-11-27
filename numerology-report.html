@@ -50,9 +50,9 @@
   .btns { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 0; }
   .btn {
     font: inherit; font-size: 14px; letter-spacing: .1em; padding: 9px 20px; cursor: pointer;
-    background: var(--ink); color: var(--paper); border: 1px solid var(--ink); border-radius: 2px;
+    background: linear-gradient(135deg, #BC9450 0%, #9B7535 55%, #86642A 100%); color: #FFFBF2; border: 1px solid #8C6A2F; border-radius: 4px;
   }
-  .btn.line { background: transparent; color: var(--ink); }
+  .btn.line { background: transparent; color: #8C6A2F; }
   .hint { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
 
   /* 封面 */
@@ -147,12 +147,18 @@
     section.chapter, .aspect { break-inside: avoid; }
   }
   .minor-note { margin: 0 0 18px; padding: 10px 14px; font-size: 14px; line-height: 1.8; background: #EEF3EC; border-left: 3px solid #6C8F74; }
+  .rp-head { text-align: center; margin: 8px 0 22px; }
+  .rp-back { display: inline-block; font-size: 13px; color: var(--muted); text-decoration: none; margin-bottom: 10px; }
+  .rp-head h1 { font-family: var(--serif); font-size: 26px; letter-spacing: .06em; margin: 0 0 8px; line-height: 1.4; }
+  .rp-head p { font-size: 14px; color: var(--muted); margin: 0 auto; max-width: 30em; line-height: 1.8; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <div class="no-print">
+    <header class="rp-head"><a class="rp-back" href="./">← 東西方命盤大亂鬥</a><h1>生命靈數計算 × 脈輪能量報告</h1>
+      <p>輸入國曆或農曆生日，免費算出你的生命靈數、能量類型、天賦脈輪與七脈輪分布，還有今年的流年提醒。</p></header>
     <div class="controls">
       <div><label for="name">稱呼（選填）</label><input id="name" placeholder="想怎麼稱呼都可以"></div>
       <div><label for="birth">生日</label><input id="birth" type="date"></div>

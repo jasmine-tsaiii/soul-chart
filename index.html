@@ -192,6 +192,19 @@
   .faq-head .pc-ic { font-family: var(--serif); font-weight: 600; }
   .faq-list { margin: 12px 0 8px; padding-left: 22px; columns: 2; column-gap: 28px; font-size: 13.5px; line-height: 1.9; color: var(--ink-2); }
   .faq-list li { break-inside: avoid; }
+  .faq-more summary { cursor: pointer; list-style: none; font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .faq-more summary::-webkit-details-marker { display: none; }
+  .faq-more summary::after { content: " ▾"; }
+  .faq-more[open] summary::after { content: " ▴"; }
+  @media (max-width: 560px) {
+    .paid-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin: 16px -16px 20px; padding: 4px 16px 12px; -webkit-overflow-scrolling: touch; }
+    .paid-grid > .paid-card { flex: 0 0 82%; scroll-snap-align: center; }
+    .paid-grid::-webkit-scrollbar { height: 4px; }
+    .paid-grid::-webkit-scrollbar-thumb { background: var(--gold-soft); border-radius: 2px; }
+    .pg-hint { display: block !important; }
+    .faq-list { columns: 1; }
+  }
+  .pg-hint { display: none; font-size: 12.5px; color: var(--muted); margin: 10px 0 -8px; }
   @media (max-width: 640px) { .faq-list { columns: 1; } }
   .faq-note { font-size: 12.5px; color: var(--muted); margin: 0; }
   .mid-cta { display: flex; align-items: center; gap: 18px; margin: 34px 0 10px; padding: 20px 22px; border: 1px solid var(--gold-soft); background: linear-gradient(135deg, #FBF5EA, #F4EDF6); }
@@ -416,7 +429,8 @@
   .pn-dots i.on { width: 18px; border-radius: 3px; background: var(--accent); }
   .input-area.collapsed > :not(.app-head):not(.edit-bar) { display: none !important; }
   .input-area.collapsed { padding-bottom: 14px; }
-  .edit-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; margin: 10px 0 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: #FFFDF8; font-size: 13.5px; color: var(--ink-2); }
+  .edit-bar .btn { background: transparent; border: 0; box-shadow: none; padding: 0; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; font-size: 13px; letter-spacing: 0; }
+  .edit-bar { font-size: 13px !important; padding: 8px 14px !important; display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap; margin: 10px 0 0; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: #FFFDF8; font-size: 13.5px; color: var(--ink-2); }
   .edit-bar[hidden] { display: none; }
   .edit-bar .btn { font-size: 13px; padding: 6px 14px; }
   .fb.fb-mini { display: inline-flex; gap: 4px; margin: 0 0 0 auto; padding: 0; border: 0; background: transparent; }
@@ -511,6 +525,12 @@
   .sm-sys .sm-all { padding: 4px 12px; background: var(--accent-grad); border-color: var(--accent); color: #FFFBF2; }
   .lens { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 2px 0 14px; font-size: 13px; color: var(--muted); }
   .lens > span { margin-right: 2px; letter-spacing: .08em; }
+  .viewmode.vm-mini { margin: 0 0 0 auto; gap: 0; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .viewmode.vm-mini > span { display: none; }
+  .viewmode.vm-mini button { border: 0; border-radius: 0; padding: 4px 10px; font-size: 12px; background: transparent; }
+  .viewmode.vm-mini button small { display: none; }
+  .viewmode.vm-mini button.on { background: var(--ink-2); color: #FFFBF2; }
+  @media (max-width: 420px) { .lens button { padding: 4px 11px; font-size: 13px; } }
   .lens button { font: inherit; font-size: 13.5px; padding: 5px 14px; border-radius: 999px; border: 1px solid var(--line); background: #FFFDF8; color: var(--ink-2); cursor: pointer; }
   .lens button.on { background: var(--accent-grad); border-color: var(--accent); color: #FFFBF2; }
   .lens-card { margin: 4px 0 22px; padding: 16px 18px 14px; border-radius: 14px; border: 1.5px solid color-mix(in srgb, var(--pc, #C27D8E) 45%, var(--line)); background: color-mix(in srgb, var(--pc, #C27D8E) 8%, #FFFDF8); }
@@ -1296,7 +1316,7 @@
       var el = document.getElementById(id), sysDef = SYSTEMS.filter(function (x) { return x.id === id; })[0];
       var st = id === 'summary' ? ['✦', '#A88550'] : id === 'aipack' ? ['◈', '#8C6A2F'] : (SYS_STYLE[sysDef ? sysDef.key : ''] || ['✦', '#A88550']);
       var name = id === 'summary' ? '綜合分析' : id === 'aipack' ? 'AI 懶人包' : sysDef.key;
-      var sub = id === 'summary' ? '六種系統都說到的你' : id === 'aipack' ? '完整版 3 份 NT$' + ladder()[3] + ' 起' : (el ? res(id) || '點進去看' : '＋ 也看看');
+      var sub = id === 'summary' ? '六種系統都說到的你' : id === 'aipack' ? '完整版 3 份 NT$' + ladder()[3] + ' 起' : (el ? res(id) || (el.querySelector('.notice') && !el.querySelector('.focus') ? '需要出生時間' : '點進去看') : '＋ 也看看');
       return '<button type="button" class="hub-t' + (el ? '' : ' off') + (id === 'aipack' ? ' hub-ai' : '') + '"' + (el ? ' data-go="' + id + '"' : ' data-add="' + id + '"') + (id === 'summary' ? ' data-scroll="summary"' : '') + ' style="--pc:' + st[1] + '">' +
         '<i>' + st[0] + '︎</i><b>' + name + '</b><span>' + esc(sub) + '</span></button>';
     }).join('');
@@ -1525,6 +1545,8 @@
     out.classList.add('tabbed');
     TAB.on = true;
     if (LAST && LAST.syn) { $('secnav').insertAdjacentHTML('afterend', lensBar()); applyLens(getLens()); }
+    var vm = out.querySelector('.viewmode'), lb = $('lensBar');
+    if (vm && lb) { vm.removeAttribute('data-pane'); vm.classList.add('vm-mini'); vm.querySelector('span').textContent = ''; lb.appendChild(vm); }
     loadSeen();
     buildSecNav();
     showPane('summary', { replace: true, noScroll: true });
@@ -2191,10 +2213,11 @@
     '一、用一句話形容我，再給三個關鍵字。\n' +
     '二、我最明顯的三個特質：每一個都要（1）用一個具體的生活情境來描述，不要只用形容詞；（2）寫出是哪幾個系統、哪個位置這樣說。優先寫好幾個系統都提到的特質。\n' +
     '三、我的兩個盲點：我可能不太想承認、但常常發生的模式，一樣附上依據，語氣溫柔但要說清楚。\n' +
-    '四、對照過去：根據資料裡「過去的轉折點」，挑 2–3 個年份，具體說出那時候我的生活重心或心境可能有什麼轉變，並請我回想看看準不準。\n' +
+    '四、對照過去：優先使用資料裡「幾個系統一起轉換的年份」（好幾個系統同時轉換，最值得對照），再從「過去的轉折點」補充，共挑 2–3 個年份，具體說出那時候我的生活重心或心境可能有什麼轉變，並請我回想看看準不準。\n' +
     '五、接下來：根據「下一次轉換」的年份，點出一件我接下來值得留意的事，只說方向、不用展開；並說明完整版的流年或主題分析可以更深入回答。\n' +
     '六、最後問我：哪一點最準？哪一點不像我？\n' +
-    '這一份不需要分析工作、金錢、感情的細節。';
+    '這一份不需要分析工作、金錢、感情的細節。\n' +
+    '格式：每一段用小標題，段落短一點（3–5 句）；最後用 3 行做「重點速記」。每個特質都順便寫一句「你比較不是＿＿的人」做對照，讓描述更精準。';
   function priceTag(pr) {
     return earlyOn() ? '<span class="pc-price"><small>早鳥</small>NT$' + pr.early + '<s>NT$' + pr.regular + '</s></span>' : '<span class="pc-price">NT$' + pr.regular + '</span>';
   }
@@ -2379,7 +2402,7 @@
       earlyBanner() +
       packsBlock(H, Y) +
       (LAST.age < 18 ? '<div class="minor-note"><b>未滿 18 歲想購買？</b>請先跟爸爸媽媽或監護人討論，由他們陪你一起購買。如果想多了解自己，推薦「個人性格深度解析」「事業與天賦」（可以當選科系的參考）、「感情與關係」和「單一系統深度解讀」；「金錢與財運」比較適合成年以後再看。</div>' : '') +
-      '<div class="paid-grid">' + PAID.map(function (x) {
+      '<p class="pg-hint">← 左右滑動看 6 份主題懶人包 →</p><div class="paid-grid">' + PAID.map(function (x) {
         return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
           '<p class="pc-hook">' + x.hook + '</p>' +
           (H.teasers[PAID.indexOf(x)] ? '<div class="pc-tease"><span>你的盤</span>' + H.teasers[PAID.indexOf(x)] + '<b>這代表什麼？完整版告訴你</b></div>' : '') +
@@ -2387,7 +2410,7 @@
       }).join('') + '</div>' +
       '<div class="faq-pack"><div class="faq-head"><span class="pc-ic" style="--pc:#7A5A9C">問</span><b>常見問題懶人包</b>' + priceTag(SHOP.price) + '</div>' +
         '<p class="faq-desc">10 個大家最常問的問題，每一題都根據你的命盤來回答：</p>' +
-        '<ol class="faq-list">' + FAQ.map(function (qq) { return '<li>' + qq + '</li>'; }).join('') + '</ol>' +
+        '<details class="faq-more"><summary>看這 10 個問題</summary><ol class="faq-list">' + FAQ.map(function (qq) { return '<li>' + qq + '</li>'; }).join('') + '</ol></details>' +
         '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。任選滿 6 份就免費加贈。</p>' + cartBtn('faq', '常見問題懶人包') + '</div>' +
       '<details class="deep deep-fold" id="deep"><summary class="deep-head"><b>單一系統深度解讀・6 份</b><span>想真正看懂其中一個系統？AI 會像老師一樣，帶你一項一項讀懂自己的盤。</span><em>展開 ▾</em></summary>' +
         '<div class="deep-grid">' + DEEP.map(function (x) {
@@ -2603,9 +2626,10 @@
     }
     if (!full) {
       // 免費版：只給「已經發生過」的轉折點，讓讀者拿自己的經驗對照；未來只給下一次轉換的年份
-      var nowY = L.nowYear, past = [], next = [];
+      var nowY = L.nowYear, past = [], next = [], ev = [];   // ev：已經發生的轉換，用來找「幾個系統同時轉換」的年份
       if (has('bazi')) {
         var lp = bzY.luck.filter(function (l) { return l.startYear <= nowY; });
+        lp.forEach(function (l) { ev.push([l.startYear, '八字換大運（' + l.ganzhi + '）']); });
         if (lp.length) past.push('八字大運換運：' + lp.map(function (l) { return l.startYear + ' 年進入 ' + l.ganzhi + '（' + l.stemGod + '/' + l.branchGod + '）'; }).join('、'));
         var ln = bzY.luck.filter(function (l) { return l.startYear > nowY; })[0];
         if (ln) next.push('八字下一步大運從 ' + ln.startYear + ' 年開始');
@@ -2614,6 +2638,7 @@
         var zp = Ziwei.calculate(b);
         if (!zp.unknownTime) {
           var dp = zp.decades.filter(function (d) { return b.y + d.from - 1 <= nowY; });
+          dp.forEach(function (d) { ev.push([b.y + d.from - 1, '紫微進入' + d.palace + '大限']); });
           if (dp.length) past.push('紫微大限轉換：' + dp.map(function (d) { return (b.y + d.from - 1) + ' 年進入' + d.palace; }).join('、'));
           var dn = zp.decades.filter(function (d) { return b.y + d.from - 1 > nowY; })[0];
           if (dn) next.push('紫微下一個大限從 ' + (b.y + dn.from - 1) + ' 年開始');
@@ -2622,6 +2647,7 @@
       if (has('vedic')) {
         var vp = Astrology.vedic(b, Astro.julianDay(nowY, 7, 1, 12));
         var dsp = vp.dashas.filter(function (d) { return +d.from.slice(0, 4) <= nowY; });
+        dsp.forEach(function (d) { ev.push([+d.from.slice(0, 4), '印度占星進入 ' + d.lord.split(' ')[0] + ' 大運']); });
         if (dsp.length) past.push('印度占星大運轉換：' + dsp.map(function (d) { return d.from.slice(0, 4) + ' 年進入 ' + d.lord; }).join('、'));
         var dsn = vp.dashas.filter(function (d) { return +d.from.slice(0, 4) > nowY; })[0];
         if (dsn) next.push('印度占星下一個大運從 ' + dsn.from.slice(0, 4) + ' 年開始');
@@ -2630,9 +2656,23 @@
         var nn = NumerologyEngine.calculate(b.y, b.m, b.d, { method: 'A', year: nowY });
         var cyc = nowY - nn.personalYear.number + 1;
         past.push('生命靈數：' + cyc + ' 年開始了目前這一輪九年循環（流年 1），' + (cyc - 9) + ' 年是上一輪的開始');
+        [cyc, cyc - 9, cyc - 18].forEach(function (y0) { if (y0 > b.y) ev.push([y0, '生命靈數新的九年循環']); });
         next.push('生命靈數下一輪九年循環從 ' + (cyc + 9) + ' 年開始');
       }
       if (past.length) out.push('', '【過去的轉折點（可以拿自己的經驗對照）】', past.join('\n'));
+      // 幾個系統在前後一年內一起轉換的年份：最有說服力、最值得請讀者回想
+      ev = ev.filter(function (e) { return e[0] > b.y + 6 && e[0] <= nowY; }).sort(function (a2, c2) { return a2[0] - c2[0]; });
+      var groups = [], used = {};
+      ev.forEach(function (e, i) {
+        if (used[i]) return;
+        var g = [e]; used[i] = 1;
+        ev.forEach(function (f, j) { if (!used[j] && Math.abs(f[0] - e[0]) <= 1 && f[1].slice(0, 2) !== e[1].slice(0, 2) && !g.some(function (x) { return x[1].slice(0, 2) === f[1].slice(0, 2); })) { g.push(f); used[j] = 1; } });
+        if (g.length >= 2) groups.push(g);
+      });
+      if (groups.length) out.push('', '【幾個系統一起轉換的年份（最值得對照）】', groups.map(function (g) {
+        var ys = g.map(function (x) { return x[0]; }), y1 = Math.min.apply(null, ys), y2 = Math.max.apply(null, ys);
+        return (y1 === y2 ? y1 : y1 + '–' + y2) + ' 年：' + g.map(function (x) { return x[1]; }).join('、');
+      }).join('\n'));
       if (next.length) out.push('', '【下一次轉換（只有年份，細節在完整版）】', next.join('\n'));
     }
     return out.join('\n');
