@@ -2725,6 +2725,13 @@
     '風': { color: '#5E95B0', tri: 'M20 4 L36 34 L4 34 Z', bar: true },
     '水': { color: '#4F6FA8', tri: 'M4 6 L36 6 L20 36 Z', bar: false }
   };
+  // 不是最多、也不是偏少的元素：給一句「適中」的說明，卡片才不會空白
+  var EL_MID = {
+    '火': '熱情和行動力剛剛好：需要時衝得起來，也懂得停下來休息。',
+    '土': '務實感剛剛好：能把想法一步步落地，又不會被規則綁住。',
+    '風': '思考和溝通的能量穩定：喜歡交流想法，也保有自己的判斷。',
+    '水': '感受力適中：能體會別人的情緒，也不容易被情緒淹沒。'
+  };
   function elementCards(r, W, maxE) {
     var total = 0, pts = { '火': [], '土': [], '風': [], '水': [] };
     var add = function (name, idx, glyph, col) { pts[['火', '土', '風', '水'][idx % 4]].push({ name: name, glyph: glyph, col: col }); total++; };
@@ -2738,7 +2745,7 @@
         '<div class="ec-top">' + tri + '<div><b>' + k + '象</b><small>' + X.western.elements[k] + '</small></div>' + (most ? '<i class="ec-tag">最多</i>' : few ? '<i class="ec-tag low">偏少</i>' : '') + '</div>' +
         '<div class="ec-num">' + n + '<span>／' + total + '</span></div><div class="ec-dots">' + dots + '</div>' +
         '<div class="ec-pl">' + (pts[k].length ? pts[k].map(function (p) { return '<em style="background:' + p.col + '" title="' + p.name + '">' + p.glyph + (p.glyph === 'AC' ? '' : '︎') + '</em>'; }).join('') : '<span>沒有行星</span>') + '</div>' +
-        (most ? '<p>' + W.elementMany[k].replace(/^[^：]+：/, '') + '</p>' : few ? '<p>' + W.elementFew[k].replace(/^[^：]+：/, '') + '</p>' : '') + '</div>';
+        '<p>' + (most ? W.elementMany[k].replace(/^[^：]+：/, '') : few ? W.elementFew[k].replace(/^[^：]+：/, '') : EL_MID[k]) + '</p></div>';
     }).join('') + '</div>';
   }
   function trio(label, name, text) {
