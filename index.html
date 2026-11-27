@@ -76,7 +76,7 @@
   .loading .sub { font-size: 12.5px; color: var(--muted); letter-spacing: .1em; }
   .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
   .reveal.in { opacity: 1; transform: none; }
-  .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); background: var(--ink); color: var(--paper); font-size: 14px; letter-spacing: .08em; padding: 10px 20px; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,.18); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; z-index: 60; }
+  .toast { position: fixed; left: 50%; bottom: 84px; transform: translate(-50%, 20px); background: var(--ink); color: var(--paper); font-size: 14px; letter-spacing: .08em; padding: 10px 20px; border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,.18); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; z-index: 60; }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
   @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .loading .orbs, .loading .orbs i, .btn.pending { animation: none; } }
   @media print { .reveal { opacity: 1 !important; transform: none !important; } .toast { display: none; } }
@@ -239,6 +239,11 @@
   .sc-fold[open] .scf-go { font-size: 0; }
   .sc-fold[open] .scf-go::after { content: "收起 ▴"; font-size: 13px; }
   .sc-fold .sc-wrap { margin: 0; border-radius: 0; }
+  .backpill { position: fixed; top: 64px; left: 50%; transform: translate(-50%, -160%); z-index: 60; font: inherit; font-size: 13.5px; padding: 8px 16px; border: 1px solid var(--gold-soft); border-radius: 999px; background: #FFFDF8; color: var(--ink); box-shadow: 0 4px 16px rgba(0,0,0,.14); cursor: pointer; transition: transform .25s; white-space: nowrap; }
+  .backpill.show { transform: translate(-50%, 0); }
+  .deep-card { scroll-margin-top: 90px; }
+  .deep-card.flash { animation: cardflash 1.6s ease; }
+  @keyframes cardflash { 0%, 60% { box-shadow: 0 0 0 3px var(--pc); } 100% { box-shadow: 0 0 0 0 transparent; } }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -546,6 +551,11 @@
   .deep-link:hover { background: color-mix(in srgb, var(--pc) 15%, #FFFDF8); }
   .deep-link i { font-style: normal; width: 34px; height: 34px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex: none; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
   .deep-link span { flex: 1; min-width: 0; }
+  .deep-row { display: flex; gap: 10px; align-items: stretch; margin: 34px 0 0; }
+  .deep-row .deep-link { flex: 1; margin: 0; min-width: 0; }
+  .cart-add.dl-add { margin: 0; flex: none; align-self: stretch; width: auto; padding: 0 14px; border-radius: 8px; border-style: solid; background: #FFFDF8; white-space: nowrap; }
+  .cart-add.dl-add.on { background: var(--pc); }
+  @media (max-width: 520px) { .deep-row .deep-link em { display: none; } }
   .deep-link b { display: block; font-family: var(--serif); font-size: 16px; }
   .deep-link small { font-size: 12.5px; color: var(--muted); }
   .deep-link em { font-style: normal; font-size: 13px; color: var(--pc); white-space: nowrap; font-weight: 600; }
@@ -767,7 +777,7 @@
   function deepLink(id) {
     var d = DEEP.filter(function (x) { return x.id === id; })[0]; if (!d) return '';
     var st = SYS_STYLE[d.key];
-    return '<a class="deep-link no-print" href="#deep" style="--pc:' + st[1] + '"><i>' + st[0] + '\uFE0E</i><span><b>想更深入看懂你的' + d.key + '？</b><small>' + d.name + '：AI 帶你一項一項讀懂自己的盤</small></span><em>看看 →</em></a>';
+    return '<div class="deep-row no-print" style="--pc:' + st[1] + '"><a class="deep-link" href="#deep-' + id + '" style="--pc:' + st[1] + '"><i>' + st[0] + '\uFE0E</i><span><b>想更深入看懂你的' + d.key + '？</b><small>' + d.name + '：AI 帶你一項一項讀懂自己的盤</small></span><em>看看 →</em></a>' + cartBtn('deep', d.name).replace('cart-add', 'cart-add dl-add').replace('＋ 加入清單', '＋ 加入') + '</div>';
   }
   // ===== 「準不準」回饋：每一段只記一票，可以改，重複按不會重複記 =====
   // 送出的內容只有：隨機裝置碼、隨機的命盤代號、哪一段、那一段的結果名稱、投票。不含生日和稱呼。
@@ -815,6 +825,34 @@
     var data = JSON.stringify({ cid: fbDevice(), rid: rid, sec: sec.split(':')[0], label: fbLabel(sec), vote: +v, page: 'chart' });
     try { fetch(SHOP.feedbackUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: data, keepalive: true }); } catch (err) {}
   });
+  // ===== 跳到下面之後，可以一鍵回到剛剛看的地方 =====
+  var BACK = null;
+  function backLabel(el) {
+    var sec = el.closest('section.system, #aipack, .portrait'); if (!sec) return '剛剛看的地方';
+    var h = sec.querySelector('h2, .ptitle'); return h ? '「' + h.textContent.replace(/^第.章/, '').trim().slice(0, 10) + '」' : '剛剛看的地方';
+  }
+  function showBack() {
+    var b = document.querySelector('.backpill');
+    if (!b) { b = document.createElement('button'); b.type = 'button'; b.className = 'backpill no-print'; document.body.appendChild(b); }
+    b.textContent = '↩ 回到' + BACK.label; b.classList.add('show');
+  }
+  function hideBack() { var b = document.querySelector('.backpill'); if (b) b.classList.remove('show'); BACK = null; }
+  document.addEventListener('click', function (e) {
+    var bp = e.target.closest && e.target.closest('.backpill');
+    if (bp) { if (BACK) { var y = BACK.y; hideBack(); window.scrollTo({ top: y, behavior: 'smooth' }); } return; }
+    var a = e.target.closest && e.target.closest('a[href^="#"]'); if (!a) return;
+    if (a.closest('.secnav, nav.overview')) return;            // 導覽列本來就是用來跳的，不另外顯示
+    var target = document.getElementById(a.getAttribute('href').slice(1)); if (!target) return;
+    BACK = { y: window.scrollY, label: backLabel(a), at: Date.now() };
+    if (target.classList.contains('deep-card')) {             // 落在那一張卡片上，閃一下
+      e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.classList.remove('flash'); void target.offsetWidth; target.classList.add('flash');
+    }
+    setTimeout(showBack, 600);
+  });
+  addEventListener('scroll', function () {                    // 自己捲回原處附近，就收起來
+    if (BACK && Date.now() - BACK.at > 1500 && Math.abs(window.scrollY - BACK.y) < 200) hideBack();
+  }, { passive: true });
   function sys(no, id, title, lead, body) {
     no = chapterNo++;
     return '<section class="system" id="' + id + '"><div class="sys-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
@@ -1337,9 +1375,10 @@
     var name = t.getAttribute('data-name'), idx = -1;
     CART.forEach(function (c, i) { if (c.name === name) idx = i; });
     if (idx >= 0) CART.splice(idx, 1); else CART.push({ kind: t.getAttribute('data-kind'), name: name });
+    if (t.classList.contains('dl-add')) toast(idx >= 0 ? '已從清單移除' : '已加入清單 ✓');
     document.querySelectorAll('.cart-add').forEach(function (b) {
       if (b.getAttribute('data-name') !== name) return;
-      var on = idx < 0; b.classList.toggle('on', on); b.textContent = on ? '✓ 已加入' : '＋ 加入清單';
+      var on = idx < 0; b.classList.toggle('on', on); b.textContent = on ? '✓ 已加入' : (b.classList.contains('dl-add') ? '＋ 加入' : '＋ 加入清單');
     });
     renderCart();
   });
@@ -1437,7 +1476,7 @@
       '<div class="deep" id="deep"><div class="deep-head"><b>單一系統深度解讀</b><span>想真正看懂其中一個系統？AI 會像老師一樣，帶你一項一項讀懂自己的盤。</span></div>' +
         '<div class="deep-grid">' + DEEP.map(function (x) {
           var st = SYS_STYLE[x.key];
-          return '<div class="deep-card" style="--pc:' + st[1] + '"><div class="dc-head"><i>' + st[0] + '\uFE0E</i><b>' + x.name + '</b></div><ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') +
+          return '<div class="deep-card" id="deep-' + x.id + '" style="--pc:' + st[1] + '"><div class="dc-head"><i>' + st[0] + '\uFE0E</i><b>' + x.name + '</b></div><ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') +
             '<li>你的盤專屬名詞小辭典＋10 個延伸提問</li></ul>' + priceTag(SHOP.price) + cartBtn('deep', x.name) + '</div>';
         }).join('') + '</div><p class="deep-note">可以和上面的主題懶人包混搭，一起算進下面的組合價。</p></div>' +
       '<div class="ladder"><div class="ld-title">買越多越划算<span>主題懶人包、深度解讀、常見問題懶人包都可以任意混搭</span></div><div class="ld-row">' +
