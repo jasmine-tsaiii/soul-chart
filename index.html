@@ -387,6 +387,14 @@
   .portrait .kw span { font-size: 14px; padding: 5px 12px; border: 1px solid var(--gold-soft); border-radius: 999px; color: var(--ink-2); background: var(--paper); }
   .portrait .kw span::before { content: '✦'; color: var(--gold); margin-right: 6px; }
   .portrait .pp p { font-size: 16px; line-height: 1.95; color: var(--ink-2); }
+  .focus { margin: 4px 0 26px; padding: 16px 20px 6px; background: #FBF8F2; border: 1px solid var(--gold-soft); border-radius: 4px; }
+  .fc-k { font-size: 12.5px; letter-spacing: .14em; color: #8A6A3A; font-weight: 600; margin-bottom: 8px; }
+  .fc-row { padding: 10px 0; border-top: 1px dashed var(--line); }
+  .fc-row:first-of-type { border-top: none; padding-top: 2px; }
+  .fc-row b { font-family: var(--serif); font-size: 16px; color: var(--ink); }
+  .fc-row p { margin: 4px 0 0; font-size: 15px; line-height: 1.85; color: var(--ink-2); }
+  .fc-row small { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
+  .fc-not b { color: #5D7FA6; }
   .traits { display: grid; gap: 14px; margin: 4px 0 18px; }
   .trait { background: var(--paper); border: 1px solid var(--line); border-left: 3px solid var(--gold); padding: 12px 16px 10px; }
   .tr-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
@@ -1096,6 +1104,9 @@
     var maxC = Math.max.apply(null, r.chakras.map(function (c) { return c.count; }).concat([1]));
     var b = '<p class="big-line">' + type.name + '</p><p class="tagline">「' + (T.quotes[r.energyType] || type.line) + '」・同類型、同天賦的人只有 ' + (r.comboRate * 100).toFixed(1) + '%</p>' +
       '<div class="prose"><p>' + type.desc + '</p></div>';
+    var FC = EXPLAIN.focus, bc = r.chakras.filter(function (c) { return c.id === r.brightest; })[0];
+    b += focusBox([{ title: '最亮的脈輪：' + T.chakras[r.brightest].name, text: FC.chakraBright[r.brightest], ev: '生日數字裡出現 ' + (bc ? bc.count : '') + ' 次，比 ' + (bc ? Math.round(bc.brighterThan * 100) : '') + '% 的人亮' }],
+      [r.potential ? FC.chakraNot[r.potential] + '（' + T.chakras[r.potential].name + '在生日數字裡沒有出現）' : null]);
     b += '<h3>七脈輪能量</h3>' + chakraColumn(r.chakras, maxC, function (id) { return T.chakras[id].color; }, function (c) {
       return c.count ? '比 ' + Math.round(c.brighterThan * 100) + '% 的人亮' : '潛在能量';
     }) + '<p class="note">光點越大越亮，代表這個脈輪在生日數字裡出現越多次；虛線圈是還沒出現、可以培養的潛在能量。</p>';
@@ -1185,6 +1196,16 @@
       (icon ? '<span class="f-ic">' + icon[0] + '</span>' : '') +
       '<span class="fmain"><span class="ft">' + title + '</span><span class="fh">' + hint + '</span></span></summary><div class="fold-body">' + inner + '</div></details>';
   }
+  // 每章開頭的「這個系統最能看出你的地方」
+  function focusBox(rows, nots) {
+    rows = rows.filter(function (r) { return r && r.text; });
+    nots = (nots || []).filter(Boolean);
+    if (!rows.length && !nots.length) return '';
+    return '<div class="focus"><div class="fc-k">這個系統最能看出你的地方</div>' + rows.map(function (r) {
+      return '<div class="fc-row"><b>' + r.title + '</b><p>' + r.text + '</p>' + (r.ev ? '<small>依據：' + r.ev + '</small>' : '') + '</div>';
+    }).join('') + (nots.length ? '<div class="fc-row fc-not"><b>你比較不是</b>' + nots.map(function (t) { return '<p>' + t + '</p>'; }).join('') + '</div>' : '') + '</div>';
+  }
+  var EL4 = ['火', '土', '風', '水'];
   function trio(label, name, text) {
     return '<div class="item"><div class="label">' + label + '</div><div class="name">' + name + '</div><p>' + text + '</p></div>';
   }
@@ -1234,6 +1255,19 @@
       E.dayBranch + '「' + day.ganzhi + '」和「' + dm.stem + dm.element + '」說的是同一柱，只是一個講整柱、一個只講你自己。</p>' +
       '<p>' + X.bazi.dayMaster[dm.stem] + '</p>' +
       '<p>你的日主坐在「' + day.branch + '」，十二長生是「' + day.stage + '」：' + E.stages[day.stage] + '。</p></div>';
+
+    // 最能看出你的地方
+    (function () {
+      var FC = EXPLAIN.focus, st0 = r.strength, cat = { '比肩': '比劫', '劫財': '比劫', '食神': '食傷', '傷官': '食傷', '正財': '財', '偏財': '財', '正官': '官殺', '七殺': '官殺', '正印': '印', '偏印': '印' }, have = {};
+      P.forEach(function (p) {
+        if (p.unknown) return;
+        if (p.label !== '日柱') have[cat[p.tenGod]] = 1;
+        p.hidden.forEach(function (h) { if (!(p.label === '日柱' && h.stem === dm.stem)) have[cat[h.tenGod]] = 1; });
+      });
+      var missing = ['比劫', '食傷', '財', '官殺', '印'].filter(function (k) { return !have[k]; });
+      b += focusBox([st0 ? { title: dm.stem + dm.element + '日主・' + st0.label, text: FC.stem[dm.stem + '|' + (st0.strong ? 1 : 0)], ev: '日主' + dm.stem + dm.element + '，生在' + st0.month.branch + '月（' + st0.month.state + '），幫身力量約 ' + Math.round(st0.ratio * 100) + '%' } : null],
+        missing.slice(0, 2).map(function (k) { return FC.godNot[k] + '（八字裡完全沒有' + k + '）'; }));
+    })();
 
     // 身強身弱
     var st = r.strength, SE = EXPLAIN.strength;
@@ -1320,6 +1354,9 @@
     b += '<div class="center"><div class="t">' + r.lunar.yearGanzhi + '年生・' + r.juName + '</div><div class="s">命宮主星：' + r.mingMainStars.join('、') +
       (r.mingBorrowed ? '（借對宮）' : '') + '<br>身宮在' + r.shenPalace + '</div></div></div>';
 
+    var FCz = EXPLAIN.focus, ji = r.sihua.filter(function (h) { return h.type === '化忌'; })[0];
+    b += focusBox(r.mingMainStars.map(function (st) { return { title: '命宮主星：' + st, text: FCz.star[st], ev: '命宮在' + r.mingBranch + (r.mingBorrowed ? '（無主星，借對宮遷移宮）' : '') }; })
+      .concat(ji && ji.palace ? [{ title: '最在意、也最容易卡住的地方', text: '「' + X.ziwei.palaces[ji.palace] + '」是你最放不下、也最需要用心經營的領域；這裡的事常常讓你反覆思考。', ev: ji.star + '化忌落在' + ji.palace }] : []));
     b += '<h3>命宮主星' + (r.mingBorrowed ? q('借對宮') : q('命宮')) + '</h3><div class="prose">' + (r.mingBorrowed ? '<p>' + X.ziwei.borrowed + '</p>' : '') +
       '<ul class="list-plain">' + r.mingMainStars.map(function (s) { return irow(['★', '#7A5A9C'], s, '命宮主星', null, X.ziwei.stars[s]); }).join('') + '</ul>' +
       '<p>身宮落在<b class="serif">' + r.shenPalace + '</b>（' + X.ziwei.palaces[r.shenPalace] + '），代表後天越來越重視的領域。</p></div>';
@@ -1344,6 +1381,13 @@
       trio(X.western.roles.moon.split('：')[0], moon.sign, X.western.roles.moon.split('：')[1] + '。' + X.western.signs[moon.sign]) +
       (r.asc ? trio(X.western.roles.asc.split('：')[0] + q('上升'), r.asc.sign, X.western.roles.asc.split('：')[1] + '。' + X.western.signs[r.asc.sign]) : trio('上升' + q('上升'), '—', '需要出生時間。')) +
       '</div>';
+    (function () {
+      var FC = EXPLAIN.focus, rows = [];
+      if (r.asc) rows.push({ title: '第一印象 vs 真正的你', text: FC.ascSun[EL4[r.asc.signIndex % 4] + EL4[sun.signIndex % 4]], ev: '上升' + r.asc.sign + '・太陽' + sun.sign });
+      if (Synthesis.SUN_MOON) rows.push({ title: '外在的你 vs 內在的需求', text: Synthesis.SUN_MOON[EL4[sun.signIndex % 4] + EL4[moon.signIndex % 4]], ev: '太陽' + sun.sign + '・月亮' + moon.sign });
+      var none = Object.keys(r.elements).filter(function (k) { return r.elements[k] === 0; });
+      b += focusBox(rows, none.slice(0, 2).map(function (k) { return FC.elNot[k] + '（十顆行星沒有落在' + k + '象星座）'; }));
+    })();
     var anyRetro = false;
     function planetItem(p) {
       var retro = p.retro && p.id !== 'node';
@@ -1446,6 +1490,8 @@
       card('簽名／非自己', '簽名與非自己', t.signature + ' <small>／</small> ' + t.notSelf, '活出自己時會感到「' + t.signature + '」；常常覺得「' + t.notSelf + '」，就是提醒你回到自己的策略。') +
       '</div>';
 
+    b += focusBox([{ title: t.name + ' × ' + au.name, text: EXPLAIN.focus.hdCombo[r.type + '|' + r.authority] || t.desc, ev: '類型 ' + t.name + '、內在權威 ' + au.name + '、人生角色 ' + r.profile }],
+      [EXPLAIN.focus.hdNot[r.type]]);
     var C = HumanDesign.CENTERS, keys = Object.keys(C);
     var openNames = keys.filter(function (c) { return r.definedCenters.indexOf(c) === -1; }).map(function (c) { return C[c].name; });
     b += '<h3>能量中心：有定義和開放差在哪' + q('能量中心') + '</h3><div class="howto">' + H.centersHow + '</div>' +

@@ -403,6 +403,6 @@
     return { portrait: portrait, themes: THEMES, common: common, tensions: tensions, aspects: aspects, systemsUsed: uniq(items.map(function (i) { return i.sys; })) };
   }
 
-  var api = { build: build, THEMES: THEMES };
+  var api = { build: build, THEMES: THEMES, SUN_MOON: SUN_MOON };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Synthesis = api;
 })(this);
