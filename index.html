@@ -239,6 +239,17 @@
   .sc-fold[open] .scf-go { font-size: 0; }
   .sc-fold[open] .scf-go::after { content: "收起 ▴"; font-size: 13px; }
   .sc-fold .sc-wrap { margin: 0; border-radius: 0; }
+  .viewmode { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 0 18px; }
+  .viewmode > span { font-size: 12.5px; color: var(--muted); letter-spacing: .1em; margin-right: 4px; }
+  .viewmode button { font: inherit; font-size: 14px; padding: 6px 16px; border: 1px solid var(--line); border-radius: 999px; background: #FFFDF8; color: var(--ink-2); cursor: pointer; display: inline-flex; align-items: baseline; gap: 6px; }
+  .viewmode button small { font-size: 11.5px; color: var(--muted); }
+  .viewmode button.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+  .viewmode button.on small { color: rgba(247,243,236,.7); }
+  .sv-more { display: none; }
+  #out.simple section.system:not(.expanded):not(#summary) > *:not(.sys-head):not(.focus):not(.fb):not(.deep-row):not(.sv-more):not(.notice) { display: none; }
+  #out.simple section.system .sv-more { display: block; margin: 16px auto 0; font: inherit; font-size: 13.5px; padding: 7px 18px; border: 1px solid var(--gold-soft); border-radius: 999px; background: transparent; color: #8A6A3A; cursor: pointer; }
+  #out.simple .portrait .pcombo, #out.simple .portrait .pnots, #out.simple .portrait .plines, #out.simple .portrait .ev-toggle, #out.simple .portrait .ev { display: none; }
+  @media print { #out.simple section.system > * , #out.simple .portrait * { display: revert !important; } .sv-more { display: none !important; } }
   .backpill { position: fixed; top: 64px; left: 50%; transform: translate(-50%, -160%); z-index: 60; font: inherit; font-size: 13.5px; padding: 8px 16px; border: 1px solid var(--gold-soft); border-radius: 999px; background: #FFFDF8; color: var(--ink); box-shadow: 0 4px 16px rgba(0,0,0,.14); cursor: pointer; transition: transform .25s, opacity .25s, visibility .25s; white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; }
   .backpill.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; pointer-events: auto; }
   .deep-card { scroll-margin-top: 90px; }
@@ -853,10 +864,24 @@
   addEventListener('scroll', function () {                    // 自己捲回原處附近，就收起來
     if (BACK && Date.now() - BACK.at > 1500 && Math.abs(window.scrollY - BACK.y) < 200) hideBack();
   }, { passive: true });
+  // ===== 簡易版／完整版 =====
+  function getView() { try { return localStorage.getItem('chart-view') || 'simple'; } catch (e) { return 'simple'; } }
+  function applyView(v) {
+    var out = $('out'); if (!out) return;
+    out.classList.toggle('simple', v === 'simple');
+    document.querySelectorAll('.viewmode button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-view') === v); });
+    document.querySelectorAll('section.system.expanded').forEach(function (sct) { sct.classList.remove('expanded'); });
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.viewmode button');
+    if (b) { var v = b.getAttribute('data-view'); try { localStorage.setItem('chart-view', v); } catch (err) {} applyView(v); return; }
+    var m = e.target.closest && e.target.closest('.sv-more');
+    if (m) { var sct = m.closest('section.system'), on = sct.classList.toggle('expanded'); m.textContent = on ? '收起，只看重點 ▴' : '看這一章的完整內容 ▾'; if (!on) sct.scrollIntoView({ block: 'start' }); }
+  });
   function sys(no, id, title, lead, body) {
     no = chapterNo++;
     return '<section class="system" id="' + id + '"><div class="sys-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
-      '<p class="lead">' + lead + '</p></div>' + body + fbBar(id, '這一章準嗎？') + deepLink(id) + '</section>';
+      '<p class="lead">' + lead + '</p></div>' + body + '<button type="button" class="sv-more no-print">看這一章的完整內容 ▾</button>' + fbBar(id, '這一章準嗎？') + deepLink(id) + '</section>';
   }
   function table(head, rows, nowFlags) {
     var h = '<div class="table-wrap"><table><thead><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>';
@@ -952,6 +977,7 @@
       '<h1>' + (name ? esc(name) + ' 的' : '') + (picked.length === 6 ? '綜合命盤' : SYSTEMS.filter(function (x) { return has(x.id); }).map(function (x) { return x.key; }).join('・')) + '</h1>' +
       '<div class="meta">' + birth.y + '.' + pad(birth.m) + '.' + pad(birth.d) + (birth.timeKnown ? '　' + pad(birth.hour) + ':' + pad(birth.minute) : '　時間不確定') +
       '　' + birth.place.name + '<br>農曆 ' + (bz.lunar ? bz.lunar.text : '') + '　生肖' + bz.zodiac + '</div></header>';
+    html += '<div class="viewmode no-print" role="group" aria-label="閱讀模式"><span>閱讀模式</span><button type="button" data-view="simple">簡易版<small>只看重點</small></button><button type="button" data-view="full">完整版<small>全部細節</small></button></div>';
     html += '<nav class="secnav no-print" id="secnav" aria-label="章節導覽"></nav>';
     if (LAST.age < 18) html += '<div class="minor-note no-print"><b>給還在念書的你</b>你還未滿 18 歲，命盤裡講到「工作、事業」的地方，可以當成選科系、找興趣和未來方向的參考；講到財運的地方先看看就好。命盤不是在替你決定未來，它只是幫你多認識自己一點，有煩惱的時候，記得找信任的大人聊聊。</div>';
 
@@ -1002,6 +1028,7 @@
     if ($('shareCanvas')) drawShareCard($('shareCanvas'), LAST.card);
     renderCart();
     fbRestore();
+    applyView(getView());
     updateAiText();
     renderUnlock();
   }
