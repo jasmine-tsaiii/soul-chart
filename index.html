@@ -239,8 +239,8 @@
   .sc-fold[open] .scf-go { font-size: 0; }
   .sc-fold[open] .scf-go::after { content: "收起 ▴"; font-size: 13px; }
   .sc-fold .sc-wrap { margin: 0; border-radius: 0; }
-  .backpill { position: fixed; top: 64px; left: 50%; transform: translate(-50%, -160%); z-index: 60; font: inherit; font-size: 13.5px; padding: 8px 16px; border: 1px solid var(--gold-soft); border-radius: 999px; background: #FFFDF8; color: var(--ink); box-shadow: 0 4px 16px rgba(0,0,0,.14); cursor: pointer; transition: transform .25s; white-space: nowrap; }
-  .backpill.show { transform: translate(-50%, 0); }
+  .backpill { position: fixed; top: 64px; left: 50%; transform: translate(-50%, -160%); z-index: 60; font: inherit; font-size: 13.5px; padding: 8px 16px; border: 1px solid var(--gold-soft); border-radius: 999px; background: #FFFDF8; color: var(--ink); box-shadow: 0 4px 16px rgba(0,0,0,.14); cursor: pointer; transition: transform .25s, opacity .25s, visibility .25s; white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; }
+  .backpill.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; pointer-events: auto; }
   .deep-card { scroll-margin-top: 90px; }
   .deep-card.flash { animation: cardflash 1.6s ease; }
   @keyframes cardflash { 0%, 60% { box-shadow: 0 0 0 3px var(--pc); } 100% { box-shadow: 0 0 0 0 transparent; } }
