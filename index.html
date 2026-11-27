@@ -408,8 +408,11 @@
   .pnots p + p { margin-top: 6px; }
   .pnots b { font-family: var(--serif); margin-right: 8px; color: var(--ink); }
   .pn-n { font-size: 12px; color: var(--muted); margin-left: 4px; }
-  .pl-ev { display: block; font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 2px; }
-  .portrait .plines { list-style: none; margin: 22px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 12px; }
+  .pl-ev { display: none; font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 2px; }
+  .portrait.show-ev .pl-ev { display: block; }
+  .ev-toggle { display: block; margin: 18px 0 0 auto; padding: 4px 12px; font: inherit; font-size: 12.5px; color: #8A6A3A; background: transparent; border: 1px solid var(--gold-soft); border-radius: 999px; cursor: pointer; }
+  .ev-toggle:hover { background: #F1E6D2; }
+  .portrait .plines { list-style: none; margin: 8px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 12px; }
   .portrait .plines li { display: grid; grid-template-columns: 112px 1fr; gap: 12px; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
   .portrait .plines b { font-family: var(--serif); color: var(--ink); white-space: nowrap; }
   .portrait .plines b::before { content: '✦'; color: var(--gold); margin-right: 8px; font-size: .85em; }
@@ -1038,6 +1041,11 @@
     var fallback = function () { var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); done(); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
   }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.ev-toggle'); if (!b) return;
+    var p = b.closest('.portrait'), on = p.classList.toggle('show-ev');
+    b.textContent = on ? '收起命盤依據 ▴' : '看每一句的命盤依據 ▾'; b.setAttribute('aria-expanded', on);
+  });
   document.addEventListener('keydown', function (e) { if (e.target.id === 'unlockCode' && e.key === 'Enter') tryUnlock(); });
   document.addEventListener('click', function (e) {
     var t = e.target;
@@ -1064,6 +1072,7 @@
         (P.combo && P.combo.text ? '<div class="pcombo"><div class="pc-k">組合解讀・' + P.combo.label + '</div><p>' + P.combo.text + '</p></div>' : '') +
         (P.tension ? '<div class="pcombo"><div class="pc-k">你身上的拉扯・' + P.tension.title + '</div><p>' + P.tension.text + '</p></div>' : '') +
         (P.nots && P.nots.length ? '<div class="pnots"><div class="pc-k">你比較不是</div>' + P.nots.map(function (x) { return '<p><b>' + x.name + '</b>' + x.text + '<span class="pn-n">（' + (x.n ? '只有 ' + x.n + ' 個系統' : '沒有系統') + '提到）</span></p>'; }).join('') + '</div>' : '') +
+        '<button type="button" class="ev-toggle" aria-expanded="false">看每一句的命盤依據 ▾</button>' +
         '<ul class="plines">' + P.lines.map(function (l) { var st = LIFE_STYLE[l.id] || LIFE_STYLE.core; return '<li style="--pc:' + st[1] + '"><b><span class="li-ic">' + st[0] + '\uFE0E</span>' + l.name + '</b><span>' + l.text + (l.evidence && l.evidence.length ? '<small class="pl-ev">依據：' + l.evidence.join('；') + '</small>' : '') + '</span></li>'; }).join('') + '</ul></div>';
     }
     b += '<p class="note" style="margin-top:0">上面這段話是把你選的 ' + nTxt + ' 個系統放在一起整理出來的。想知道每一句是哪些系統說的，點開下面看。</p>';
