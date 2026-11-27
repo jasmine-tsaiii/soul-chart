@@ -1227,6 +1227,7 @@
     feedbackUrl: 'https://script.google.com/macros/s/AKfycbyuV8bRPV4Pw4No6BCrpvH9vftI-7fbFrZ9TGiLJ8wWtJY69rCrM2AXszfEHtcHcAzlFw/exec',
     giftAt: 6,
     extra: 250,   // 超過 6 份，之後每多 1 份 NT$250
+    allCount: 12, allPrice: 2999,   // 全選 12 份一口價
     // 解鎖碼：只放 SHA-256 雜湊，不放原本的碼。用「付費版懶人包/產生解鎖碼.html」產生新的，貼一行到這裡
     codeHashes: [
       '8e01507f14c50eecf81aca631cf11111ec6c76066d536e6fd21dc2449d3efaaa'
@@ -1321,7 +1322,7 @@
     return '<button type="button" class="cart-add' + (on ? ' on' : '') + '" data-kind="' + kind + '" data-name="' + name + '">' + (on ? '✓ 已加入' : '＋ 加入清單') + '</button>';
   }
   function ladder() { return earlyOn() ? SHOP.ladder.early : SHOP.ladder.regular; }
-  function ladderTotal(n) { var L = ladder(); return n <= 6 ? L[n] : L[6] + (n - 6) * SHOP.extra; }
+  function ladderTotal(n) { var L = ladder(); if (n >= SHOP.allCount) return SHOP.allPrice + (n - SHOP.allCount) * SHOP.extra; return n <= 6 ? L[n] : L[6] + (n - 6) * SHOP.extra; }
   function cartPrice() {
     var L = ladder(), unit = L[1];
     var others = CART.filter(function (c) { return c.kind !== 'faq'; }).length;
@@ -1329,10 +1330,10 @@
     var gift = hasFaq && others >= SHOP.giftAt;          // 選滿 6 份：常見問題懶人包免費
     var n = others + (hasFaq && !gift ? 1 : 0);          // 實際計價的份數
     var total = ladderTotal(n), parts = [];
-    parts.push(n + ' 份組合價 NT$' + total + (n > 1 ? '（平均每份 NT$' + Math.round(total / n) + '）' : ''));
+    parts.push((n >= SHOP.allCount ? '全選 ' + n + ' 份一口價' : n + ' 份組合價') + ' NT$' + total + (n > 1 ? '（平均每份 NT$' + Math.round(total / n) + '）' : ''));
     if (gift) parts.push('常見問題懶人包 免費加贈');
     var tip = '';
-    if (n < 13) {
+    if (n < SHOP.allCount) {
       var add = ladderTotal(n + 1) - total;
       tip = '再加 1 份只要多 NT$' + add;
       if (others + 1 === SHOP.giftAt) tip = hasFaq ? '再加 1 份不用多付錢：選滿 6 份，常見問題懶人包會變成免費贈送' : tip + '，而且選滿 6 份就加贈「常見問題懶人包」';
@@ -1350,7 +1351,7 @@
   // 推薦「再加哪幾份」可以湊滿 3 份或 6 份
   function cartSuggest(pr) {
     var others = CART.filter(function (c) { return c.kind !== 'faq'; }).length, freeOne = !pr.gift && others === SHOP.giftAt - 1 && CART.length > others;
-    var target = freeOne ? 6 : pr.n < 3 ? 3 : pr.n < 6 ? 6 : 0; if (!target) return '';
+    var target = freeOne ? 6 : pr.n < 3 ? 3 : pr.n < 6 ? 6 : pr.n < SHOP.allCount ? SHOP.allCount : 0; if (!target) return '';
     var need = freeOne ? 1 : target - pr.n, inCart = function (nm) { return CART.some(function (c) { return c.name === nm; }); };
     var pool = PAID.map(function (x) { return { kind: 'main', name: x.name.replace('{Y}', LAST ? LAST.nowYear + 1 : '') }; })
       .concat(DEEP.map(function (x) { return { kind: 'deep', name: x.name }; }))
@@ -1360,7 +1361,7 @@
     pool.forEach(function (x) { if (x.kind === 'main') shown.forEach(function (b) { var nm = b.getAttribute('data-name'); if (nm.indexOf('流年') >= 0 && x.name.indexOf('流年') >= 0) x.name = nm; }); });
     pool = pool.filter(function (x) { return !inCart(x.name); }).slice(0, Math.min(need, 3));
     if (!pool.length) return '';
-    return '<div class="cs"><span>' + (freeOne ? '推薦加這份（不用多付錢）：' : (need > 1 ? '再加 ' + need + ' 份就到' : '再 1 份就到') + '「' + target + ' 份 NT$' + ladder()[target] + '」，推薦：') + '</span>' +
+    return '<div class="cs"><span>' + (freeOne ? '推薦加這份（不用多付錢）：' : (need > 1 ? '再加 ' + need + ' 份就到' : '再 1 份就到') + '「' + (target === SHOP.allCount ? '全選一口價' : target + ' 份') + ' NT$' + ladderTotal(target) + '」，推薦：') + '</span>' +
       pool.map(function (x) { return '<button type="button" class="cart-add cs-add" data-kind="' + x.kind + '" data-name="' + x.name + '">＋ ' + x.name + '</button>'; }).join('') + '</div>';
   }
   function renderCart() {
@@ -1512,7 +1513,7 @@
           return '<div class="ld-cell' + (n === 3 || n === 6 ? ' hot' : '') + '" data-n="' + n + '"><div class="ld-n">' + n + ' 份</div><div class="ld-p">NT$' + t + '</div>' +
             '<div class="ld-avg">' + (n > 1 ? '每份 ' + Math.round(t / n) : '單份') + '</div>' + (n === 6 ? '<i>🎁 送常見問題</i>' : '') + '</div>';
         }).join('') + '</div>' +
-        '<p class="ld-more">想要更多？超過 6 份之後，每多 1 份只要 <b>NT$' + SHOP.extra + '</b>。全部 12 份 <b>NT$' + ladderTotal(12) + '</b>（平均每份 ' + Math.round(ladderTotal(12) / 12) + '），常見問題懶人包一樣送。</p>' +
+        '<p class="ld-more">想要更多？超過 6 份之後，每多 1 份只要 <b>NT$' + SHOP.extra + '</b>。<b>全選 12 份一口價 NT$' + SHOP.allPrice + '</b>（平均每份 ' + Math.round(SHOP.allPrice / SHOP.allCount) + '），常見問題懶人包一樣送。</p>' +
         (earlyOn() ? '<p class="ld-note">早鳥價。早鳥結束後：單份 NT$' + SHOP.ladder.regular[1] + '、2 份 NT$' + SHOP.ladder.regular[2] + '，3 份以上不變。</p>' : '') + '</div>' +
       '<div class="cart" id="cart"><div class="cart-title">🛒 我的購買清單</div><div class="cart-body"></div></div>' +
       '<div class="flow"><div class="flow-title">購買流程</div><ol>' +
