@@ -500,6 +500,15 @@
   .si-faq summary::after { content: "+"; position: absolute; right: 4px; top: 12px; color: var(--accent); font-size: 18px; }
   .si-faq[open] summary::after { content: "−"; }
   .si-faq p { margin: -4px 0 14px 36px; font-size: 13.5px; line-height: 1.8; color: var(--ink-2); }
+  .hub-t.off { opacity: 1; cursor: pointer; border-style: dashed; background: #FFFDF8; }
+  .hub-t.off i { background: color-mix(in srgb, var(--pc) 35%, #E8E1D6); }
+  .hub-t.off b { color: var(--ink-2); font-weight: 500; }
+  .hub-t.off span { color: var(--pc); font-weight: 600; }
+  .solo-more { margin: 6px 0 22px; padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--gold-soft); background: #FFFDF8; font-size: 13.5px; color: var(--ink-2); }
+  .sm-sys { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .sm-sys button { font: inherit; font-size: 12.5px; display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px 4px 5px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-2); cursor: pointer; }
+  .sm-sys button i { font-style: normal; width: 18px; height: 18px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
+  .sm-sys .sm-all { padding: 4px 12px; background: var(--accent-grad); border-color: var(--accent); color: #FFFBF2; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -1265,8 +1274,8 @@
       var el = document.getElementById(id), sysDef = SYSTEMS.filter(function (x) { return x.id === id; })[0];
       var st = id === 'summary' ? ['✦', '#A88550'] : id === 'aipack' ? ['◈', '#8C6A2F'] : (SYS_STYLE[sysDef ? sysDef.key : ''] || ['✦', '#A88550']);
       var name = id === 'summary' ? '綜合分析' : id === 'aipack' ? 'AI 懶人包' : sysDef.key;
-      var sub = id === 'summary' ? '六種系統都說到的你' : id === 'aipack' ? '完整版 3 份 NT$' + ladder()[3] + ' 起' : (el ? res(id) || '點進去看' : '沒有勾選');
-      return '<button type="button" class="hub-t' + (el ? '' : ' off') + (id === 'aipack' ? ' hub-ai' : '') + '" data-go="' + id + '"' + (id === 'summary' ? ' data-scroll="summary"' : '') + (el ? '' : ' disabled') + ' style="--pc:' + st[1] + '">' +
+      var sub = id === 'summary' ? '六種系統都說到的你' : id === 'aipack' ? '完整版 3 份 NT$' + ladder()[3] + ' 起' : (el ? res(id) || '點進去看' : '＋ 也看看');
+      return '<button type="button" class="hub-t' + (el ? '' : ' off') + (id === 'aipack' ? ' hub-ai' : '') + '"' + (el ? ' data-go="' + id + '"' : ' data-add="' + id + '"') + (id === 'summary' ? ' data-scroll="summary"' : '') + ' style="--pc:' + st[1] + '">' +
         '<i>' + st[0] + '︎</i><b>' + name + '</b><span>' + esc(sub) + '</span></button>';
     }).join('');
     return '<section class="hub" id="hub"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p id="hubCount">點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
@@ -1367,11 +1376,36 @@
       var k = el.closest('section').getAttribute('data-ic'); if (ICON_SVG[k]) { el.innerHTML = ICON_SVG[k]; el.classList.add('has-ico'); }
     });
   }
+  function addSystems(ids) {
+    ids.forEach(function (id) { var c = $('pk-' + id); if (c) c.checked = true; });
+    syncPick(); try { localStorage.setItem('picked-systems', JSON.stringify(getPicked())); } catch (e) {}
+    FIRST_SYS = ids.length === 1 ? ids[0] : null;
+    track('add_system', { systems: ids.join(',') });
+    analyze();
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('[data-add]'); if (!t) return;
+    addSystems(t.getAttribute('data-add') === 'all' ? SYSTEMS.map(function (x) { return x.id; }).filter(function (id) { return !document.getElementById(id); }) : [t.getAttribute('data-add')]);
+  });
   function setupTabs() {
     heroIcons();
     var out = $('out'); if (!out || !out.querySelector('.cover')) return;
     TAB.order = ['summary'].concat(SYSTEMS.map(function (x) { return x.id; })).concat(['aipack']).filter(function (id) { return document.getElementById(id); });
-    if (TAB.order.length < 2) { TAB.on = false; return; }
+    if (TAB.order.filter(function (id) { return SYSTEMS.some(function (x) { return x.id === id; }); }).length < 2) {   // 只選一個系統：不用九宮格
+      TAB.on = false;
+      var only = SYSTEMS.filter(function (x) { return document.getElementById(x.id); })[0], cover = out.querySelector('.cover');
+      if (only) {   // 只看一個系統：詳細內容預設展開
+        var osec = document.getElementById(only.id); osec.classList.add('expanded');
+        var om = osec.querySelector('.sv-more'); if (om) om.textContent = '收起，只看重點 ▴';
+      }
+      if (only && cover && !out.querySelector('.solo-more')) {
+        var rest = SYSTEMS.filter(function (x) { return x.id !== only.id; });
+        cover.insertAdjacentHTML('afterend', '<div class="solo-more no-print"><span>你選了<b>' + only.key + '</b>。其他系統也想對照看看嗎？</span><div class="sm-sys">' +
+          rest.map(function (x) { var st = SYS_STYLE[x.key]; return '<button type="button" data-add="' + x.id + '" style="--pc:' + st[1] + '"><i>' + st[0] + '︎</i>' + x.key + '</button>'; }).join('') +
+          '<button type="button" class="sm-all" data-add="all">六個一起看</button></div></div>');
+      }
+      return;
+    }
     // 標記每一塊屬於哪個分頁
     Array.prototype.forEach.call(out.children, function (el) {
       var p = null;
