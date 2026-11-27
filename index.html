@@ -1662,6 +1662,7 @@
   function markChanged() {
     var go = $('go');
     if (busy) return;
+    if (!document.querySelector('#out .cover')) return; // 還沒分析過：維持「開始分析」
     go.classList.add('pending'); go.textContent = '更新分析';
     $('changedHint').classList.add('show');
   }
