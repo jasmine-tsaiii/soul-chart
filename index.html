@@ -446,6 +446,26 @@
   .ec-pl em { font-style: normal; min-width: 22px; height: 22px; padding: 0 3px; box-sizing: border-box; border-radius: 999px; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-family: "Apple Symbols", "Segoe UI Symbol", sans-serif; }
   .ec-pl span { font-size: 12px; color: var(--muted); }
   .ec-card p { margin: 2px 0 0; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+  .deep { margin: 0 0 20px; padding: 18px; background: #FFFDF8; border: 1px solid var(--line); border-top: 3px solid var(--gold); }
+  .deep-head b { display: block; font-family: var(--serif); font-size: 18px; }
+  .deep-head span { font-size: 13.5px; color: var(--muted); }
+  .deep-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  @media (max-width: 760px) { .deep-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .deep-grid { grid-template-columns: 1fr; } }
+  .deep-card { padding: 12px 14px; border-radius: 6px; background: color-mix(in srgb, var(--pc) 6%, #FFFDF8); border: 1px solid color-mix(in srgb, var(--pc) 25%, var(--line)); display: flex; flex-direction: column; }
+  .dc-head { display: flex; align-items: center; gap: 8px; }
+  .dc-head i { font-style: normal; width: 26px; height: 26px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; flex: none; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
+  .dc-head b { font-family: var(--serif); font-size: 15px; line-height: 1.35; }
+  .deep-card ul { margin: 8px 0 8px; padding-left: 18px; font-size: 12.5px; line-height: 1.75; color: var(--ink-2); flex: 1; }
+  .deep-card .pc-price { --pc: inherit; font-size: 16px; }
+  .deep-note { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+  .deep-link { display: flex; align-items: center; gap: 12px; margin: 34px 0 0; padding: 14px 16px; border-radius: 8px; text-decoration: none; color: inherit; background: color-mix(in srgb, var(--pc) 8%, #FFFDF8); border: 1px solid color-mix(in srgb, var(--pc) 30%, var(--line)); transition: background .2s; }
+  .deep-link:hover { background: color-mix(in srgb, var(--pc) 15%, #FFFDF8); }
+  .deep-link i { font-style: normal; width: 34px; height: 34px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex: none; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
+  .deep-link span { flex: 1; min-width: 0; }
+  .deep-link b { display: block; font-family: var(--serif); font-size: 16px; }
+  .deep-link small { font-size: 12.5px; color: var(--muted); }
+  .deep-link em { font-style: normal; font-size: 13px; color: var(--pc); white-space: nowrap; font-weight: 600; }
   .focus { margin: 4px 0 26px; padding: 16px 20px 6px; background: #FBF8F2; border: 1px solid var(--gold-soft); border-radius: 4px; }
   .fc-k { font-size: 12.5px; letter-spacing: .14em; color: #8A6A3A; font-weight: 600; margin-bottom: 8px; }
   .fc-row { padding: 10px 0; border-top: 1px dashed var(--line); }
@@ -649,10 +669,15 @@
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function deepLink(id) {
+    var d = DEEP.filter(function (x) { return x.id === id; })[0]; if (!d) return '';
+    var st = SYS_STYLE[d.key];
+    return '<a class="deep-link no-print" href="#deep" style="--pc:' + st[1] + '"><i>' + st[0] + '\uFE0E</i><span><b>想更深入看懂你的' + d.key + '？</b><small>' + d.name + '：AI 帶你一項一項讀懂自己的盤</small></span><em>看看 →</em></a>';
+  }
   function sys(no, id, title, lead, body) {
     no = chapterNo++;
     return '<section class="system" id="' + id + '"><div class="sys-head"><div class="no">第' + NUMS[no] + '章</div><h2>' + title + '</h2>' +
-      '<p class="lead">' + lead + '</p></div>' + body + '</section>';
+      '<p class="lead">' + lead + '</p></div>' + body + deepLink(id) + '</section>';
   }
   function table(head, rows, nowFlags) {
     var h = '<div class="table-wrap"><table><thead><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>';
@@ -923,6 +948,15 @@
     { icon: '♡', color: '#C27D8E', name: '感情與關係', hook: '看懂自己在愛裡的樣子，不再重複受傷', points: ['一句話形容你在愛裡的樣子＋三個關鍵字', '你的需求、愛的表達方式與被愛的感覺', '容易卡住的模式，以及溫柔的練習方向', '適合的伴侶特質與相處節奏', '家人、朋友、工作夥伴關係的提醒', '這幾年的關係功課＋三個小練習'] },
     { icon: '❋', color: '#5D88A6', name: '專屬能量充電處方', hook: '總是莫名很累、想太多、睡不好？', points: ['找出你最容易耗能的情境與環境', '身心發出「需要休息」訊號時的樣子', '你的脈輪能量地圖：哪裡亮、哪裡需要照顧', '整合五行、星盤、人類圖的能量特質', '最適合你的充電方式與療癒方法', '一套每天 10 分鐘的專屬能量練習'] }
   ];
+  // 單一系統深度解讀：AI 像老師一樣，帶你看懂自己的盤
+  var DEEP = [
+    { id: 'numerology', key: '生命靈數', name: '生命靈數 × 脈輪深度解讀', points: ['生命靈數和脈輪的基本邏輯', '你的天賦數、最亮脈輪、潛在脈輪', '九年流年循環：你現在在哪一步'] },
+    { id: 'bazi', key: '八字', name: '八字深度解讀', points: ['四柱、天干地支、十神怎麼看', '你的日主、身強身弱、五行喜忌', '十年大運的節奏和現在這一步'] },
+    { id: 'ziwei', key: '紫微斗數', name: '紫微斗數深度解讀', points: ['十二宮和主星怎麼看', '你的命宮、身宮、四化落點', '每個大限的人生重心'] },
+    { id: 'western', key: '西洋占星', name: '西洋占星深度解讀', points: ['行星、星座、宮位、相位怎麼讀', '你的太陽、月亮、上升與重要相位', '星群、元素和你的人生重心'] },
+    { id: 'vedic', key: '印度占星', name: '印度占星深度解讀', points: ['印度占星和西洋有什麼不同', '你的 Lagna、月亮星宿、九曜落宮', 'Vimshottari 大運：人生的章節'] },
+    { id: 'hd', key: '人類圖', name: '人類圖深度解讀', points: ['類型、策略、權威怎麼運作', '你的定義中心、開放中心、通道', '人生角色和每天可以實驗的方法'] }
+  ];
   // 常見問題懶人包：只放題目，真正的指令在付費版資料夾
   var FAQ = ['我適合創業，還是適合上班？', '什麼時候適合換工作或轉職？', '我為什麼總是存不了錢？', '我的正緣是什麼樣子？什麼時候比較容易遇到？', '為什麼我在感情裡總是重複一樣的模式？',
     '我的人生使命、天命是什麼？', '我適合做身心靈或助人的工作嗎？', '今年適合搬家、結婚或做重大決定嗎？', '我為什麼容易焦慮、想太多？', '為什麼我和家人的關係總是卡卡的？'];
@@ -998,6 +1032,12 @@
         '<p class="faq-desc">10 個大家最常問的問題，每一題都根據你的命盤來回答：</p>' +
         '<ol class="faq-list">' + FAQ.map(function (qq) { return '<li>' + qq + '</li>'; }).join('') + '</ol>' +
         '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。全套方案免費加贈。</p></div>' +
+      '<div class="deep" id="deep"><div class="deep-head"><b>單一系統深度解讀</b><span>想真正看懂其中一個系統？AI 會像老師一樣，帶你一項一項讀懂自己的盤。</span></div>' +
+        '<div class="deep-grid">' + DEEP.map(function (x) {
+          var st = SYS_STYLE[x.key];
+          return '<div class="deep-card" style="--pc:' + st[1] + '"><div class="dc-head"><i>' + st[0] + '\uFE0E</i><b>' + x.name + '</b></div><ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') +
+            '<li>你的盤專屬名詞小辭典＋10 個延伸提問</li></ul>' + priceTag(SHOP.price) + '</div>';
+        }).join('') + '</div><p class="deep-note">可以和上面的主題懶人包一起算進「任選三份」。</p></div>' +
       '<div class="bundles">' + SHOP.bundles.map(function (bd) {
         var on = earlyOn(), unit = on ? SHOP.price.early : SHOP.price.regular, now = on ? bd.early : bd.regular, full = unit * bd.count;
         return '<div class="bundle' + (bd.best ? ' best' : '') + '">' + (bd.best ? '<i class="bd-tag">最划算</i>' : '') +
