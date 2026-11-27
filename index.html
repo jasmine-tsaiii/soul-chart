@@ -201,6 +201,30 @@
   .bd-price s { font-size: 13px; color: var(--muted); margin-right: 8px; }
   .bd-price b { font-family: var(--serif); font-size: 26px; color: #8A6A3A; }
   .bd-save { font-size: 12.5px; color: #4F6B55; }
+  .cart-add { margin-top: 12px; align-self: stretch; font: inherit; font-size: 13.5px; padding: 8px 10px; border: 1px dashed var(--pc, var(--gold)); color: var(--pc, var(--gold)); background: transparent; border-radius: 6px; cursor: pointer; transition: background .15s, color .15s; }
+  .cart-add:hover { background: color-mix(in srgb, var(--pc, #A88550) 8%, transparent); }
+  .cart-add.on { border-style: solid; background: var(--pc, var(--gold)); color: #fff; }
+  .faq-pack .cart-add { --pc: #7A5A9C; width: 100%; }
+  .deep-card .cart-add { margin-top: 10px; }
+  .cart { margin: 0 0 20px; padding: 18px 20px; background: #FFFDF8; border: 1px solid var(--gold-soft); border-top: 3px solid var(--gold); scroll-margin-top: 80px; }
+  .cart-title { font-weight: 700; margin-bottom: 10px; }
+  .cart-empty { margin: 0; color: var(--muted); font-size: 14px; }
+  .cart-list { margin: 0 0 12px; padding-left: 22px; }
+  .cart-list li { padding: 4px 0; border-bottom: 1px dotted var(--line); }
+  .cart-list li span { display: inline-block; width: calc(100% - 34px); }
+  .cart-del { float: right; border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0 4px; }
+  .cart-sum { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .cart-parts { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .cart-total { text-align: right; }
+  .cart-total s { color: var(--muted); margin-right: 8px; font-size: 14px; }
+  .cart-total b { font-size: 24px; color: var(--ink); }
+  .cart-total small { display: block; font-size: 12px; color: #6C8F74; }
+  .cart-tip { margin: 10px 0 0; font-size: 13.5px; background: color-mix(in srgb, var(--gold) 10%, transparent); padding: 8px 10px; border-radius: 6px; }
+  .cart-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .cart-note { margin: 8px 0 0; font-size: 12.5px; color: var(--muted); }
+  .cart-bar { position: fixed; left: 50%; bottom: 16px; transform: translate(-50%, 140%); z-index: 50; display: flex; gap: 10px; align-items: center; padding: 10px 18px; border-radius: 999px; background: #1E2148; color: #F4E6C8; text-decoration: none; font-size: 14px; box-shadow: 0 6px 24px rgba(0,0,0,.25); transition: transform .25s; white-space: nowrap; }
+  .cart-bar.show { transform: translate(-50%, 0); }
+  .cart-bar span { opacity: .75; font-size: 13px; }
   .flow { background: #FFFDF8; border: 1px solid var(--line); padding: 18px 20px; }
   .flow-title { font-family: var(--serif); font-weight: 600; font-size: 16px; margin-bottom: 6px; }
   .flow ol { margin: 0; padding-left: 20px; font-size: 14px; line-height: 2; color: var(--ink-2); }
@@ -467,6 +491,15 @@
   .deep-link b { display: block; font-family: var(--serif); font-size: 16px; }
   .deep-link small { font-size: 12.5px; color: var(--muted); }
   .deep-link em { font-style: normal; font-size: 13px; color: var(--pc); white-space: nowrap; font-weight: 600; }
+  .sc-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: center; margin: 34px 0 6px; padding: 22px; border-radius: 10px; background: linear-gradient(135deg, #1F2353, #2E3270); color: #F3E6C8; }
+  .sc-preview canvas { width: 100%; height: auto; display: block; border-radius: 10px; box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+  .sc-side .eyebrow { font-size: 12px; letter-spacing: .28em; color: #E3CFA0; }
+  .sc-side .paid-title { color: #FFF4DA; margin: 6px 0 8px; }
+  .sc-side p { font-size: 14.5px; color: #E2D7C2; line-height: 1.85; margin: 0 0 16px; }
+  .sc-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sc-btns .btn { background: #E6C384; border-color: #E6C384; color: #1F2353; font-weight: 600; }
+  .sc-btns .btn.line { background: transparent; color: #F3E6C8; border-color: rgba(243,230,200,.6); }
+  @media (max-width: 640px) { .sc-wrap { grid-template-columns: 1fr; } .sc-preview { max-width: 260px; margin: 0 auto; } }
   .focus { margin: 4px 0 26px; padding: 16px 20px 6px; background: #FBF8F2; border: 1px solid var(--gold-soft); border-radius: 4px; }
   .fc-k { font-size: 12.5px; letter-spacing: .14em; color: #8A6A3A; font-weight: 600; margin-bottom: 8px; }
   .fc-row { padding: 10px 0; border-top: 1px dashed var(--line); }
@@ -781,6 +814,17 @@
       var syn = Synthesis.build({ nu: nu, bz: bz, zw: zw, we: we, ve: ve, hd: hd },
         { T: T, X: X, E: EXPLAIN, nowYear: nowYear, birthYear: birth.y, only: only, centerName: function (c) { return HumanDesign.CENTERS[c].name; } });
       html += synthesisSection(syn, name ? esc(name) : '', picked.length);
+      if (syn.portrait) {
+        var rows = [];
+        if (has('numerology')) rows.push(['生命靈數', T.types[nu.energyType].name + '・生命靈數 ' + nu.lifePath]);
+        if (has('bazi')) rows.push(['八字', bz.dayMaster.stem + bz.dayMaster.element + '日主' + (bz.strength ? '・' + bz.strength.label : '')]);
+        if (has('ziwei') && !zw.unknownTime) rows.push(['紫微斗數', '命宮 ' + zw.mingMainStars.join('、')]);
+        if (has('western')) rows.push(['西洋占星', we.planets[0].sign.replace('座', '') + '太陽・' + we.planets[1].sign.replace('座', '') + '月亮' + (we.asc ? '・' + we.asc.sign.replace('座', '') + '上升' : '')]);
+        if (has('vedic')) rows.push(['印度占星', '月亮星宿 ' + ve.moonNakshatra.name + '（' + ve.moonNakshatra.zh + '）']);
+        if (has('hd') && !hd.unknownTime) rows.push(['人類圖', X.hd.types[hd.type].name + '・' + hd.profile + '・' + X.hd.authorities[hd.authority].name]);
+        LAST.card = { name: name, title: syn.portrait.title, keywords: syn.portrait.keywords, rows: rows };
+        html += shareBlock();
+      }
     }
     html += midCta();
 
@@ -809,6 +853,8 @@
       '所有排盤都由這個工具自行計算（天文公式與傳統排盤規則），已用實際命盤與已知天象驗證；重要的決定，建議再用專業軟體對照。</p>';
     $('out').innerHTML = html;
     buildSecNav();
+    if ($('shareCanvas')) drawShareCard($('shareCanvas'), LAST.card);
+    renderCart();
     updateAiText();
     renderUnlock();
   }
@@ -861,6 +907,92 @@
     var st = SYS_STYLE[sysName.replace(' × 脈輪', '')] || ['•', '#A88550'];
     return '<a href="#' + id + '" style="--pc:' + st[1] + '"><div class="sys"><span class="nav-ic">' + st[0] + '\uFE0E</span>' + sysName + '</div><div class="main">' + main + '</div><div class="sub">' + sub + '</div></a>';
   }
+
+  // ===== 分享卡：東西方命盤大亂鬥（1080×1920，IG 限動尺寸）=====
+  function shareBlock() {
+    return '<div class="sc-wrap no-print"><div class="sc-preview"><canvas id="shareCanvas" width="1080" height="1920"></canvas></div>' +
+      '<div class="sc-side"><div class="eyebrow">分享你的命盤卡</div><h3 class="paid-title">六種系統，看看誰最懂你</h3>' +
+      '<p>把你的一句話和六個系統的結果做成一張卡，IG 限時動態尺寸（1080×1920），朋友看得懂，也會想來測。</p>' +
+      '<div class="sc-btns"><button type="button" class="btn" id="scDownload">下載分享圖</button><button type="button" class="btn line" id="scShare">分享</button><button type="button" class="btn line" id="scCopy">複製分享文字</button></div></div></div>';
+  }
+  function wrapText(ctx, text, maxW) {
+    var lines = [], cur = '';
+    Array.from(text).forEach(function (ch) { if (ctx.measureText(cur + ch).width > maxW && cur) { lines.push(cur); cur = ch; } else cur += ch; });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function drawShareCard(cv, d) {
+    if (!cv || !d) return;
+    var ctx = cv.getContext('2d'), W = 1080, H = 1920, SERIF = '"Songti TC","Noto Serif TC",serif', SANS = '"PingFang TC","Noto Sans TC",sans-serif';
+    var bg = ctx.createRadialGradient(W / 2, 360, 60, W / 2, 700, 1500);
+    bg.addColorStop(0, '#3D4386'); bg.addColorStop(.45, '#20245A'); bg.addColorStop(1, '#0E1030');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    var seed = 7, rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+    for (var i = 0; i < 420; i++) { ctx.fillStyle = 'rgba(255,245,225,' + (rnd() * .7 + .2) + ')'; ctx.beginPath(); ctx.arc(rnd() * W, rnd() * H, rnd() * 1.8 + .3, 0, 7); ctx.fill(); }
+    // 月亮
+    var glow = ctx.createRadialGradient(W / 2, 300, 60, W / 2, 300, 260); glow.addColorStop(0, 'rgba(248,220,160,.45)'); glow.addColorStop(1, 'rgba(248,220,160,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, 620);
+    var mg = ctx.createRadialGradient(W / 2 - 40, 260, 10, W / 2, 300, 120); mg.addColorStop(0, '#FBEFD2'); mg.addColorStop(.5, '#EDCF95'); mg.addColorStop(1, '#C49A5C');
+    ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(W / 2, 300, 118, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(160,120,70,.18)'; [[-40, -30, 22], [36, 10, 14], [-6, 44, 28]].forEach(function (c) { ctx.beginPath(); ctx.arc(W / 2 + c[0], 300 + c[1], c[2], 0, 7); ctx.fill(); });
+    ctx.strokeStyle = 'rgba(243,230,200,.35)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(W / 2, 300, 360, 90, -.12, 0, 7); ctx.stroke();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    // 標題區
+    ctx.fillStyle = '#E3CFA0'; ctx.font = '500 34px ' + SANS; ctx.letterSpacing = '12px';
+    ctx.fillText('東西方命盤大亂鬥', W / 2 + 6, 530); ctx.letterSpacing = '0px';
+    ctx.fillStyle = '#EADFC6'; ctx.font = '40px ' + SERIF; ctx.fillText((d.name ? d.name + '，' : '') + '六種系統都說你是', W / 2, 612);
+    var parts = d.title.split('，'), tg = ctx.createLinearGradient(0, 640, 0, 760); tg.addColorStop(0, '#FFF4DA'); tg.addColorStop(1, '#D9AE66');
+    ctx.fillStyle = tg; ctx.font = '700 88px ' + SERIF;
+    var tl = wrapText(ctx, parts[0], 900), y = 720;
+    tl.forEach(function (l) { ctx.fillText(l, W / 2, y); y += 104; });
+    if (parts[1]) { ctx.fillStyle = '#EBD8AE'; ctx.font = '42px ' + SERIF; ctx.fillText(parts[1], W / 2, y - 20); y += 50; }
+    // 關鍵字
+    ctx.font = '500 32px ' + SANS;
+    var ks = d.keywords.map(function (k) { return '✦ ' + k; }), kw = ks.map(function (k) { return ctx.measureText(k).width + 56; }), total = kw.reduce(function (a, b) { return a + b; }, 0) + (ks.length - 1) * 18, x = (W - total) / 2, ky = y + 10;
+    ks.forEach(function (k, i) {
+      ctx.strokeStyle = 'rgba(227,207,160,.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(x, ky, kw[i], 64, 32); ctx.stroke();
+      ctx.fillStyle = '#F3E6C8'; ctx.fillText(k, x + kw[i] / 2, ky + 43); x += kw[i] + 18;
+    });
+    // 六個系統
+    var ry = ky + 120, rx = 120, rw = W - 240, rh = 108;
+    ctx.fillStyle = 'rgba(255,255,255,.06)'; ctx.beginPath(); ctx.roundRect(rx - 30, ry - 30, rw + 60, d.rows.length * rh + 40, 28); ctx.fill();
+    ctx.strokeStyle = 'rgba(227,207,160,.25)'; ctx.lineWidth = 2; ctx.stroke();
+    d.rows.forEach(function (r, i) {
+      var st = SYS_STYLE[r[0]] || ['✦', '#A88550'], cy = ry + i * rh + 46;
+      ctx.fillStyle = st[1]; ctx.beginPath(); ctx.arc(rx + 34, cy, 32, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = '30px "Apple Symbols","Segoe UI Symbol",' + SERIF; ctx.textAlign = 'center'; ctx.fillText(st[0], rx + 34, cy + 11);
+      ctx.textAlign = 'left'; ctx.fillStyle = '#C9B489'; ctx.font = '500 26px ' + SANS; ctx.fillText(r[0], rx + 92, cy - 10);
+      ctx.fillStyle = '#FFF4E0'; ctx.font = '600 36px ' + SERIF;
+      var line = r[1]; while (ctx.measureText(line).width > rw - 110 && line.length > 4) line = line.slice(0, -2) + '…';
+      ctx.fillText(line.replace(/……$/, '…'), rx + 92, cy + 34);
+      if (i < d.rows.length - 1) { ctx.strokeStyle = 'rgba(227,207,160,.15)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(rx + 92, ry + (i + 1) * rh - 10); ctx.lineTo(rx + rw, ry + (i + 1) * rh - 10); ctx.stroke(); }
+    });
+    // 底部
+    ctx.textAlign = 'center'; ctx.fillStyle = '#EADFC6'; ctx.font = '34px ' + SERIF; ctx.fillText('你呢？六種系統，看看誰最懂你', W / 2, H - 160);
+    ctx.fillStyle = '#E6C384'; ctx.font = '600 40px ' + SANS; ctx.letterSpacing = '4px'; ctx.fillText('chart.jas-soul.com', W / 2 + 2, H - 96); ctx.letterSpacing = '0px';
+    ctx.fillStyle = 'rgba(234,223,198,.7)'; ctx.font = '28px ' + SANS; ctx.fillText('@jas.soulcareer', W / 2, H - 52);
+  }
+  function shareText() {
+    var d = LAST && LAST.card; if (!d) return '';
+    return '我測了「東西方命盤大亂鬥」，六種系統都說我是「' + d.title.split('，')[0] + '」✦ 關鍵字：' + d.keywords.join('、') + '。你呢？來看看誰最懂你 → https://chart.jas-soul.com';
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target; if (!t.id) return;
+    if (t.id === 'scDownload' || t.id === 'scShare') {
+      var cv = $('shareCanvas'); if (!cv) return;
+      cv.toBlob(function (blob) {
+        var file = new File([blob], '東西方命盤大亂鬥.png', { type: 'image/png' });
+        if (t.id === 'scShare' && navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], text: shareText() }).catch(function () {});
+        } else {
+          var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+          toast(t.id === 'scShare' ? '這個瀏覽器不支援直接分享，已幫你下載圖片' : '已下載分享圖');
+        }
+      }, 'image/png');
+    } else if (t.id === 'scCopy') {
+      copyText(shareText(), t, '複製分享文字', '已複製，可以貼到 IG 或 LINE');
+    }
+  });
 
   // ===== AI 分析懶人包 =====
   // ===== 商店設定：改這裡就好 =====
@@ -961,6 +1093,90 @@
   // 常見問題懶人包：只放題目，真正的指令在付費版資料夾
   var FAQ = ['我適合創業，還是適合上班？', '什麼時候適合換工作或轉職？', '我為什麼總是存不了錢？', '我的正緣是什麼樣子？什麼時候比較容易遇到？', '為什麼我在感情裡總是重複一樣的模式？',
     '我的人生使命、天命是什麼？', '我適合做身心靈或助人的工作嗎？', '今年適合搬家、結婚或做重大決定嗎？', '我為什麼容易焦慮、想太多？', '為什麼我和家人的關係總是卡卡的？'];
+  // ===== 購買清單（像購物車：勾選 → 自動算最划算的價格 → 複製文字貼到 LINE）=====
+  var CART = [];   // [{kind, name}]，依加入順序
+  function cartBtn(kind, name) {
+    var on = CART.some(function (c) { return c.name === name; });
+    return '<button type="button" class="cart-add' + (on ? ' on' : '') + '" data-kind="' + kind + '" data-name="' + name + '">' + (on ? '✓ 已加入' : '＋ 加入清單') + '</button>';
+  }
+  function cartPrice() {
+    var unit = earlyOn() ? SHOP.price.early : SHOP.price.regular;
+    var b3 = SHOP.bundles[0], b6 = SHOP.bundles[1];
+    var p3 = earlyOn() ? b3.early : b3.regular, p6 = earlyOn() ? b6.early : b6.regular;
+    var items = CART.filter(function (c) { return c.kind !== 'faq'; }), n = items.length;
+    var mains = CART.filter(function (c) { return c.kind === 'main'; }).length;
+    var hasFaq = CART.some(function (c) { return c.kind === 'faq'; });
+    // 只有選齊六份主題懶人包才算「全套六份」（加贈常見問題懶人包）
+    var best = null;
+    for (var k6 = 0; k6 <= (mains === 6 ? 1 : 0); k6++) {
+      var rest = n - 6 * k6; if (rest < 0) continue;
+      var k3 = Math.floor(rest / 3), r = rest % 3;
+      var total = k6 * p6 + k3 * p3 + r * unit, parts = [];
+      if (k6) parts.push(b6.name + ' NT$' + p6);
+      if (k3) parts.push(b3.name + (k3 > 1 ? ' ×' + k3 : '') + ' NT$' + (k3 * p3));
+      if (r) parts.push('單份 ×' + r + ' NT$' + (r * unit));
+      if (!best || total < best.total) best = { total: total, parts: parts, gift: !!k6 };
+    }
+    if (hasFaq) {
+      if (best.gift) best.parts.push('常見問題懶人包 免費加贈');
+      else { best.total += unit; best.parts.push('常見問題懶人包 NT$' + unit); }
+    }
+    var tip = '';
+    if (n % 3 === 2) tip = '再選 1 份，就能用「' + b3.name + ' NT$' + p3 + '」';
+    if (mains >= 4 && mains < 6) tip = '再選 ' + (6 - mains) + ' 份主題懶人包，就能用「' + b6.name + ' NT$' + p6 + '」，還加贈常見問題懶人包';
+    best.full = n * unit + (hasFaq ? unit : 0);
+    best.tip = tip;
+    return best;
+  }
+  function cartText() {
+    var pr = cartPrice();
+    return '你好！我想購買命盤 AI 懶人包：\n' + CART.map(function (c, i) { return (i + 1) + '. ' + c.name; }).join('\n') +
+      '\n\n共 ' + CART.length + ' 份\n' + pr.parts.join('＋') + '\n合計 NT$' + pr.total + (earlyOn() ? '（早鳥價）' : '') + '\n\n（從 chart.jas-soul.com 送出）';
+  }
+  function renderCart() {
+    var box = document.querySelector('#cart .cart-body'); if (!box) return;
+    var bar = document.querySelector('.cart-bar');
+    if (!CART.length) {
+      box.innerHTML = '<p class="cart-empty">在上面點「＋ 加入清單」，選好之後在這裡一鍵複製，貼到官方 LINE 就完成了。</p>';
+      if (bar) bar.classList.remove('show');
+      return;
+    }
+    var pr = cartPrice();
+    box.innerHTML = '<ol class="cart-list">' + CART.map(function (c) {
+        return '<li><span>' + c.name + '</span><button type="button" class="cart-del" data-name="' + c.name + '" aria-label="移除">✕</button></li>';
+      }).join('') + '</ol>' +
+      '<div class="cart-sum"><div class="cart-parts">' + pr.parts.join('<br>') + '</div><div class="cart-total">' +
+        (pr.full > pr.total ? '<s>NT$' + pr.full + '</s>' : '') + '<b>NT$' + pr.total + '</b>' + (pr.full > pr.total ? '<small>已幫你套用最划算的組合，省 NT$' + (pr.full - pr.total) + '</small>' : '') + '</div></div>' +
+      (pr.tip ? '<p class="cart-tip">💡 ' + pr.tip + '</p>' : '') +
+      '<div class="cart-actions"><button type="button" class="btn cart-copy">複製購買清單</button>' +
+      (SHOP.lineUrl ? '<a class="btn line" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">打開官方 LINE</a>' : '') + '</div>' +
+      '<p class="cart-note">複製後貼到官方 LINE 傳給我，我確認後會告訴你付款方式。</p>';
+    if (!bar) {
+      bar = document.createElement('a'); bar.className = 'cart-bar'; bar.href = '#cart';
+      document.body.appendChild(bar);
+    }
+    bar.innerHTML = '🛒 已選 ' + CART.length + ' 份・<b>NT$' + pr.total + '</b><span>查看清單 ›</span>';
+    cartBarSync();
+  }
+  function cartBarSync() {
+    var bar = document.querySelector('.cart-bar'), c = $('cart'); if (!bar || !c) return;
+    var r = c.getBoundingClientRect(), inView = r.top < innerHeight && r.bottom > 0;
+    bar.classList.toggle('show', CART.length > 0 && !inView);
+  }
+  addEventListener('scroll', function () { if (CART.length) cartBarSync(); }, { passive: true });
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('.cart-add, .cart-del, .cart-copy, .cart-bar'); if (!t) return;
+    if (t.classList.contains('cart-bar')) { e.preventDefault(); $('cart').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    if (t.classList.contains('cart-copy')) { copyText(cartText(), t, '複製購買清單', '已複製，貼到官方 LINE 傳給我就可以了'); return; }
+    var name = t.getAttribute('data-name'), idx = -1;
+    CART.forEach(function (c, i) { if (c.name === name) idx = i; });
+    if (idx >= 0) CART.splice(idx, 1); else CART.push({ kind: t.getAttribute('data-kind'), name: name });
+    document.querySelectorAll('.cart-add').forEach(function (b) {
+      if (b.getAttribute('data-name') !== name) return;
+      var on = idx < 0; b.classList.toggle('on', on); b.textContent = on ? '✓ 已加入' : '＋ 加入清單';
+    });
+    renderCart();
+  });
   function earlyOn() { return !!(SHOP.earlyBird && SHOP.earlyBird.open); }
   var FREE_PROMPT = '請根據下面的命盤資料，幫我做一份「免費體驗版」的自我認識，大約 800–1000 字，重點放在「我是怎樣的人」：\n' +
     '一、用一句話形容我，再給三個關鍵字。\n' +
@@ -1030,17 +1246,17 @@
       '<div class="paid-grid">' + PAID.map(function (x) {
         return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
           '<p class="pc-hook">' + x.hook + '</p>' +
-          '<ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') + '</ul><div class="pc-foot">' + priceTag(SHOP.price) + '<span class="lock" title="購買後提供完整指令">🔒</span></div></div>';
+          '<ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') + '</ul><div class="pc-foot">' + priceTag(SHOP.price) + '<span class="lock" title="購買後提供完整指令">🔒</span></div>' + cartBtn('main', x.name.replace('{Y}', Y)) + '</div>';
       }).join('') + '</div>' +
       '<div class="faq-pack"><div class="faq-head"><span class="pc-ic" style="--pc:#7A5A9C">問</span><b>常見問題懶人包</b>' + priceTag(SHOP.price) + '</div>' +
         '<p class="faq-desc">10 個大家最常問的問題，每一題都根據你的命盤來回答：</p>' +
         '<ol class="faq-list">' + FAQ.map(function (qq) { return '<li>' + qq + '</li>'; }).join('') + '</ol>' +
-        '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。全套方案免費加贈。</p></div>' +
+        '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。全套方案免費加贈。</p>' + cartBtn('faq', '常見問題懶人包') + '</div>' +
       '<div class="deep" id="deep"><div class="deep-head"><b>單一系統深度解讀</b><span>想真正看懂其中一個系統？AI 會像老師一樣，帶你一項一項讀懂自己的盤。</span></div>' +
         '<div class="deep-grid">' + DEEP.map(function (x) {
           var st = SYS_STYLE[x.key];
           return '<div class="deep-card" style="--pc:' + st[1] + '"><div class="dc-head"><i>' + st[0] + '\uFE0E</i><b>' + x.name + '</b></div><ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') +
-            '<li>你的盤專屬名詞小辭典＋10 個延伸提問</li></ul>' + priceTag(SHOP.price) + '</div>';
+            '<li>你的盤專屬名詞小辭典＋10 個延伸提問</li></ul>' + priceTag(SHOP.price) + cartBtn('deep', x.name) + '</div>';
         }).join('') + '</div><p class="deep-note">可以和上面的主題懶人包一起算進「任選三份」。</p></div>' +
       '<div class="bundles">' + SHOP.bundles.map(function (bd) {
         var on = earlyOn(), unit = on ? SHOP.price.early : SHOP.price.regular, now = on ? bd.early : bd.regular, full = unit * bd.count;
@@ -1050,6 +1266,7 @@
           (bd.gift ? '<div class="bd-gift">🎁 ' + bd.gift + '</div>' : '') +
           (on && bd.regular !== bd.early ? '<div class="bd-after">早鳥結束後 NT$' + bd.regular + '</div>' : '') + '</div>';
       }).join('') + '</div>' +
+      '<div class="cart" id="cart"><div class="cart-title">🛒 我的購買清單</div><div class="cart-body"></div></div>' +
       '<div class="flow"><div class="flow-title">購買流程</div><ol>' +
         '<li>' + (SHOP.lineUrl ? '<a class="line-link" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">' : '') + '<b>加官方 LINE</b>' + (SHOP.lineId ? '（' + SHOP.lineId + '）' : '') + (SHOP.lineUrl ? '</a>' : '') + '，告訴我你想要哪一份</li>' +
         '<li><b>完成付款</b>，' + (earlyOn() ? '早鳥價單份 NT$' + SHOP.price.early + '，也有組合優惠' : '單份 NT$' + SHOP.price.regular + '，也有組合優惠') + '</li>' +
