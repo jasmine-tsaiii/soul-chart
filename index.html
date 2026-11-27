@@ -281,6 +281,40 @@
   .iv-btns { display: flex; gap: 8px; flex-wrap: wrap; }
   .invite .btn { background: #E3C78E; border-color: #E3C78E; color: #1F2353; font-size: 13.5px; padding: 8px 14px; }
   .invite .btn.line { background: transparent; color: #F3E6C8; border-color: rgba(243,230,200,.55); }
+  .packs { margin: 0 0 22px; }
+  .pk-title { font-weight: 700; font-size: 17px; margin-bottom: 12px; }
+  .pk-title span { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+  .pk-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 12px; }
+  @media (max-width: 760px) { .pk-grid { grid-template-columns: 1fr; } }
+  .pack { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 18px 16px 14px; border: 1px solid var(--gold-soft); border-radius: 10px; background: #FFFDF8; }
+  .pack-rec { border: 2px solid var(--gold); background: color-mix(in srgb, var(--gold) 9%, #FFFDF8); }
+  .pk-badge { position: absolute; top: -11px; left: 14px; font-style: normal; font-size: 11.5px; padding: 1px 10px; border-radius: 999px; background: var(--gold); color: #fff; }
+  .pack-all .pk-badge { background: #1E2148; }
+  .pk-name { font-family: var(--serif); font-size: 18px; font-weight: 600; }
+  .pk-desc { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.7; flex: 1; }
+  .pk-list { margin: 0; padding: 0; list-style: none; flex: 1; }
+  .pk-list li { padding: 5px 0; border-bottom: 1px dotted var(--line); line-height: 1.5; }
+  .pk-list li b { display: block; font-size: 14.5px; }
+  .pk-list li small { font-size: 12px; color: var(--muted); }
+  .pk-price { display: flex; align-items: baseline; gap: 8px; }
+  .pk-price s { font-size: 13px; color: var(--muted); }
+  .pk-price b { font-size: 24px; color: var(--ink); }
+  .pack .btn { width: 100%; text-align: center; }
+  .pk-or { margin: 12px 0 0; font-size: 13px; color: var(--muted); text-align: center; }
+  .pc-tease { margin: 2px 0 10px; padding: 8px 10px; font-size: 13px; line-height: 1.65; border-radius: 6px; background: color-mix(in srgb, var(--pc) 9%, #FFFDF8); border-left: 3px solid var(--pc); }
+  .pc-tease span { display: inline-block; font-size: 11px; padding: 0 7px; margin-right: 6px; border-radius: 999px; background: var(--pc); color: #fff; vertical-align: 1px; }
+  .pc-tease b { display: block; font-size: 12.5px; color: var(--pc); margin-top: 2px; }
+  .pc-more { margin: 0 0 8px; }
+  .pc-more summary { cursor: pointer; font-size: 13px; color: var(--muted); list-style: none; }
+  .pc-more summary::-webkit-details-marker { display: none; }
+  .pc-more summary::after { content: " ▾"; }
+  .pc-more[open] summary::after { content: " ▴"; }
+  .pc-more ul { margin-top: 6px; }
+  .deep-fold > summary { cursor: pointer; list-style: none; position: relative; padding-right: 64px; }
+  .deep-fold > summary::-webkit-details-marker { display: none; }
+  .deep-fold > summary em { position: absolute; right: 0; top: 2px; font-style: normal; font-size: 13px; color: var(--gold); }
+  .deep-fold[open] > summary em { font-size: 0; }
+  .deep-fold[open] > summary em::after { content: "收起 ▴"; font-size: 13px; }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -883,6 +917,7 @@
     if (a.closest('.secnav, nav.overview')) return;            // 導覽列本來就是用來跳的，不另外顯示
     var target = document.getElementById(a.getAttribute('href').slice(1)); if (!target) return;
     BACK = { y: window.scrollY, label: backLabel(a), at: Date.now() };
+    var fold = target.closest && target.closest('details:not([open])'); if (fold) fold.open = true;
     if (target.classList.contains('deep-card')) {             // 落在那一張卡片上，閃一下
       e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'center' });
       target.classList.remove('flash'); void target.offsetWidth; target.classList.add('flash');
@@ -1572,7 +1607,100 @@
       return '<div class="cmp-row"><span class="cmp-k">' + r[0] + '</span><span class="cmp-free">' + r[1] + '</span><span class="cmp-paid">' + r[2] + '</span></div>';
     }).join('') + '</div>';
   }
+  // ===== 依使用者自己的命盤：每份懶人包的「你的盤」預告＋推薦組合 =====
+  function chartHints(Y) {
+    var L = LAST, b = L.birth, has = function (id) { return L.picked.indexOf(id) !== -1; };
+    var P = (L.card && L.card.portrait) || {}, H = { teasers: ['', '', '', '', '', ''], rec: [] };
+    var safe = function (fn) { try { return fn() || ''; } catch (e) { return ''; } };
+    var bz = has('bazi') ? safe(function () { return Bazi.calculate(b, { year: Y }); }) : '';
+    var zw = has('ziwei') ? safe(function () { var z = Ziwei.calculate(b); return z.unknownTime ? '' : z; }) : '';
+    var we = has('western') ? safe(function () { return Astrology.western(b); }) : '';
+    var nu = has('numerology') ? safe(function () { return NumerologyEngine.calculate(b.y, b.m, b.d, { method: 'A', year: Y }); }) : '';
+    var hd = has('hd') ? safe(function () { var h = HumanDesign.calculate(b); return h.unknownTime ? '' : h; }) : '';
+    var ve = has('vedic') ? safe(function () { return Astrology.vedic(b, Astro.julianDay(Y, 7, 1, 12)); }) : '';
+    var palace = function (nm) { var p = zw && zw.palaces.filter(function (x) { return x.name === nm; })[0]; if (!p) return ''; var m = p.stars.filter(function (s) { return s.kind === 'main'; }).map(function (s) { return s.name; }); return m.length ? m.join('、') : '空宮'; };
+    var planet = function (id) { var p = we && we.planets.filter(function (x) { return x.id === id; })[0]; return p ? p.sign.replace('座', '') : ''; };
+    var join = function (arr) { return arr.filter(Boolean).slice(0, 3).join('・'); };
+    // 0 性格
+    H.teasers[0] = safe(function () {
+      if (!P.title) return '';
+      return '你的一句話是「' + P.title.split('，')[0] + '」' + (P.tension ? '，但你身上同時有「' + P.tension.title + '」的拉扯' : '');
+    });
+    // 1 流年
+    var yearFacts = [], transFacts = [], transition = false;
+    safe(function () {
+      if (nu) { var py = nu.personalYear.number; yearFacts.push('生命靈數流年 ' + py + '（' + T.personalYear[py].theme + '）'); if (py === 1 || py === 9) { transition = true; transFacts.push('生命靈數流年 ' + py + (py === 1 ? '，新循環開始' : '，一個循環的結尾')); } }
+      if (bz) {
+        var fIdx = ((Y - 4) % 60 + 60) % 60, fs = fIdx % 10, fb = fIdx % 12, day = bz.pillars[2];
+        var rs = stRel(fs, day.stemIndex).concat(brRel(fb, day.branchIndex));
+        yearFacts.push('流年' + XS[fs] + XB[fb] + (rs.length ? '和你的日柱' + rs[0] : ''));
+        if (bz.luck.some(function (l) { return l.startYear === Y || l.startYear === Y + 1; })) { transition = true; var ly = bz.luck.some(function (l) { return l.startYear === Y; }) ? Y : Y + 1; yearFacts.push('八字 ' + ly + ' 年換大運'); transFacts.push('八字 ' + ly + ' 年換大運'); }
+      }
+      if (zw) { var hj = Ziwei.SIHUA[((Y - 4) % 10 + 10) % 10][3], pl = zw.palaces.filter(function (p) { return p.stars.some(function (s) { return s.name === hj; }); })[0]; if (pl) yearFacts.push('紫微化忌入' + pl.name); }
+      if (ve && ve.dashas.some(function (d) { return d.from.slice(0, 4) === String(Y); })) { transition = true; yearFacts.push('印度占星 ' + Y + ' 年換大運'); transFacts.push('印度占星 ' + Y + ' 年換大運'); }
+    });
+    H.teasers[1] = yearFacts.length ? Y + ' 年：' + join(yearFacts) : '';
+    // 2 事業
+    H.teasers[2] = join([zw && '紫微官祿宮 ' + palace('官祿宮'), we && we.mc && '天頂' + we.mc.sign.replace('座', ''), hd && '人類圖' + X.hd.types[hd.type].name]);
+    // 3 金錢
+    H.teasers[3] = safe(function () {
+      var cai = 0; if (bz) bz.pillars.forEach(function (p) { if (p.unknown) return; if (/財/.test(p.tenGod || '')) cai++; p.hidden.forEach(function (h) { if (/財/.test(h.tenGod)) cai++; }); });
+      var h2 = we ? we.planets.filter(function (p) { return p.house === 2; }).map(function (p) { return p.name; }) : [];
+      return join([zw && '紫微財帛宮 ' + palace('財帛宮'), bz && '八字財星出現 ' + cai + ' 次', h2.length ? '第 2 宮有' + h2.slice(0, 2).join('、') : '']);
+    });
+    // 4 感情
+    H.teasers[4] = join([zw && '紫微夫妻宮 ' + palace('夫妻宮'), planet('venus') && '金星' + planet('venus'), planet('moon') && '月亮' + planet('moon')]);
+    // 5 能量
+    H.teasers[5] = safe(function () {
+      var low = bz ? bz.elements.slice().sort(function (a, c) { return a.weight - c.weight; })[0] : null;
+      return join([nu && '最亮的是' + T.chakras[nu.brightest].name + (nu.potential ? '、' + T.chakras[nu.potential].name + '還沒打開' : ''), low && '五行最缺' + low.name, hd && '人類圖有 ' + (9 - hd.definedCenters.length) + ' 個開放中心']);
+    });
+    // 推薦：性格＋最明顯的特質對應的主題＋（快換運就加流年）
+    var MAP = { '思考洞察': 2, '表達創作': 2, '學習傳授': 2, '行動開創': 2, '主見領導': 2, '穩定務實': 3, '經營資源': 3, '照顧連結': 4, '感受直覺': 5, '自由變化': 1 };
+    var picks = [{ i: 0, why: P.title ? '先看懂「' + P.title.split('，')[0] + '」的你，其他主題才讀得懂' : '先看懂自己，其他主題才讀得懂' }];
+    var add = function (i, why) { if (L.age < 18 && i === 3) return; if (picks.length < 3 && !picks.some(function (p) { return p.i === i; })) picks.push({ i: i, why: why }); };
+    if (transition) add(1, '你的盤在 ' + Y + '–' + (Y + 1) + ' 年有轉換點：' + transFacts.slice(0, 2).join('、'));
+    (P.traits || []).forEach(function (t) { var i = MAP[t.name]; if (i !== undefined) add(i, '你最明顯的「' + t.name + '」有 ' + t.n + ' 個系統提到，' + ['', '', '最能在工作上發揮', '和你賺錢的方式很有關', '在關係裡最明顯', '也代表你特別容易耗能'][i]); });
+    [2, 1, 4, 5, 3].forEach(function (i) { add(i, ['', Y + ' 年的節奏，提前知道比較好安排', '找到最適合你發揮的方式', '看懂你和錢的關係', '看懂你在愛裡的樣子', '找到最適合你的充電方式'][i]); });
+    H.rec = picks;
+    return H;
+  }
+  function packItems(which) {
+    var Y = LAST ? LAST.nowYear + 1 : '';
+    var main = PAID.map(function (x) { return { kind: 'main', name: x.name.replace('{Y}', Y) }; });
+    if (which === 'rec') return (LAST && LAST.hints ? LAST.hints.rec : []).map(function (r) { return main[r.i]; });
+    if (which === 'six') return main.concat([{ kind: 'faq', name: '常見問題懶人包' }]);
+    return main.concat([{ kind: 'faq', name: '常見問題懶人包' }]).concat(DEEP.map(function (x) { return { kind: 'deep', name: x.name }; }));
+  }
+  function addItems(items, msg) {
+    items.forEach(function (it) { if (!CART.some(function (c) { return c.name === it.name; })) CART.push(it); });
+    document.querySelectorAll('.cart-add').forEach(function (bt) {
+      if (CART.some(function (c) { return c.name === bt.getAttribute('data-name'); })) { bt.classList.add('on'); bt.textContent = '✓ 已加入'; }
+    });
+    renderCart(); toast(msg);
+    $('cart').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function packsBlock(H, Y) {
+    var L = ladder();
+    var recNames = H.rec.map(function (r) { return PAID[r.i].name.replace('{Y}', Y); });
+    return '<div class="packs"><div class="pk-title">幫你挑好的組合<span>不知道選哪個？從這裡開始</span></div><div class="pk-grid">' +
+      '<div class="pack pack-rec"><i class="pk-badge">依你的盤推薦</i><div class="pk-name">你的專屬 3 份</div>' +
+        '<ul class="pk-list">' + H.rec.map(function (r, k) { return '<li><b>' + recNames[k] + '</b><small>' + r.why + '</small></li>'; }).join('') + '</ul>' +
+        '<div class="pk-price"><s>NT$' + (L[1] * 3) + '</s><b>NT$' + L[3] + '</b></div><button type="button" class="btn pk-add" data-pack="rec">加入這 3 份</button></div>' +
+      '<div class="pack"><div class="pk-name">主題全套 6 份</div><p class="pk-desc">性格、' + Y + ' 流年、事業、金錢、感情、能量一次看完，再送常見問題懶人包</p>' +
+        '<div class="pk-price"><s>NT$' + (L[1] * 7) + '</s><b>NT$' + L[6] + '</b></div><button type="button" class="btn line pk-add" data-pack="six">加入 6 份＋贈品</button></div>' +
+      '<div class="pack pack-all"><i class="pk-badge">最划算</i><div class="pk-name">全選 12 份</div><p class="pk-desc">6 份主題＋6 份單一系統深度解讀，再送常見問題懶人包，每份只要 ' + Math.round(SHOP.allPrice / SHOP.allCount) + '</p>' +
+        '<div class="pk-price"><s>NT$' + (L[1] * 13) + '</s><b>NT$' + SHOP.allPrice + '</b></div><button type="button" class="btn line pk-add" data-pack="all">一鍵全選</button></div>' +
+      '</div><p class="pk-or">或往下自己挑，加入清單會自動幫你算最優惠的價格 ↓</p></div>';
+  }
+  document.addEventListener('click', function (e) {
+    var bt = e.target.closest && e.target.closest('.pk-add'); if (!bt) return;
+    var w = bt.getAttribute('data-pack');
+    track('add_pack', { pack: w });
+    addItems(packItems(w), w === 'rec' ? '已加入推薦的 3 份' : w === 'six' ? '已加入主題全套 6 份＋常見問題懶人包' : '已全選 12 份＋常見問題懶人包');
+  });
   function aiPackSection() {
+    var H = LAST.hints = chartHints(LAST.nowYear + 1);
     var Y = (LAST ? LAST.nowYear : new Date().getFullYear()) + 1;
     var line = SHOP.lineUrl ? '<a class="btn line-btn" href="' + SHOP.lineUrl + '" target="_blank" rel="noopener">加官方 LINE 了解完整版</a>' : '<span class="btn line-btn disabled">官方 LINE 連結尚未設定</span>';
     return '<section class="ai-pack no-print" id="aipack"><div class="eyebrow">AI 分析懶人包</div><h2>先免費試試看，AI 怎麼讀你的命盤</h2>' +
@@ -1585,23 +1713,24 @@
       '<div class="paid"><div class="eyebrow">覺得準嗎？</div><h3 class="paid-title">完整版懶人包</h3>' +
       '<p class="lead">完整版是更深入的專屬指令，AI 會整合你勾選的系統，寫出一份完整的分析。</p>' + compareTable() + sampleBlock() +
       earlyBanner() +
-      '<div class="deal"><b>怎麼買最划算？</b><span><i>滿 3 份</i> NT$' + ladder()[3] + '（每份 ' + Math.round(ladder()[3] / 3) + '）</span><span><i>滿 6 份</i> NT$' + ladder()[6] + '（每份 ' + Math.round(ladder()[6] / 6) + '）＋送常見問題懶人包</span><span><i>全選 12 份</i> NT$' + SHOP.allPrice + '（每份 ' + Math.round(SHOP.allPrice / SHOP.allCount) + '）＋送常見問題懶人包</span><small>所有懶人包都可以任意混搭，加入清單後會自動幫你算最優惠的價格。</small></div>' +
+      packsBlock(H, Y) +
       (LAST.age < 18 ? '<div class="minor-note"><b>未滿 18 歲想購買？</b>請先跟爸爸媽媽或監護人討論，由他們陪你一起購買。如果想多了解自己，推薦「個人性格深度解析」「事業與天賦」（可以當選科系的參考）、「感情與關係」和「單一系統深度解讀」；「金錢與財運」比較適合成年以後再看。</div>' : '') +
       '<div class="paid-grid">' + PAID.map(function (x) {
         return '<div class="paid-card" style="--pc:' + x.color + '"><div class="pc-head"><span class="pc-ic">' + x.icon + '\uFE0E</span><b>' + x.name.replace('{Y}', Y) + '</b></div>' +
           '<p class="pc-hook">' + x.hook + '</p>' +
-          '<ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') + '</ul><div class="pc-foot">' + priceTag(SHOP.price) + '<span class="lock" title="購買後提供完整指令">🔒</span></div>' + cartBtn('main', x.name.replace('{Y}', Y)) + '</div>';
+          (H.teasers[PAID.indexOf(x)] ? '<div class="pc-tease"><span>你的盤</span>' + H.teasers[PAID.indexOf(x)] + '<b>這代表什麼？完整版告訴你</b></div>' : '') +
+          '<details class="pc-more"><summary>看完整內容</summary><ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') + '</ul></details><div class="pc-foot">' + priceTag(SHOP.price) + '<span class="lock" title="購買後提供完整指令">🔒</span></div>' + cartBtn('main', x.name.replace('{Y}', Y)) + '</div>';
       }).join('') + '</div>' +
       '<div class="faq-pack"><div class="faq-head"><span class="pc-ic" style="--pc:#7A5A9C">問</span><b>常見問題懶人包</b>' + priceTag(SHOP.price) + '</div>' +
         '<p class="faq-desc">10 個大家最常問的問題，每一題都根據你的命盤來回答：</p>' +
         '<ol class="faq-list">' + FAQ.map(function (qq) { return '<li>' + qq + '</li>'; }).join('') + '</ol>' +
         '<p class="faq-note">每一題是一段獨立的指令，想問哪題就複製哪題，和完整命盤資料一起貼給 AI。任選滿 6 份就免費加贈。</p>' + cartBtn('faq', '常見問題懶人包') + '</div>' +
-      '<div class="deep" id="deep"><div class="deep-head"><b>單一系統深度解讀</b><span>想真正看懂其中一個系統？AI 會像老師一樣，帶你一項一項讀懂自己的盤。</span></div>' +
+      '<details class="deep deep-fold" id="deep"><summary class="deep-head"><b>單一系統深度解讀・6 份</b><span>想真正看懂其中一個系統？AI 會像老師一樣，帶你一項一項讀懂自己的盤。</span><em>展開 ▾</em></summary>' +
         '<div class="deep-grid">' + DEEP.map(function (x) {
           var st = SYS_STYLE[x.key];
           return '<div class="deep-card" id="deep-' + x.id + '" style="--pc:' + st[1] + '"><div class="dc-head"><i>' + st[0] + '\uFE0E</i><b>' + x.name + '</b></div><ul>' + x.points.map(function (pt) { return '<li>' + pt + '</li>'; }).join('') +
             '<li>你的盤專屬名詞小辭典＋10 個延伸提問</li></ul>' + priceTag(SHOP.price) + cartBtn('deep', x.name) + '</div>';
-        }).join('') + '</div><p class="deep-note">可以和上面的主題懶人包混搭，一起算進下面的組合價。</p></div>' +
+        }).join('') + '</div><p class="deep-note">可以和上面的主題懶人包混搭，一起算進下面的組合價。</p></details>' +
       '<div class="ladder"><div class="ld-title">買越多越划算<span>主題懶人包、深度解讀、常見問題懶人包都可以任意混搭</span></div><div class="ld-row">' +
         [1, 2, 3, 4, 5, 6].map(function (n) {
           var L = ladder(), t = L[n];
