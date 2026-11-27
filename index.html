@@ -3,7 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>一個生日，六種看見自己的方式</title>
+<title>一個生日，認識完整的自己｜綜合命盤分析</title>
+<meta name="description" content="輸入生日，用生命靈數、八字、紫微斗數、西洋占星、印度占星、人類圖六種系統，一次看見真正的自己：你的天賦、關係模式、人生節奏。免費排盤，還能一鍵產生 AI 分析懶人包。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://chart.jas-soul.com/">
+<meta property="og:title" content="一個生日，認識完整的自己｜綜合命盤分析">
+<meta property="og:description" content="輸入生日，用生命靈數、八字、紫微斗數、西洋占星、印度占星、人類圖六種系統，一次看見真正的自己：你的天賦、關係模式、人生節奏。免費排盤，還能一鍵產生 AI 分析懶人包。">
+<meta property="og:image" content="https://chart.jas-soul.com/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="一個生日，認識完整的自己｜綜合命盤分析">
+<meta name="twitter:description" content="輸入生日，用生命靈數、八字、紫微斗數、西洋占星、印度占星、人類圖六種系統，一次看見真正的自己：你的天賦、關係模式、人生節奏。免費排盤，還能一鍵產生 AI 分析懶人包。">
+<meta name="twitter:image" content="https://chart.jas-soul.com/og.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
@@ -249,12 +262,12 @@
   section.system::before { content: '✦'; display: block; text-align: center; color: var(--gold-soft); font-size: 14px; letter-spacing: 1.2em; padding-left: 1.2em; margin-bottom: 36px; content: '·  ✦  ·'; }
   .sys-head .no { font-family: var(--serif); font-size: 13px; letter-spacing: .24em; color: var(--gold); }
   .sys-head h2 { font-family: var(--serif); font-weight: 600; font-size: 30px; line-height: 1.35; margin: 4px 0 6px; letter-spacing: .06em; }
-  .sys-head .lead { font-size: 15px; color: var(--muted); margin: 0 0 28px; max-width: 36em; }
+  .sys-head .lead { font-size: 15px; color: var(--muted); margin: 0 0 28px; }
   h3 { font-family: var(--serif); font-weight: 600; font-size: 20px; margin: 36px 0 12px; letter-spacing: .05em; display: flex; align-items: center; gap: 10px; }
   h3::before { content: ''; flex: none; width: 4px; height: 1.05em; border-radius: 2px; background: var(--gold); }
   .sys-head h2::before { content: '✦'; color: var(--gold); font-size: .62em; margin-right: 12px; vertical-align: .22em; }
   p { margin: 0 0 12px; }
-  .prose { max-width: 36em; color: var(--ink-2); }
+  .prose { color: var(--ink-2); }
   .big-line { font-family: var(--serif); font-size: 26px; font-weight: 600; letter-spacing: .06em; margin: 0 0 6px; }
   .tagline { font-size: 13px; letter-spacing: .14em; color: var(--muted); margin-bottom: 12px; }
   .note { font-size: 12px; color: var(--muted); margin-top: 18px; line-height: 1.7; }
@@ -282,7 +295,7 @@
   .pillars .small { font-size: 13.5px; color: var(--ink-2); line-height: 1.7; }
 
   /* 長條 */
-  .chakra-col { position: relative; display: grid; gap: 16px; max-width: 600px; padding: 6px 0; }
+  .chakra-col { position: relative; display: grid; gap: 16px; padding: 6px 0; }
   .chakra-col::before { content: ''; position: absolute; left: 15px; top: 18px; bottom: 18px; width: 2px; background: var(--line); }
   .ck-row { position: relative; display: grid; grid-template-columns: 32px 100px 1fr 108px; gap: 12px; align-items: center; }
   .ck-orb { justify-self: center; border-radius: 50%; background: var(--c); border: 2px solid var(--c); box-shadow: 0 0 var(--g) var(--c); }
@@ -293,7 +306,7 @@
   .ck-fill { height: 100%; border-radius: 5px; }
   .ck-note { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
   @media (max-width: 560px) { .ck-row { grid-template-columns: 28px 84px 1fr 80px; gap: 8px; } .ck-note { font-size: 11px; } }
-  .bars { display: grid; gap: 12px; max-width: 520px; }
+  .bars { display: grid; gap: 12px; }
   .bar-row { display: grid; grid-template-columns: 70px 1fr 70px; gap: 12px; align-items: center; font-size: 14px; }
   .bar-track { height: 4px; background: var(--paper-2); position: relative; }
   .bar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--gold); }
@@ -337,7 +350,7 @@
 
 
   /* 說明 */
-  .howto { background: var(--paper-2); border-left: 2px solid var(--gold); padding: 14px 18px; font-size: 14.5px; line-height: 1.85; color: var(--ink-2); margin: 0 0 22px; max-width: 42em; }
+  .howto { background: var(--paper-2); border-left: 2px solid var(--gold); padding: 14px 18px; font-size: 14.5px; line-height: 1.85; color: var(--ink-2); margin: 0 0 22px; }
   .howto b { color: var(--ink); font-weight: 500; }
   .pillars .role { display: block; font-size: 11px; letter-spacing: .02em; color: var(--muted); margin-top: 2px; line-height: 1.5; }
   .pillars .rowtip { display: block; font-size: 10.5px; letter-spacing: 0; color: var(--muted); line-height: 1.5; margin-top: 2px; padding-right: 6px; }
@@ -363,7 +376,7 @@
   .tension { border-top: 1px solid var(--line); padding: 16px 0 4px; }
   .tension .name { font-family: var(--serif); font-size: 19px; font-weight: 600; margin-bottom: 8px; }
   .tension .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 8px; }
-  .tension p { font-size: 14.5px; color: var(--ink-2); max-width: 40em; }
+  .tension p { font-size: 14.5px; color: var(--ink-2); }
   @media (max-width: 640px) { .themes { grid-template-columns: 1fr; gap: 20px; } .tension .sides { grid-template-columns: 1fr; gap: 8px; } }
 
   /* 收合 */
@@ -373,7 +386,7 @@
   .portrait .kw { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 20px; }
   .portrait .kw span { font-size: 14px; padding: 5px 12px; border: 1px solid var(--gold-soft); border-radius: 999px; color: var(--ink-2); background: var(--paper); }
   .portrait .kw span::before { content: '✦'; color: var(--gold); margin-right: 6px; }
-  .portrait .pp p { font-size: 16px; line-height: 1.95; color: var(--ink-2); max-width: 36em; }
+  .portrait .pp p { font-size: 16px; line-height: 1.95; color: var(--ink-2); }
   .portrait .plines { list-style: none; margin: 22px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); display: grid; gap: 12px; }
   .portrait .plines li { display: grid; grid-template-columns: 112px 1fr; gap: 12px; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
   .portrait .plines b { font-family: var(--serif); color: var(--ink); white-space: nowrap; }
@@ -490,7 +503,7 @@
     <header class="app-head">
       <div class="eyebrow">一個生日・六種看見自己的方式</div>
       <h1 class="app-title">綜合命盤分析</h1>
-      <p class="app-sub">輸入生日，勾選想看的系統，就能得到你的命盤、跨系統總覽，以及可以直接貼給 AI 的分析懶人包。</p>
+      <p class="app-sub">你是一個怎樣的人？天賦在哪裡、在關係裡需要什麼、現在走到人生的哪個階段？<br>輸入生日，讓六種系統一起回答，找出它們都在說的那個你。</p>
     </header>
     <div class="step-label"><span>1</span>出生資料</div>
     <div class="controls">
@@ -1249,7 +1262,7 @@
     var luckNow = r.luck.map(function (l) { return nowYear >= l.startYear && nowYear <= l.endYear; });
     var cur = r.luck.filter(function (l, i) { return luckNow[i]; })[0];
     var flowNow = r.flow[0];
-    b += '<h3>大運' + q('大運') + '與流年' + q('流年') + '</h3><div class="howto">大運是每十年換一次的人生季節，流年是每一年的天氣。都是用「跟你（日主）的關係」來看：天干是那段時間外在比較明顯的事，地支是內在、比較深層的狀態。</div>';
+    b += '<h3>大運與流年' + q('大運') + '</h3><div class="howto">大運是每十年換一次的人生季節，流年是每一年的天氣。都是用「跟你（日主）的關係」來看：天干是那段時間外在比較明顯的事，地支是內在、比較深層的狀態。</div>';
     if (cur) b += '<div class="prose"><p>你現在走「<b class="serif">' + cur.ganzhi + '</b>」大運（' + cur.startYear + '–' + cur.endYear + '）：天干是<b>' + cur.stemGod + '</b>，' + X.bazi.tenGods[cur.stemGod] +
       '；地支是<b>' + cur.branchGod + '</b>，' + X.bazi.tenGods[cur.branchGod] + '。</p>' +
       '<p>' + flowNow.year + ' 年是「<b class="serif">' + flowNow.ganzhi + '</b>」年：天干' + flowNow.stemGod + '（' + X.bazi.tenGods[flowNow.stemGod] + '），地支' + flowNow.branchGod + '（' + X.bazi.tenGods[flowNow.branchGod] + '）。</p></div>';
@@ -1331,7 +1344,7 @@
     b += '<h3>每顆行星在說什麼' + q('宮位') + '</h3>';
     stell.forEach(function (k) {
       var ps = bySign[k], h = ps[0].house;
-      b += '<div class="howto"><b>星群' + q('星群') + '：' + k + '有 ' + ps.length + ' 顆行星（' + ps.map(function (p) { return p.name; }).join('、') + '）</b><br>' +
+      b += '<div class="howto"><b>星群：' + k + '有 ' + ps.length + ' 顆行星（' + ps.map(function (p) { return p.name; }).join('、') + '）</b>' + q('星群') + '<br>' +
         W.stellium.replace('{s}', W.signStyle[k]).replace('{h}', h ? '，第 ' + h + ' 宮「' + W.houses[h] + '」也是你人生的重心' : '') + '</div>';
     });
     b += '<ul class="list-plain">' + r.planets.slice(0, 5).map(planetItem).join('') + '</ul>';
@@ -1415,7 +1428,7 @@
 
     var C = HumanDesign.CENTERS, keys = Object.keys(C);
     var openNames = keys.filter(function (c) { return r.definedCenters.indexOf(c) === -1; }).map(function (c) { return C[c].name; });
-    b += '<h3>能量中心' + q('能量中心') + '：有定義和開放差在哪</h3><div class="howto">' + H.centersHow + '</div>' +
+    b += '<h3>能量中心：有定義和開放差在哪' + q('能量中心') + '</h3><div class="howto">' + H.centersHow + '</div>' +
       '<p class="prose">你有 ' + r.definedCenters.length + ' 個中心有定義、' + openNames.length + ' 個開放' + (openNames.length ? '（' + openNames.join('、') + '）' : '') + '。</p>' +
       '<div class="bodygraph">' + bodygraph(r) + '<div><ul class="list-plain hd-centers">' +
       keys.map(function (c) {
