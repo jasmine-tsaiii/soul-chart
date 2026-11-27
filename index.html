@@ -1443,6 +1443,14 @@
     var ws = we.planets[0].sign.replace('座', ''), vs = r.grahas[0].rashi.split(' ')[1];
     var example = ws === vs ? '你的太陽剛好兩邊都是' + ws + '。' : '例如你的太陽在西洋是' + ws + '座，在印度是' + vs + '。';
     var b = '<div class="howto">' + V.howTo.replace('{example}', example) + q('恆星黃道') + '</div>';
+    (function () {
+      var cd = r.dashas.filter(function (d) { return d.current; })[0], rows = [];
+      rows.push({ title: '月亮星宿：' + n.name + '（' + n.zh + '）', text: X.vedic.nakshatra[n.index] + '。印度占星認為月亮的星宿最能描述你的內心：你怎麼感受、什麼讓你安心。', ev: '月亮在' + moon.rashi + ' ' + moon.deg + '，第 ' + n.pada + ' 足' });
+      if (r.lagna && Synthesis.SUN_MOON) rows.push({ title: '外在的你 vs 內心', text: Synthesis.SUN_MOON[EL4[r.lagna.signIndex % 4] + EL4[moon.signIndex % 4]], ev: 'Lagna ' + r.lagna.rashi + '・月亮 ' + moon.rashi });
+      if (cd) rows.push({ title: '你現在的人生章節：' + cd.lord + ' 大運', text: X.vedic.dasha[cd.lord] + '。這一章會持續到 ' + cd.to.slice(0, 4) + ' 年，這段時間的重心都會和這個主題有關。', ev: cd.lord + ' 大運 ' + cd.from + ' – ' + cd.to });
+      if (ws !== vs) rows.push({ title: '西洋和印度的太陽不一樣', text: '你的太陽在西洋是' + ws + '座、在印度是' + vs + '座。如果你覺得自己不太像' + ws + '座，讀讀' + vs + '座的描述，常常會更有共鳴。', ev: '兩個系統的黃道相差約 ' + r.ayanamsa.toFixed(1) + '°' });
+      b += focusBox(rows, []);
+    })();
     b += '<div class="facts">' +
       fact('月亮星座（Rashi）', moon.rashi, 'Rashi') +
       fact('月亮星宿', n.name + '<br><span style="font-size:15px">' + n.zh + '・第 ' + n.pada + ' 足</span>', 'Nakshatra') +
