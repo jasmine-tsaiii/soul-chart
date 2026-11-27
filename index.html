@@ -1046,6 +1046,11 @@
     var p = b.closest('.portrait'), on = p.classList.toggle('show-ev');
     b.textContent = on ? '收起命盤依據 ▴' : '看每一句的命盤依據 ▾'; b.setAttribute('aria-expanded', on);
   });
+  // 帶資料到生命靈數報告（存在這台裝置的瀏覽器，不放在網址裡）
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('#toReport'); if (!a) return;
+    try { localStorage.setItem('chart-handoff', JSON.stringify({ name: $('name').value.trim(), birth: $('birth').value, t: Date.now() })); } catch (err) {}
+  });
   document.addEventListener('keydown', function (e) { if (e.target.id === 'unlockCode' && e.key === 'Enter') tryUnlock(); });
   document.addEventListener('click', function (e) {
     var t = e.target;
@@ -1127,7 +1132,7 @@
       var t = T.personalYear[py.number];
       return trio(py.year + ' 年', py.number + '・' + t.theme, t.line);
     }).join('') + '</div>';
-    b += '<div class="btns no-print"><a class="btn line" href="numerology-report.html">看完整報告與分享卡 →</a></div>';
+    b += '<div class="btns no-print"><a class="btn line" id="toReport" href="numerology-report.html" target="_blank" rel="noopener">看完整報告與分享卡 →</a></div>';
     return sys(0, 'numerology', '生命靈數 × 脈輪', X.intro.numerology, b);
   }
   // ===== 圖示列：彩色圓形圖示＋標題＋關鍵字＋小標籤＋說明 =====

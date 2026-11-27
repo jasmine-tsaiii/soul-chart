@@ -143,7 +143,7 @@
 
   <div class="no-print">
     <div class="controls">
-      <div><label for="name">稱呼（選填）</label><input id="name" placeholder="例如：Jasmine"></div>
+      <div><label for="name">稱呼（選填）</label><input id="name" placeholder="想怎麼稱呼都可以"></div>
       <div><label for="birth">生日</label><input id="birth" type="date"></div>
       <div><label for="year">流年年份</label><input id="year" type="number" min="1900" max="2100"></div>
     </div>
@@ -451,6 +451,12 @@
   $('go').addEventListener('click', render);
   $('print').addEventListener('click', function () { window.print(); });
   ['birth', 'year', 'name'].forEach(function (id) { $(id).addEventListener('change', render); });
+  (function () { // 從綜合命盤帶過來的資料（10 分鐘內有效）
+    try {
+      var h = JSON.parse(localStorage.getItem('chart-handoff') || 'null');
+      if (h && Date.now() - h.t < 600000) { if (h.birth) $('birth').value = h.birth; if (h.name) $('name').value = h.name; }
+    } catch (e) {}
+  })();
   render();
 })();
 </script>
