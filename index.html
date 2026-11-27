@@ -385,12 +385,27 @@
   .hub-me span { font-size: 10.5px; color: rgba(243,230,200,.7); line-height: 1.4; }
   @media (max-width: 420px) { .hub-t, .hub-me { min-height: 112px; padding: 10px 6px; } .hub-t b { font-size: 14px; } .hub-me b { font-size: 14.5px; } }
   .hub .mid-cta { margin-top: 22px; }
-  .pane-nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; margin: 26px 0 34px; padding-top: 16px; border-top: 1px solid var(--line); }
-  .pane-nav button { font: inherit; font-size: 13.5px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--gold-soft); background: #FFFDF8; color: var(--ink-2); cursor: pointer; }
-  .pane-nav .pn-prev { justify-self: start; }
-  .pane-nav .pn-next { justify-self: end; background: var(--accent-grad); border-color: var(--accent); color: #FFFBF2; }
-  .pane-nav .pn-hub { color: var(--accent); }
-  @media (max-width: 480px) { .pane-nav { grid-template-columns: 1fr 1fr; } .pane-nav .pn-hub { grid-column: 1 / -1; grid-row: 2; justify-self: center; } .pane-nav button { font-size: 12.5px; padding: 7px 10px; } }
+  .pane-nav { margin: 30px 0 36px; }
+  .pn-card { font: inherit; width: 100%; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; align-items: center; gap: 4px 12px; text-align: left; padding: 14px 18px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--pc) 40%, var(--line)); background: color-mix(in srgb, var(--pc) 8%, #FFFDF8); color: var(--ink); cursor: pointer; transition: transform .15s, box-shadow .2s; }
+  .pn-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(140,106,47,.14); }
+  .pn-k { grid-column: 1; font-size: 11.5px; letter-spacing: .14em; color: var(--muted); }
+  .pn-main { grid-column: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .pn-main i { font-style: normal; flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--pc); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; }
+  .pn-main > span { display: flex; flex-direction: column; min-width: 0; }
+  .pn-main b { font-family: var(--serif); font-size: 18px; }
+  .pn-main small { font-size: 12.5px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pn-card em { grid-column: 2; grid-row: 1 / 3; font-style: normal; font-size: 22px; color: var(--pc); }
+  .pn-card.pn-gold { background: var(--accent-grad); border-color: var(--accent); color: #FFFBF2; }
+  .pn-card.pn-gold .pn-k, .pn-card.pn-gold small { color: rgba(255,251,242,.8); }
+  .pn-card.pn-gold i { background: #FFFBF2; color: var(--accent); }
+  .pn-card.pn-gold em { color: #FFFBF2; }
+  .pn-links { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-top: 12px; }
+  .pn-links button { font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; padding: 6px 2px; cursor: pointer; }
+  .pn-links button:first-child { justify-self: start; }
+  .pn-links button:last-child { justify-self: end; color: var(--accent); }
+  .pn-dots { display: inline-flex; gap: 6px; }
+  .pn-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .pn-dots i.on { width: 18px; border-radius: 3px; background: var(--accent); }
   .cs { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .cs span { flex-basis: 100%; font-size: 12.5px; color: var(--muted); }
   .cart-add.cs-add { margin: 0; align-self: auto; width: auto; font-size: 13px; padding: 4px 12px; border-radius: 999px; border-style: solid; --pc: #A88550; background: #FFFDF8; }
@@ -1105,12 +1120,24 @@
     }).join('');
     return '<section class="hub" data-pane="hub"><div class="hub-head"><div class="eyebrow">你的命盤九宮格</div><p>點一格，進去看那個系統怎麼說你</p></div><div class="hub-grid">' + tiles + '</div></section>';
   }
+  function paneMeta(id) {
+    var L = LAST || {}, rows = (L.card && L.card.rows) || [], sd = SYSTEMS.filter(function (x) { return x.id === id; })[0];
+    if (id === 'summary') return { icon: '✦', color: '#A88550', name: '綜合分析', sub: '六種系統都說到的你' };
+    if (id === 'aipack') return { icon: '◈', color: '#8C6A2F', name: 'AI 懶人包', sub: '讓 AI 依你的盤寫一份完整分析' };
+    if (id === 'hub') return { icon: '▦', color: '#8C6A2F', name: '回九宮格', sub: '看看還有哪幾格沒點過' };
+    var st = SYS_STYLE[sd.key] || ['✦', '#A88550'], r = rows.filter(function (x) { return x[0] === sd.key; })[0];
+    return { icon: st[0], color: st[1], name: sd.key, sub: r ? r[1] : '' };
+  }
   function paneNav(id) {
-    var i = TAB.order.indexOf(id), nx = TAB.order[i + 1], pv = TAB.order[i - 1];
+    var i = TAB.order.indexOf(id), nx = TAB.order[i + 1] || 'hub', pv = TAB.order[i - 1], m = paneMeta(nx);
+    var dots = TAB.order.map(function (o) { return '<i class="' + (o === id ? 'on' : '') + '"></i>'; }).join('');
     return '<div class="pane-nav no-print" data-pane="' + id + '">' +
-      (pv ? '<button type="button" class="pn-prev" data-go="' + pv + '">← ' + paneLabel(pv) + '</button>' : '<span></span>') +
-      '<button type="button" class="pn-hub" data-go="hub">回九宮格</button>' +
-      (nx ? '<button type="button" class="pn-next" data-go="' + nx + '">下一個：' + paneLabel(nx) + ' →</button>' : '<span></span>') + '</div>';
+      '<button type="button" class="pn-card' + (nx === 'aipack' ? ' pn-gold' : '') + '" data-go="' + nx + '" style="--pc:' + m.color + '">' +
+        '<span class="pn-k">' + (nx === 'hub' ? '看完了' : '下一個') + '</span>' +
+        '<span class="pn-main"><i>' + m.icon + '︎</i><span><b>' + m.name + '</b><small>' + esc(m.sub) + '</small></span></span><em>→</em></button>' +
+      '<div class="pn-links">' + (pv ? '<button type="button" data-go="' + pv + '">← ' + paneLabel(pv) + '</button>' : '<span></span>') +
+        '<span class="pn-dots" aria-label="第 ' + (i + 1) + ' / ' + TAB.order.length + ' 塊">' + dots + '</span>' +
+        '<button type="button" data-go="hub">九宮格 ▦</button></div></div>';
   }
   function setupTabs() {
     var out = $('out'); if (!out || !out.querySelector('.cover')) return;
@@ -1151,7 +1178,10 @@
     });
     if (!opt.fromPop) { try { history[opt.replace ? 'replaceState' : 'pushState']({ pane: id }, '', location.pathname + location.search + (id === 'hub' ? '' : '#' + id)); } catch (e) {} }
     spySections();
-    if (!opt.noScroll) { var nav = $('secnav'); window.scrollTo({ top: nav.getBoundingClientRect().top + window.scrollY, behavior: 'auto' }); }
+    if (!opt.noScroll) {   // 捲到新分頁的開頭（分頁列是 sticky，不能用它的位置算）
+      var first = Array.prototype.filter.call(out.querySelectorAll('#out > .pane-on'), function (el) { return !el.classList.contains('viewmode'); })[0];
+      if (first) window.scrollTo({ top: Math.max(0, first.getBoundingClientRect().top + window.scrollY - navOffset() - 8), behavior: 'auto' });
+    }
     document.querySelectorAll('#out .reveal').forEach(function (el) { if (el.closest('.pane-on')) el.classList.add('in'); });
     if (prev !== id) track('open_pane', { pane: id, from: prev });
   }
