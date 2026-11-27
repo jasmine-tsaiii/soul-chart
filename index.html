@@ -672,7 +672,9 @@
   .portrait .plines b { display: inline-flex; align-items: center; align-self: start; min-height: 27px; }
   .portrait .plines b::before { content: none; }
   .li-ic { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; margin-right: 8px; border-radius: 50%; background: var(--pc); color: #fff; font-size: 13px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; flex: none; }
-  .ev span .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--pc); margin-right: 6px; vertical-align: 1px; }
+  .ev span { display: inline-flex; align-items: baseline; max-width: 100%; box-sizing: border-box; vertical-align: top; }
+  .ev span .dot { flex: none; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--pc); margin-right: 6px; position: relative; top: -1px; }
+  .ev span .evt { font-style: normal; min-width: 0; overflow-wrap: anywhere; }
   .ev span[style] { background: color-mix(in srgb, var(--pc) 10%, var(--paper)); }
   .nav-ic { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; margin-right: 7px; border-radius: 50%; background: var(--pc); color: #fff; font-size: 11px; letter-spacing: 0; vertical-align: 1px; font-family: "Apple Symbols", "Segoe UI Symbol", serif; }
   .overview a { border-top: 3px solid transparent; transition: border-color .2s, background .2s; }
@@ -1696,7 +1698,7 @@
   // ===== 總整理 =====
   function evChip(e) {
     var sysName = e.split('：')[0], st = SYS_STYLE[sysName];
-    return '<span' + (st ? ' style="--pc:' + st[1] + '"' : '') + '>' + (st ? '<i class="dot"></i>' : '') + e + '</span>';
+    return '<span' + (st ? ' style="--pc:' + st[1] + '"' : '') + '>' + (st ? '<i class="dot"></i>' : '') + '<em class="evt">' + e + '</em></span>';
   }
   function synthesisSection(s, name, n) {
     var nTxt = n === 6 ? '六' : String(n);
